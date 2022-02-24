@@ -1,0 +1,15 @@
+<div class="docking-container">
+  <div class="docking-content">
+    <div class="docking-title-container">
+      <h2 class="docking-title">{{"dockingDialog.tips1" | translate }}</h2>
+    </div>
+    <div class="docking-btn-container d-flex justify-content-around">
+      <button class="btn cancel-button mr-2 p-2" (click)="onCloseModel()">
+        {{ "cancel"| translate }}
+      </button>
+      <button class="btn confirm-button mr-2 p-2" (click)="onSubmitModel()">
+        {{ "confirm" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

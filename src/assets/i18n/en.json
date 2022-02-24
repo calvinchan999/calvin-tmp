@@ -1,0 +1,45 @@
+{
+  "waypoint": "Waypoint",
+  "docking": "Docking",
+  "sos": "SOS",
+  "map": "Map",
+  "localization": "Localization",
+  "mode": "Mode",
+  "modeChanged": "The mode has been updated with ",
+  "robotStatus": {
+    "followMe": "Follow Me Mode",
+    "navigation": "Auto Mode",
+    "error": "Error"
+  },
+  "mapNotFound": "map not found",
+  "mapChanged": "The map has been updated with ",
+  "cancel": "cancel",
+  "confirm": "confirm",
+  "resume": "resume",
+  "pause": "pause",
+  "sosDialog":{
+    "tips1" : "Are you sure to execute the SOS signal?",
+    "tips2": "SOS signal has been issued"
+  },
+  "dockingDialog": {
+    "tips1": "Return to charging point?",
+    "tips2": "Returning to charging station",
+    "tips3": "Robot Charging...",
+    "tips4": "Please leave the charging area",
+    "cancalCharging": "Cancel Charging"
+  },
+  "mapDialog": {
+    "tips1": "The map has been updated"
+  },
+  "modeDialog":{
+    "tips1": "The mode has been updated"
+  },
+  "arrivedAtDestination" : "Arrived at destination",
+  "cancelledTask" : "The Task has been cancelled",
+  "information": "Information",
+  "navigatingtoDestination": "Destination",
+  "localizationDialog": {
+    "successMessage": "The initial point has been updated",
+    "failedMessage": "Update failed"
+  }
+}

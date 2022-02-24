@@ -1,0 +1,14 @@
+{
+  "server": {
+    "endpoint": "http://52.175.230.39:8081",
+    "envirmonent": "production"
+  },
+  "mqtt": {
+    "ip_address": "127.0.0.1",
+    "port_no": 61614
+  },
+  "battery": {
+    "upperLimit": "0.9",
+    "duration": "28800000"
+  }
+}

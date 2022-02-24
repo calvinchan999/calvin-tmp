@@ -1,0 +1,23 @@
+<div class="localization-items-container">
+  <div class="localization-items">
+    <div
+      class="localization-item"
+      *ngFor="let waypoint of waypointLists$ | async"
+      [ngClass]="{ selected: selectedWaypoint === waypoint.name }"
+      (click)="onSelectedWaypoint(waypoint.name)"
+    >
+      {{ waypoint.name }}
+    </div>
+  </div>
+</div>
+<div class="localization-btn-container d-flex justify-content-around">
+  <button class="btn localization-cancel-button" (click)="onCloseModel()">
+    {{ "cancel" | translate }}
+  </button>
+  <button
+    class="btn localization-confirm-button"
+    (click)="onSubmitModel(selectedWaypoint)"
+  >
+    {{ "confirm" | translate }}
+  </button>
+</div>

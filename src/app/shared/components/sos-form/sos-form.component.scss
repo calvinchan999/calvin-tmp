@@ -1,0 +1,49 @@
+.sos-container {
+  text-align: center;
+  width: 100%;
+  .sos-title-container {
+    text-align: center;
+    width: 100%;
+    height: 150px;
+    .sos-title {
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+  }
+}
+
+.sos-btn-container {
+  padding-top: 30px;
+  width: 100%;
+  .sos-cancel-button {
+    background-color: #fe0000;
+    width: 50%;
+    color: white;
+    margin: 0 10px 0 10px;
+  }
+  .sos-confirm-button {
+    background-color: #09ff78;
+    width: 50%;
+    color: black;
+    margin: 0 10px 0 10px;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .sos-title {
+    font-size: 45px !important;
+  }
+
+  .sos-cancel-button {
+    font-size: 35px;
+  }
+
+  .sos-confirm-button {
+    font-size: 35px;
+  }
+}

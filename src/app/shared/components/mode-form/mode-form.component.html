@@ -1,0 +1,18 @@
+<div class="mode-items-container">
+  <div class="mode-items">
+    <div
+      class="mode-item"
+      *ngFor="let mode of modeLists$ | async"
+      [ngClass]="{ selected: selectedMode === mode.name }"
+      (click)="currentMode !== mode.name && onSelectedMode(mode.name)"
+    >
+      {{ mode.name }}
+    </div>
+  </div>
+</div>
+<div class="mode-btn-container d-flex justify-content-around">
+  <button class="btn mode-cancel-button" (click)="onCloseModel()">{{ "cancel" | translate }}</button>
+  <button class="btn mode-confirm-button" (click)="onSubmitModel(selectedMode)">
+    {{ "confirm" | translate }}
+  </button>
+</div>

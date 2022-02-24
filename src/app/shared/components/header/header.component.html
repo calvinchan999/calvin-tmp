@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
+  <div class="container-fluid">
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
+      style="flex: 1"
+    >
+      {{ modeTranslation }}
+  
+    </div>
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
+    >
+      {{ map ? map : mapTranslation }}
+    </div>
+
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-end"
+      style="flex: 1;height: 100px;"
+    >
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item admin-container" (click)="useAdminMode()">
+          <i class="material-icons nav-link" style="font-size: 3.5em"
+            >admin_panel_settings</i
+          >
+        </li>
+        <li class="nav-item language-container" (click)="useLanguage()">
+          <i class="material-icons nav-link" style="font-size: 3.5em"
+            >translate</i
+          >
+        </li>
+        <li class="nav-item battery-container" placement="bottom">
+          <img
+            src="assets/images/battery-low.png"
+            class="battery"
+            *ngIf="percentage <= 10"
+          />
+          <img
+            src="assets/images/battery-mid.png"
+            class="battery"
+            *ngIf="percentage > 10 && percentage < 60"
+          />
+          <img
+            src="assets/images/battery.png"
+            class="battery"
+            *ngIf="percentage >= 60"
+          />
+          <img
+            src="assets/images/charging.png"
+            class="battery-charging"
+            style="width: 2em"
+            *ngIf="powerSupplyStatus === 'CHARGING'"
+          />
+          <label class="battery-percentage">{{ percentage }}%</label>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

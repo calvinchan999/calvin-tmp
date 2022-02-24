@@ -1,0 +1,58 @@
+<div fxFlexFill fxLayout="column">
+  <div fxFlex="none" style="position: sticky; top: 0; z-index: 2">
+    <app-header></app-header>
+  </div>
+  <div fxFlex fxLayoutAlign="center start">
+    <router-outlet></router-outlet>
+  </div>
+  <!-- <div fxFlex="none">
+    <app-footer></app-footer>
+  </div> -->
+</div>
+
+<app-modal #responseDialog disableClose="true">
+  <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
+    ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
+  >
+  <ng-template #modalResponse
+    ><h2 class="modal-title">{{ response?.message }}</h2></ng-template
+  >
+</app-modal>
+
+<app-modal #chargingDialog>
+  <ng-template #modalHeader
+    ><h2 class="modal-title">{{ "docking" | translate }}</h2>
+  </ng-template>
+  <ng-template #modalBody>
+    <app-charging></app-charging>
+  </ng-template>
+</app-modal>
+
+<app-modal #dialog>
+  <ng-template #modalHeader
+    ><h2 class="modal-title">{{ modalTitle | translate }}</h2></ng-template
+  >
+  <ng-template #modalBody [ngSwitch]="modal">
+    <div *ngSwitchCase="'waypoint'">
+      <app-waypoint-form></app-waypoint-form>
+    </div>
+    <div *ngSwitchCase="'sos'">
+      <app-sos-form></app-sos-form>
+    </div>
+    <div *ngSwitchCase="'map'">
+      <app-map-form></app-map-form>
+    </div>
+    <div *ngSwitchCase="'localization'">
+      <app-localization-form></app-localization-form>
+    </div>
+    <div *ngSwitchCase="'docking'">
+      <app-docking-form></app-docking-form>
+    </div>
+    <div *ngSwitchCase="'mode'">
+      <app-mode-form></app-mode-form>
+    </div>
+    <div *ngSwitchCase="'destination'">
+      <app-destination></app-destination>
+    </div>
+  </ng-template>
+</app-modal>

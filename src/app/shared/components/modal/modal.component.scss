@@ -1,0 +1,44 @@
+/**
+ * A more specific selector overwrites bootstrap display properties, but they still enable users
+ * to overwite them on their apps.
+ */
+.modal {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  z-index: 999;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 42;
+}
+
+.modal.in {
+  opacity: 1;
+}
+
+.modal-dialog {
+  width: 100%;
+}
+
+.model-content {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.modal-response-dialog {
+  width: 100%;
+}
+
+// .modal-response-content {
+//     width: 100%;
+//     height: 200px;
+// }

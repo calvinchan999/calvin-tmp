@@ -1,0 +1,73 @@
+.docking-container {
+//   width: 100%;
+//   height: 100%;
+//   background-color: rgba(0, 0, 0, 0.5);
+//   position: fixed;
+//   left: 0;
+//   right: 0;
+//   top: 0;
+//   bottom: 0;
+//   z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.docking-content {
+  width: 100%;
+  height: auto;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 20px;
+}
+
+.docking-title-container {
+  text-align: center;
+  width: 100%;
+  height: 150px;
+
+  .docking-title {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
+.docking-btn-container {
+  padding-top: 30px;
+  width: 100%;
+  .cancel-button {
+    background-color: #fe0000;
+    width: 50%;
+    color: white;
+    margin: 0 10px 0 10px;
+  }
+  .confirm-button {
+    background-color: #09ff78;
+    width: 50%;
+    color: black;
+    margin: 0 10px 0 10px;
+  }
+}
+
+
+@media only screen and (max-width: 900px) {
+  .docking-title {
+    font-size: 45px  !important;
+  }
+
+  .cancel-button {
+    font-size: 35px;
+  }
+
+  .confirm-button {
+    font-size: 35px;
+  }
+}

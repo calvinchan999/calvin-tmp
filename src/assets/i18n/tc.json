@@ -1,0 +1,45 @@
+{
+  "waypoint": "航點",
+  "docking": "充電對接",
+  "sos": "SOS信號",
+  "map": "更換地圖",
+  "localization": "設定初始點",
+  "mode": "更換模式",
+  "modeChanged": "模式已更新",
+  "robotStatus": {
+    "followMe": "跟隨模式",
+    "navigation": "自動模式",
+    "error": "錯誤"
+  },
+  "mapNotFound": "沒有地圖",
+  "mapChanged": "地圖已更新",
+  "cancel": "取消",
+  "confirm": "確認",
+  "resume": "重新開始",
+  "pause": "暫停",
+  "sosDialog":{
+    "tips1" : "你確定要執行SOS信號嗎？",
+    "tips2": "已經發出SOS信號"
+  },
+  "dockingDialog": {
+    "tips1": "確認返回充電點？",
+    "tips2": "返回充電站中",
+    "tips3": "機器人充電中...",
+    "tips4": "請操作人員離開充電區",
+    "cancalCharging": "取消充電"
+  },
+  "mapDialog": {
+    "tips1": "地圖已更新"
+  },
+  "modeDialog":{
+    "tips1": "模式已更新"
+  },
+  "arrivedAtDestination" : "已到達目的地",
+  "cancelledTask" : "任務已取消",
+  "information": "信息",
+  "navigatingtoDestination": "導航至目的地",
+  "localizationDialog": {
+    "successMessage": "已更新初始點",
+    "failedMessage": "更新初始點失敗"
+  }
+}

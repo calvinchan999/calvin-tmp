@@ -1,0 +1,26 @@
+.charging-btn-container {
+  padding-top: 30px;
+  width: 100%;
+  .cancel-button {
+    background-color: #fe0000;
+    width: 100%;
+    color: white;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .block {
+    width: 100%;
+  }
+
+  .block-disable {
+    width: 100%;
+  }
+
+  .docking-tips {
+    font-size: 45px !important;
+  }
+  .cancel-button {
+    font-size: 35px;
+  }
+}

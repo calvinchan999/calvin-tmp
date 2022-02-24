@@ -1,0 +1,52 @@
+.container-fluid {
+  .spuare-group {
+    display: flex;
+    .square-button {
+      height: 200px;
+      width: 80px;
+      margin: 0 auto;
+      display: flex;
+      flex: 0 0 25%;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 5px;
+      //   transition: 1s ease-in-out;
+      background-color: transparent;
+    }
+
+    .square-button:active {
+      box-shadow: -2px -2px 5px #000;
+    }
+  }
+}
+
+.pause {
+  background-color: rgba(255, 0, 0, 0.596);
+  border-radius: 5px;
+}
+
+.resume {
+  background-color: rgb(10, 255, 51);
+  border-radius: 5px;
+}
+
+.cancel {
+  background-color: rgb(255, 0, 0);
+  border-radius: 5px;
+}
+
+
+@media only screen and (max-width: 900px) {
+  .map-item {
+    font-size: 45px  !important;
+  }
+
+  .map-cancel-button {
+    font-size: 35px;
+  }
+
+  .map-confirm-button {
+    font-size: 35px;
+  }
+}
