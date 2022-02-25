@@ -15,6 +15,8 @@ export const environment = {
     pause: '/api/baseControl/v1/pause',
     resume: '/api/baseControl/v1/resume',
     localization: '/api/localization/v1',
-    docking: '/api/docking/v1/charging'
+    docking: '/api/docking/v1/charging',
+    mapImage: (map: string) => `/api/map/v1/${map}/image`,
+    mapMetaData: (map: string) => `/api/map/v1/${map}/metadata`
   },
 };

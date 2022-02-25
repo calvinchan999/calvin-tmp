@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
-
+import { map } from 'rxjs/operators';
 export interface Map {
   map: string;
 }
@@ -39,5 +39,17 @@ export class MapService {
   changeMap(data: { mapName: string }): Observable<any> {
     const url = `${this.baseUrl}${environment.api.changeMap}`;
     return this.http.post<any>(url, data);
+  }
+
+  getMapImage(name: string): Observable<any> {
+    const url = `${this.baseUrl}${environment.api.mapImage(name)}`;
+    // @ts-ignore
+    return this.http.get<any>(url, { responseType: 'blob' });
+    // .pipe(map((res: Response) => res.blob()));
+  }
+
+  getMapMetaData(name: string): Observable<any> {
+    const url = `${this.baseUrl}${environment.api.mapMetaData(name)}`;
+    return this.http.get<any>(url);
   }
 }

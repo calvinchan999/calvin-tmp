@@ -37,6 +37,11 @@
   }
 }
 
+.preview-wrapper {
+  height: 700px;
+  overflow: scroll;
+}
+
 @media only screen and (max-width: 900px) {
   .localization-item {
     font-size: 45px !important;

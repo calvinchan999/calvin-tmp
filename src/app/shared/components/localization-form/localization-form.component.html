@@ -1,5 +1,5 @@
 <div class="localization-items-container">
-  <div class="localization-items">
+  <!-- <div class="localization-items">
     <div
       class="localization-item"
       *ngFor="let waypoint of waypointLists$ | async"
@@ -8,6 +8,10 @@
     >
       {{ waypoint.name }}
     </div>
+  </div> -->
+
+  <div class="preview-wrapper">
+    <canvas #canvas (click)="getMousePos($event)"></canvas>
   </div>
 </div>
 <div class="localization-btn-container d-flex justify-content-around">
