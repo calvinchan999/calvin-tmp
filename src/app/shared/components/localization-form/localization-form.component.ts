@@ -64,10 +64,12 @@ export class LocalizationFormComponent implements OnInit {
 
   ngOnInit(): void {
     let map: string = '';
-    this.sharedService.currentMap$.subscribe(currentMap => map = currentMap)
+    this.sharedService.currentMap$.subscribe(
+      (currentMap) => (map = currentMap)
+    );
     console.log('localization-form.component line 69: ', map);
     this.mapService
-      .getMapImage(map)
+      .getMapImage('5W')
       .pipe(
         mergeMap(async (data) => {
           console.log(data);
@@ -76,7 +78,7 @@ export class LocalizationFormComponent implements OnInit {
         }),
         mergeMap(() =>
           this.mapService
-            .getMapMetaData(map)
+            .getMapMetaData('5W')
             .pipe(tap((metaData) => (this.metaData = metaData)))
         )
       )
@@ -161,6 +163,14 @@ export class LocalizationFormComponent implements OnInit {
     this.ctx.font = '30px Georgia';
     this.ctx.fillStyle = '#0000FF';
     this.ctx.fillText('Origin Point', 0, 30);
+    console.log('drawnOriginPoint');
+
+    console.log(this.metaData);
+    console.log(this.metaData.x / this.metaData.resolution);
+    console.log(
+      this.ctx.canvas.height -
+        Math.abs(this.metaData.y * this.metaData.resolution)
+    );
   }
 
   async drawnLidarRedpoint() {
@@ -206,12 +216,18 @@ export class LocalizationFormComponent implements OnInit {
     this.ctx.strokeStyle = 'lightgray';
     this.ctx.fill();
     this.ctx.stroke();
-  }
 
-  // async drawnWaypointRectangle() {
-  //   this.ctx.fillStyle = 'blue';
-  //   this.ctx.fillRect(this.drag1X, this.drag1Y, this.drag1W, this.drag1H);
-  // }
+    console.log(
+      this.waypointPointer?.x * this.metaData.resolution -
+        Math.abs(this.metaData.x)
+    );
+
+    console.log(
+      (this.ctx.canvas.height - this.waypointPointer?.y) *
+        this.metaData.resolution -
+        Math.abs(this.metaData.y)
+    );
+  }
 
   drawnWaypointAngle(evt?: any): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
@@ -271,7 +287,13 @@ export class LocalizationFormComponent implements OnInit {
 
     if (this.waypointAngleLineStatus && (await this.drawnWaypointAngle(evt))) {
       console.log('getapi');
-      const { x, y } = this.waypointPointer;
+      const x =
+        this.waypointPointer?.x * this.metaData.resolution -
+        Math.abs(this.metaData.x);
+      const y =
+        (this.ctx.canvas.height - this.waypointPointer?.y) *
+          this.metaData.resolution -
+        Math.abs(this.metaData.y);
       this.waypointService
         .initialPose({ x, y, radians: this.radians })
         .pipe(mergeMap(() => this.drawnLidarRedpoint()))
