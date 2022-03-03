@@ -29,6 +29,14 @@
     color: white;
     margin: 0 10px 0 10px;
   }
+
+  .localization-wapoint-button {
+    background-color: #87ceeb;
+    width: 50%;
+    color: white;
+    margin: 0 10px 0 10px;
+  }
+
   .localization-confirm-button {
     background-color: #09ff78;
     width: 50%;
@@ -38,7 +46,7 @@
 }
 
 .preview-wrapper {
-  height: 700px;
+  height: 650px;
   overflow: scroll;
 }
 
@@ -47,11 +55,9 @@
     font-size: 45px !important;
   }
 
-  .localization-cancel-button {
-    font-size: 35px;
-  }
-
+  .localization-cancel-button,
+  .localization-wapoint-button,
   .localization-confirm-button {
-    font-size: 35px;
+    font-size: 30px;
   }
 }

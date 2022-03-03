@@ -19,9 +19,11 @@ export const environment = {
     pause: '/api/baseControl/v1/pause',
     resume: '/api/baseControl/v1/resume',
     localization: '/api/localization/v1',
+    initialPose: '/api/localization/v1/initialPose',
     docking: '/api/docking/v1/charging',
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
-    mapMetaData: (map: string) => `/api/map/v1/${map}/metadata`
+    mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
+    lidar: '/api/lidar/v1'
   },
 };
 

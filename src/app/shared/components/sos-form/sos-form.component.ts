@@ -26,7 +26,6 @@ export class SosFormComponent implements OnInit {
 
   onSubmitModel() {
 
-    
     //todo, mock payload for testing
     const topic: string = 'rvautotech/fobo/sos';
     const payload: string = "{ sos: true }";

@@ -52,4 +52,9 @@ export class MapService {
     const url = `${this.baseUrl}${environment.api.mapMetaData(name)}`;
     return this.http.get<any>(url);
   }
+
+  getLidar():Observable<any> {
+    const url = `${this.baseUrl}${environment.api.lidar}`;
+    return this.http.get<any>(url);
+  }
 }

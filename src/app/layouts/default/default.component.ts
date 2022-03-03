@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { of, Subscription } from 'rxjs';
-import { delay, filter, map, mergeMap, retry } from 'rxjs/operators';
+import { of, Subject, Subscription } from 'rxjs';
+import { delay, filter, map, mergeMap, retry, takeUntil } from 'rxjs/operators';
+import { HttpStatusService } from 'src/app/services/http-status.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
@@ -19,6 +20,7 @@ export class DefaultComponent implements OnInit {
   @ViewChild('destinationDialog') destinationDialog: ModalComponent;
   @ViewChild('chargingDialog') chargingDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
+  private ngUnsubscribe = new Subject();
   public sub = new Subscription();
   public option: string = '';
   public response: any;
@@ -32,13 +34,10 @@ export class DefaultComponent implements OnInit {
     private modeService: ModeService,
     private mapService: MapService,
     private mqttService: MqttService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private httpStatusService: HttpStatusService
   ) {
-    // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
-    //   if (reponse.type === 'close-modal') {
-    //     this.destinationDialog.onCloseWithoutRefresh();
-    //   }
-    // }); "ArrivedAtDestination" : "Arrived at destination",
+
 
     this.mqttService.$completion
       .pipe(
@@ -171,6 +170,7 @@ export class DefaultComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initializeErrors();
     if (!sessionStorage.getItem('role')) {
       this.sharedService._userRole().subscribe();
     } else {
@@ -200,7 +200,24 @@ export class DefaultComponent implements OnInit {
       });
   }
 
+  initializeErrors() {
+    this.httpStatusService
+    .getHttpStatus()
+    .pipe(takeUntil(this.ngUnsubscribe))
+    .subscribe((errors: any) => {
+      console.log(errors);
+      if (errors.inFlight) {
+        const message = 'Status : ' + errors.errorCode + " - " + errors.errorMsg;
+        this.sharedService.response$.next({ type: 'warning', message });
+   
+      }
+    });
+
+  }
+
   ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
     if (this.sub) this.sub.unsubscribe();
   }
 }

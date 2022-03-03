@@ -31,6 +31,12 @@ export interface TaskItemList {
   actionList?: ActionList[];
 }
 
+export interface InitialPose {
+  x: number;
+  y: number;
+  radians: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -54,6 +60,13 @@ export class WaypointService {
     return this.http.put<any>(
       `${this.baseUrl}${environment.api.localization}/${waypoint}`,
       {}
+    );
+  }
+
+  initialPose(data: InitialPose): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}${environment.api.initialPose}`,
+      data
     );
   }
 

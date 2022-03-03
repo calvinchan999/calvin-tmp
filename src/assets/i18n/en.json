@@ -41,5 +41,6 @@
   "localizationDialog": {
     "successMessage": "The initial point has been updated",
     "failedMessage": "Update failed"
-  }
+  },
+  "resetWaypoint": "Reset waypoint"
 }

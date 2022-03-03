@@ -11,9 +11,13 @@
 </div>
 
 <app-modal #responseDialog disableClose="true">
-  <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
+  <!-- <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
     ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
-  >
+  > -->
+
+  <ng-template #modalHeader
+  ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
+>
   <ng-template #modalResponse
     ><h2 class="modal-title">{{ response?.message }}</h2></ng-template
   >
