@@ -47,9 +47,9 @@ export class HeaderComponent implements OnInit {
         mergeMap(() => this.getTranlateModeMessage$())
       )
       .subscribe(() => {
-        if (this.mode.length > 0 && this.map.length > 0) {
-          this.sharedService.loading$.next(false);
-        }
+        // if (this.mode.length > 0 && this.map.length > 0) {
+        //   this.sharedService.loading$.next(false);
+        // }
       });
   }
 
@@ -58,11 +58,11 @@ export class HeaderComponent implements OnInit {
     this.getLanguage();
   }
 
-  ngDoCheck() {
-    if (this.mode.length <= 0 && this.map.length <= 0) {
-      this.sharedService.loading$.next(true);
-    }
-  }
+  // ngDoCheck() {
+  //   if (this.mode.length <= 0 && this.map.length <= 0) {
+  //     this.sharedService.loading$.next(true);
+  //   }
+  // }
 
   getBattery() {
     this.mqttService.$battery.subscribe((battery) => {

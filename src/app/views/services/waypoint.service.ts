@@ -34,7 +34,7 @@ export interface TaskItemList {
 export interface InitialPose {
   x: number;
   y: number;
-  radians: number;
+  angle: number;
 }
 
 @Injectable({

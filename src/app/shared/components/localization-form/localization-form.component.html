@@ -12,13 +12,35 @@
 
   <div class="preview-wrapper">
     <canvas #canvas></canvas>
+    <div class="button-wrapper">
+      <button
+        class="btn btn-outline-dark"
+        style="width: 50px;"
+        type="button"
+        id="plus"
+        value="+"
+        (click)="zoomIn()"
+      >+</button>
+      <button
+        class="btn btn-outline-dark"
+        style="width: 50px;"
+        type="button"
+        id="minus"
+        value="-"
+        (click)="zoomOut()"
+      >-</button>
+    </div>
   </div>
 </div>
 <div class="localization-btn-container d-flex justify-content-around">
   <button class="btn localization-cancel-button" (click)="onCloseModel()">
     {{ "cancel" | translate }}
   </button>
-  <button class="btn localization-wapoint-button"  *ngIf="waypointPointer.x > 0 && waypointPointer.y > 0" (click)="onResetWaypoint()">
+  <button
+    class="btn localization-wapoint-button"
+    *ngIf="waypointPointer.x > 0 && waypointPointer.y > 0"
+    (click)="onResetWaypoint()"
+  >
     {{ "resetWaypoint" | translate }}
   </button>
   <!-- <button class="btn localization-wapoint-button" *ngIf="isUpdateAngle && waypointIsExist" (click)="onCloseModel()">

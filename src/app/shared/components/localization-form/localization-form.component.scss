@@ -19,6 +19,9 @@
     }
   }
 }
+canvas{
+  display: block;
+}
 
 .localization-btn-container {
   padding-top: 30px;
@@ -48,6 +51,33 @@
 .preview-wrapper {
   height: 650px;
   overflow: scroll;
+}
+
+
+.preview-wrapper::-webkit-scrollbar {
+  background: white;
+  width: 12px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.button-wrapper {
+  position: absolute;
+  width: 50px;
+  top: 2px;
+  right: 2px;
 }
 
 @media only screen and (max-width: 900px) {
