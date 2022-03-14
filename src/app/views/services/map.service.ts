@@ -14,6 +14,30 @@ export interface MapResponse {
   robotId: string;
 }
 
+export interface LocalizationPose {
+  robotId: string,
+  mapName: string,
+  x: number,
+  y: number,
+  angle: number
+}
+
+export interface Lidar {
+  robotId: string,
+  mapName: string,
+  pointList: []
+}
+
+export interface MapMetaData {
+  resolution: number,
+  width: number,
+  height: number,
+  x: number,
+  y: number,
+  angle: number
+
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -48,13 +72,18 @@ export class MapService {
     // .pipe(map((res: Response) => res.blob()));
   }
 
-  getMapMetaData(name: string): Observable<any> {
+  getMapMetaData(name: string): Observable<MapMetaData> {
     const url = `${this.baseUrl}${environment.api.mapMetaData(name)}`;
-    return this.http.get<any>(url);
+    return this.http.get<MapMetaData>(url);
   }
 
-  getLidar():Observable<any> {
+  getLidar():Observable<Lidar> {
     const url = `${this.baseUrl}${environment.api.lidar}`;
-    return this.http.get<any>(url);
+    return this.http.get<Lidar>(url);
+  }
+
+  getLocalizationPose(): Observable<LocalizationPose> {
+    const url = `${this.baseUrl}${environment.api.localizationPose}`;
+    return this.http.get<LocalizationPose>(url);
   }
 }

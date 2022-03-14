@@ -66,6 +66,7 @@ export class LocalizationFormComponent implements OnInit {
   };
 
   message: any;
+  robotCurrentPosition: any;
 
   constructor(
     private modalComponent: ModalComponent,
@@ -83,7 +84,7 @@ export class LocalizationFormComponent implements OnInit {
     );
     console.log('localization-form.component line 69: ', map);
     this.mapService
-      .getMapImage(map)
+      .getMapImage('5W')
       .pipe(
         mergeMap(async (data) => {
           console.log(data);
@@ -92,9 +93,14 @@ export class LocalizationFormComponent implements OnInit {
         }),
         mergeMap(() =>
           this.mapService
-            .getMapMetaData(map)
+            .getMapMetaData('5W')
             .pipe(tap((metaData) => (this.metaData = metaData)))
-        )
+        ),
+        mergeMap(() =>
+        this.mapService
+          .getLocalizationPose()
+          .pipe(tap((pose) => (this.robotCurrentPosition = pose)))
+      )
       )
       .subscribe(() => {
         const { x, y, resolution } = this.metaData;
@@ -107,6 +113,7 @@ export class LocalizationFormComponent implements OnInit {
         this.init();
 
         console.log(this.message);
+        console.log(this.robotCurrentPosition);
       });
   }
 
@@ -126,6 +133,7 @@ export class LocalizationFormComponent implements OnInit {
               waypointAngle: true,
               lidarRedpoint: true,
               map: true,
+              originPoint: true
             },
             event
           );
@@ -216,7 +224,8 @@ export class LocalizationFormComponent implements OnInit {
   }
 
   async drawnOriginPoint() {
-    const { x, y, resolution } = this.metaData;
+    const { resolution } = this.metaData;
+    const { x, y, } = this.robotCurrentPosition;
     this.ctx.fillStyle = '#0000FF';
 
     this.ctx.beginPath();
@@ -264,7 +273,7 @@ export class LocalizationFormComponent implements OnInit {
 
     if (originPoint) {
       // console.log('originPoint');
-      // await this.drawnOriginPoint();
+      await this.drawnOriginPoint();
     }
 
     if (lidarRedpoint && waypointAngle && this.waypointAngleLineStatus) {
