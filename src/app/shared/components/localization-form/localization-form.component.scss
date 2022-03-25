@@ -19,7 +19,7 @@
     }
   }
 }
-canvas{
+canvas {
   display: block;
 }
 
@@ -51,8 +51,8 @@ canvas{
 .preview-wrapper {
   height: 650px;
   overflow: scroll;
+  position: relative;
 }
-
 
 .preview-wrapper::-webkit-scrollbar {
   background: white;
@@ -73,12 +73,34 @@ canvas{
   background: #555;
 }
 
-.button-wrapper {
+.parent-canvas {
+  z-index: 999;
   position: absolute;
-  width: 50px;
-  top: 2px;
-  right: 2px;
 }
+
+.child-canvas {
+  z-index: 998;
+  position: absolute;
+}
+
+.degrees-label{
+  position: fixed;
+  top: 110px;
+  left: 20px;
+  z-index: 999;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-size: 30px;
+}
+
+.button-wrapper {
+  width: 50px;
+  z-index: 999;
+  position: fixed;
+  right: 30px;
+  top: 100px;
+}
+
+
 
 @media only screen and (max-width: 900px) {
   .localization-item {

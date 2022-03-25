@@ -26,6 +26,7 @@
     "@ngx-translate/http-loader": "^6.0.0",
     "angular2-uuid": "^1.1.1",
     "bootstrap": "^5.1.3",
+    "konva": "^8.3.4",
     "ngx-mqtt": "^9.0.5",
     "ngx-spinner": "^12.0.0",
     "rxjs": "~6.6.0",

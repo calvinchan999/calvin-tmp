@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
@@ -9,6 +9,11 @@ import {
   Waypoint,
 } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
+
+import { Stage } from 'konva/lib/Stage';
+import { Layer } from 'konva/lib/Layer';
+import { Arrow } from 'konva/lib/shapes/Arrow';
+import { Circle } from 'konva/lib/shapes/Circle';
 
 export async function loadImage(src: string): Promise<HTMLImageElement> {
   const image = new Image();
@@ -32,35 +37,27 @@ export interface WaypointPointer {
 export class LocalizationFormComponent implements OnInit {
   @ViewChild('canvas', { static: false })
   public canvas: ElementRef<HTMLCanvasElement>;
+
   waypointLists$: Observable<any> = this.sharedService.currentMap$.pipe(
     mergeMap((map: any) => this.waypointService.getWaypoint(map))
   );
-  selectedWaypoint: Waypoint;
-  marginLeft: string = '0px';
-  imageVisible = false;
 
   ctx: any;
   mapImage: any;
   metaData: any;
 
+  waypoint: any; //  konva
+  line: any; //  konva
   waypointPointer: WaypointPointer = { x: 0, y: 0 };
   waypointAngleLineStatus: boolean = false;
 
-  radius: number = 40;
-  drag1W: number = 10;
-  drag1H: number = 10;
-  drag1X: number = 0;
-  drag1Y: number = 0;
-
   radians: number = 0;
+  degrees: number = 0;
 
   scale = 1;
   scaleMultiplier = 0.8;
 
-  startDragOffset: any = {};
-  mouseDown: boolean = false;
-  mylatesttap: any;
-  translatePos: any = {
+  translatePos: WaypointPointer = {
     x: 0,
     y: 0,
   };
@@ -68,15 +65,20 @@ export class LocalizationFormComponent implements OnInit {
   message: any;
   robotCurrentPosition: any;
 
+  stage: Stage;
+  layer: Layer;
+  lineLastPosition: WaypointPointer = {
+    x: 0,
+    y: 0,
+  };
+
   constructor(
     private modalComponent: ModalComponent,
     private waypointService: WaypointService,
     private sharedService: SharedService,
     private translateService: TranslateService,
     private mapService: MapService
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     this.setMessage();
     let map: string = '';
     this.sharedService.currentMap$.subscribe(
@@ -84,7 +86,7 @@ export class LocalizationFormComponent implements OnInit {
     );
     console.log('localization-form.component line 69: ', map);
     this.mapService
-      .getMapImage('5W')
+      .getMapImage(map)
       .pipe(
         mergeMap(async (data) => {
           console.log(data);
@@ -93,16 +95,16 @@ export class LocalizationFormComponent implements OnInit {
         }),
         mergeMap(() =>
           this.mapService
-            .getMapMetaData('5W')
+            .getMapMetaData(map)
             .pipe(tap((metaData) => (this.metaData = metaData)))
         ),
         mergeMap(() =>
-        this.mapService
-          .getLocalizationPose()
-          .pipe(tap((pose) => (this.robotCurrentPosition = pose)))
+          this.mapService
+            .getLocalizationPose()
+            .pipe(tap((pose) => (this.robotCurrentPosition = pose)))
+        )
       )
-      )
-      .subscribe(() => {
+      .subscribe(async () => {
         const { x, y, resolution } = this.metaData;
         console.log(
           'x: ',
@@ -111,77 +113,134 @@ export class LocalizationFormComponent implements OnInit {
           Math.abs(y / resolution)
         );
         this.init();
+        // this.initKonvasLayout();
 
+        this.stage = new Stage({
+          container: 'canvas',
+        });
+
+        this.layer = new Layer();
+        this.stage.add(this.layer);
+
+        this.waypoint = new Circle({
+          fill: 'red',
+        });
         console.log(this.message);
         console.log(this.robotCurrentPosition);
       });
   }
 
+  ngOnInit(): void {}
+
   ngAfterViewInit() {
     this.ctx = this.canvas.nativeElement.getContext('2d');
 
-    this.canvas.nativeElement.addEventListener(
-      'mousedown',
-      async (event: any) => {
-        const now = new Date().getTime();
-        const timesince = now - this.mylatesttap;
-        if (timesince < 600 && timesince > 0) {
-          // double tap
-          this.onDraw(
-            {
-              waypoint: true,
-              waypointAngle: true,
-              lidarRedpoint: true,
-              map: true,
-              originPoint: true
-            },
-            event
-          );
+    setTimeout(() => {
+      this.stage?.on('mousedown touchstart', async (event: any) => {
+        // const waypoint = this.stage.find(".waypoint").length;
+        if (this.stage.find("#waypoint").length <= 0) {
+          this.drawnWaypoint(event);
+          // this.waypointAngleLineStatus = true;
         }
-        this.mylatesttap = new Date().getTime();
-      }
-    );
+      });
 
-    // test
-    // this.canvas.nativeElement.addEventListener('mousemove', async (e: any) => {
-    //   // e.preventDefault();
-    //   // e.stopPropagation();
+      this.waypoint?.on('mousedown touchstart', async (event: any) => {
+        this.layer.getChildren().forEach((child) => {
+          if (child.className === 'Arrow') {
+            child.destroy();
+          }
+        });
 
-    //   // const pointer = await this.getPointerXY(e);
-    //   if (this.mouseDown) {
-    //     console.log(this.startDragOffset);
-    //     console.log(e.clientX);
-    //     this.translatePos.x = e.clientX - this.startDragOffset.x;
-    //     this.translatePos.y = e.clientY - this.startDragOffset.y;
-    //     const translatePos = this.translatePos;
-    //     const scale = this.scale;
-    //     // await this.onDraw({ waypoint: true, waypointAngle: true, lidarRedpoint: true , map:  true  });
-    //     // await this.drawnOriginPoint();
-    //   }
-    // });
+        let pos: any = this.stage.getPointerPosition();
+        this.line = new Arrow({
+          fill: 'black',
+          stroke: 'black',
+          strokeWidth: 4,
+          // remove line from hit graph, so we can check intersections
+          listening: false,
+          name: 'angleLine',
+          points: [
+            this.waypoint.x(),
+            this.waypoint.y(),
+            pos.x / this.scale,
+            pos.y / this.scale,
+          ],
+        });
+        this.layer.add(this.line);
+      });
 
-    // --------------------------------------------------
+      this.stage?.on('mousemove touchmove', async (event: any) => {
+        if (!this.line) return;
 
-    // this.canvas.nativeElement.addEventListener('touchstart', async (event: any) => {
-    //   const now = new Date().getTime();
-    //   const timesince = now - this.mylatesttap;
-    //   if (timesince < 600 && timesince > 0) {
-    //     // double tap
-    //     this.onDraw(
-    //       { waypoint: true, waypointAngle: true, lidarRedpoint: true , map:  true},
-    //       event
-    //     );
+        const pos: any = this.stage.getPointerPosition();
 
-    //   }
-    //   this.mylatesttap = new Date().getTime();
-    // });
+        const points = this.line.points().slice();
+        points[2] = pos.x / this.scale;
+        points[3] = pos.y / this.scale;
+        this.line.points(points);
+        this.layer.batchDraw();
+      });
+
+      this.stage?.on('mouseup touchend', async (event: any) => {
+        if (!this.line) {
+          return;
+        }
+
+        if (!event.target.hasName('target')) {
+          this.line = null;
+          const Arrow: any = this.layer
+            .getChildren()
+            .find((i) => i.className === 'Arrow');
+
+          this.lineLastPosition = {
+            x: Arrow.attrs.points[2],
+            y: Arrow.attrs.points[3],
+          };
+
+          if (this.lineLastPosition) {
+            // const data = await this.getXYAngle();
+            // console.log(data);
+            this.getXYAngle()
+              .pipe(
+                mergeMap((data: any) => {
+                  const { x, y, radians } = data;
+                  return this.waypointService.initialPose({
+                    x,
+                    y,
+                    angle: radians,
+                  });
+                }),
+                mergeMap(async () => {
+                  setTimeout(async () => {
+                    await this.drawnLidarRedpoint();
+                  }, 2000);
+                })
+              )
+              .subscribe(
+                () => {
+                  console.log(this.message);
+                  this.sharedService.response$.next({
+                    type: this.message.success.type,
+                    message: this.message.success.message,
+                  });
+                },
+                (error) => {
+                  console.log('localization-form.component line 296');
+                  console.log(error);
+
+                  this.sharedService.response$.next({
+                    type: this.message.fail.type,
+                    message: `${this.message.fail.message} \n ${error?.message}`,
+                  });
+                }
+              );
+          }
+        }
+      });
+    }, 1000);
   }
 
   async init() {
-    // const scale = this.scale;
-    // if (await this.drawMap({ scale })) {
-    //   await this.drawnOriginPoint();
-    // }
     const functionData = {
       map: true,
       originPoint: true,
@@ -225,7 +284,7 @@ export class LocalizationFormComponent implements OnInit {
 
   async drawnOriginPoint() {
     const { resolution } = this.metaData;
-    const { x, y, } = this.robotCurrentPosition;
+    const { x, y } = this.robotCurrentPosition;
     this.ctx.fillStyle = '#0000FF';
 
     this.ctx.beginPath();
@@ -238,9 +297,9 @@ export class LocalizationFormComponent implements OnInit {
       false
     );
     this.ctx.fill();
-    this.ctx.font = '30px Georgia';
-    this.ctx.fillStyle = '#0000FF';
-    this.ctx.fillText('Origin Point', 0, 30);
+    // this.ctx.font = '30px Georgia';
+    // this.ctx.fillStyle = '#0000FF';
+    // this.ctx.fillText('Origin Point', 0, 30);
     console.log('drawnOriginPoint');
 
     console.log(this.metaData);
@@ -251,84 +310,46 @@ export class LocalizationFormComponent implements OnInit {
     );
   }
 
-  async onDraw(
-    {
-      map = false,
-      originPoint = false,
-      lidarRedpoint = false,
-      waypoint = false,
-      waypointAngle = false,
-      mousePos = false,
-    },
-    event?: any
-  ) {
-    // clear canvas
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  async initKonvasLayout() {
+    const image = await loadImage(this.mapImage);
 
-    this.ctx.save();
+    this.stage = new Stage({
+      container: 'canvas',
+      width: image.width,
+      height: image.height,
+    });
+
+    this.layer = new Layer();
+    this.stage.add(this.layer);
+  }
+
+  updateKonvasScale() {
+    const scale = this.scale;
+    this.stage?.scale({ x: scale, y: scale });
+  }
+
+  async onDraw({ map = false }, event?: any) {
+ 
+    this.updateKonvasScale();
+
+    // clear canvas
+    // this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+    // this.ctx.save();
 
     if (map) {
       await this.drawMap({ scale: this.scale });
     }
 
-    if (originPoint) {
-      // console.log('originPoint');
-      await this.drawnOriginPoint();
-    }
-
-    if (lidarRedpoint && waypointAngle && this.waypointAngleLineStatus) {
-      await this.drawnWaypointAngle(event);
-      const x =
-        (this.waypointPointer?.x / this.scale) * this.metaData.resolution -
-        Math.abs(this.metaData.x);
-      const y =
-        (this.ctx.canvas.height / this.scale -
-          this.waypointPointer?.y / this.scale) *
-          this.metaData.resolution -
-        Math.abs(this.metaData.y);
-      this.waypointService
-        .initialPose({ x, y, angle: this.radians })
-        .pipe(
-          mergeMap(async () => {
-            setTimeout(async () => {
-              await this.drawnLidarRedpoint();
-            },2000);
-          })
-        )
-        .subscribe(
-          () => {
-            console.log(this.message);
-            this.sharedService.response$.next({
-              type: this.message.success.type,
-              message: this.message.success.message,
-            });
-          },
-          (error) => {
-            console.log('localization-form.component line 296');
-            console.log(error);
-
-            this.sharedService.response$.next({
-              type: this.message.fail.type,
-              message: `${this.message.fail.message} \n ${error?.message}`,
-            });
-          }
-        );
-    }
-    // if (mousePos) {
-    //   // await this.getMousePos();
+    // if (originPoint) {
+    //   await this.drawnOriginPoint();
     // }
 
-    if (waypoint) {
-      await this.drawnWaypoint(event);
-      this.waypointAngleLineStatus = true;
-    }
-
-    this.ctx.restore();
+    // this.ctx.restore();
   }
 
   async drawMap({ scale, translatePos }: any) {
-    console.log('drawMap');
-    console.log(scale);
+    console.log('drawMap scale: ',scale);
     const image: HTMLImageElement = await loadImage(this.mapImage);
     if (image) {
       this.translatePos = {
@@ -337,7 +358,8 @@ export class LocalizationFormComponent implements OnInit {
       };
       this.ctx.canvas.width = image.width * this.scale;
       this.ctx.canvas.height = image.height * this.scale;
-
+      this.stage?.width(image.width * this.scale);
+      this.stage?.height(image.height * this.scale);
       this.ctx.translate(translatePos?.x, translatePos?.y);
       this.ctx.scale(scale ? scale : this.scale, scale ? scale : this.scale);
 
@@ -346,20 +368,20 @@ export class LocalizationFormComponent implements OnInit {
     return true;
   }
 
-  async getPointerXY(evt: any) {
+  async getPointerXY(e: any) {
     let clientX = 0;
     let clientY = 0;
-    console.log(evt.type);
-    switch (evt.type) {
+    console.log(e.type);
+    switch (e.type) {
       case 'touchstart':
-        clientX = evt.targetTouches[0].clientX;
-        clientY = evt.targetTouches[0].clientY;
+        clientX = e.evt.targetTouches[0].clientX;
+        clientY = e.evt.targetTouches[0].clientY;
         break;
 
       case 'mousedown':
       case 'mousemove':
-        clientX = evt.clientX;
-        clientY = evt.clientY;
+        clientX = e.evt.clientX;
+        clientY = e.evt.clientY;
         break;
     }
     const rect = this.canvas.nativeElement.getBoundingClientRect();
@@ -374,23 +396,44 @@ export class LocalizationFormComponent implements OnInit {
   }
 
   async drawnLidarRedpoint() {
-    this.mapService.getLidar().subscribe((data) => {
-      const { pointList } = data;
-      for (let i in pointList) {
-        this.ctx.fillStyle = '#FF0000';
-        this.ctx.fillRect(
-          Math.abs(
-            (this.metaData.x - pointList[i]['x']) / this.metaData.resolution
-          ),
-          this.ctx.canvas.height / this.scale -
-            Math.abs(
-              (this.metaData.y - pointList[i]['y']) / this.metaData.resolution
+    of(this.layer.find('#redpoint')).pipe(
+      tap((items) => items.forEach((item) => item.destroy())),
+      mergeMap(() => this.mapService.getLidar().pipe(tap(data => {
+        const { pointList } = data;
+        for (let i in pointList) {
+          // this.ctx.fillStyle = '#FF0000';
+          // this.ctx.fillRect(
+          //   Math.abs(
+          //     (this.metaData.x - pointList[i]['x']) / this.metaData.resolution
+          //   ),
+          //   this.ctx.canvas.height / this.scale -
+          //     Math.abs(
+          //       (this.metaData.y - pointList[i]['y']) / this.metaData.resolution
+          //     ),
+          //   3,
+          //   3
+          // );
+          const redpoint = new Circle({
+            x: Math.abs(
+              (this.metaData.x - pointList[i]['x']) / this.metaData.resolution
             ),
-          3,
-          3
-        );
-      }
-    });
+            y:
+              this.ctx.canvas.height / this.scale -
+              Math.abs(
+                (this.metaData.y - pointList[i]['y']) / this.metaData.resolution
+              ),
+            radius: 2,
+            fill: 'red',
+            name: 'redpoint',
+          });
+  
+          this.layer.add(redpoint);
+        }
+      })))
+      
+    ).subscribe();
+
+
   }
 
   async drawnWaypoint(evt: Event) {
@@ -398,21 +441,13 @@ export class LocalizationFormComponent implements OnInit {
       const pointer = await this.getPointerXY(evt);
       this.waypointPointer = { x: pointer.x, y: pointer.y };
     }
+    console.log(this.stage);
 
-    this.ctx.beginPath();
-    this.ctx.arc(
-      this.waypointPointer?.x / this.scale,
-      this.waypointPointer?.y / this.scale,
-      10,
-      0,
-      Math.PI * 2
-    );
-
-    this.ctx.closePath();
-    this.ctx.fillStyle = 'skyblue';
-    this.ctx.strokeStyle = 'lightgray';
-    this.ctx.fill();
-    // this.ctx.stroke();
+    this.waypoint.x(this.waypointPointer?.x / this.scale);
+    this.waypoint.y(this.waypointPointer?.y / this.scale);
+    this.waypoint.radius(10);
+    this.waypoint.name = "waypoint";
+    this.layer.add(this.waypoint);
 
     console.log(
       (this.waypointPointer?.x / this.scale) * this.metaData.resolution -
@@ -426,52 +461,83 @@ export class LocalizationFormComponent implements OnInit {
     );
   }
 
-  drawnWaypointAngle(evt?: any): Promise<boolean> {
-    return new Promise(async (resolve, reject) => {
-      if (this.waypointPointer?.x > 0 && this.waypointPointer?.y > 0) {
-        const rect = this.canvas.nativeElement.getBoundingClientRect();
-        const mx: number = evt.targetTouches
-          ? evt.targetTouches[0].clientX - rect.left
-          : evt.clientX - rect.left;
-        const my: number = evt.targetTouches
-          ? evt.targetTouches[0].clientY - rect.top
-          : evt.clientY - rect.top;
+  // drawnWaypointAngle(evt?: any): Promise<boolean> {
+  //   return new Promise(async (resolve, reject) => {
+  //     if (this.waypointPointer?.x > 0 && this.waypointPointer?.y > 0) {
+  //       const rect = this.canvas.nativeElement.getBoundingClientRect();
+  //       const mx: number = evt.targetTouches
+  //         ? evt.targetTouches[0].clientX - rect.left
+  //         : evt.clientX - rect.left;
+  //       const my: number = evt.targetTouches
+  //         ? evt.targetTouches[0].clientY - rect.top
+  //         : evt.clientY - rect.top;
 
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = 'black';
-        this.ctx.lineWidth = 10;
-        this.ctx.moveTo(
-          this.waypointPointer.x / this.scale,
-          this.waypointPointer.y / this.scale
-        );
-        this.ctx.lineTo(mx / this.scale, my / this.scale);
-        this.ctx.stroke();
+  //       this.ctx.beginPath();
+  //       this.ctx.strokeStyle = 'black';
+  //       this.ctx.lineWidth = 10;
+  //       this.ctx.moveTo(
+  //         this.waypointPointer.x / this.scale,
+  //         this.waypointPointer.y / this.scale
+  //       );
+  //       this.ctx.lineTo(mx / this.scale, my / this.scale);
+  //       this.ctx.stroke();
 
-        const Vx = mx - this.waypointPointer.x;
-        const Vy = this.waypointPointer.y - my;
+  //       const Vx = mx - this.waypointPointer.x;
+  //       const Vy = this.waypointPointer.y - my;
 
-        this.radians = 0;
+  //       this.radians = 0;
 
-        if (Vx || Vy) {
-          this.radians = Math.atan2(Vy, Vx);
-        } else {
-          this.radians = 0;
-        }
+  //       if (Vx || Vy) {
+  //         this.radians = Math.atan2(Vy, Vx);
+  //       } else {
+  //         this.radians = 0;
+  //       }
 
-        if (this.radians < 0) {
-          this.radians += 2 * Math.PI;
-        }
+  //       if (this.radians < 0) {
+  //         this.radians += 2 * Math.PI;
+  //       }
 
-        const degrees = Math.round((this.radians * 180) / Math.PI);
+  //       const degrees = Math.round((this.radians * 180) / Math.PI);
 
-        this.ctx.font = '30px Georgia';
-        this.ctx.fillStyle = 'black';
-        this.ctx.fillText(`Angle: ${degrees}`, 0, 60);
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    });
+  //       this.ctx.font = '30px Georgia';
+  //       this.ctx.fillStyle = 'black';
+  //       this.ctx.fillText(`Angle: ${degrees}`, 0, 60);
+  //       resolve(true);
+  //     } else {
+  //       resolve(false);
+  //     }
+  //   });
+  // }
+
+  getXYAngle(): Observable<any> {
+    const Vx = this.lineLastPosition.x - this.waypointPointer.x / this.scale;
+    const Vy = this.waypointPointer.y / this.scale - this.lineLastPosition.y;
+
+    this.radians = 0;
+
+    if (Vx || Vy) {
+      this.radians = Math.atan2(Vy, Vx);
+    } else {
+      this.radians = 0;
+    }
+
+    if (this.radians < 0) {
+      this.radians += 2 * Math.PI;
+    }
+
+    this.degrees = Math.round((this.radians * 180) / Math.PI);
+
+    console.log(this.degrees);
+    const x =
+      (this.waypointPointer?.x / this.scale) * this.metaData.resolution -
+      Math.abs(this.metaData.x);
+    const y =
+      (this.ctx.canvas.height / this.scale -
+        this.waypointPointer?.y / this.scale) *
+        this.metaData.resolution -
+      Math.abs(this.metaData.y);
+
+    return of({ x: x, y: y, radians: this.radians });
   }
 
   // async getMousePos(evt?: any) {
@@ -537,75 +603,30 @@ export class LocalizationFormComponent implements OnInit {
   //   this.waypointAngleLineStatus = true;
   // }
 
-  onResetWaypoint() {
+  async onResetWaypoint() {
     this.waypointPointer = { x: 0, y: 0 };
-    this.waypointAngleLineStatus = false;
+    // this.waypointAngleLineStatus = false;
+    this.degrees = 0;
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    this.init();
-  }
-
-  onCloseModel() {
-    this.modalComponent.closeTrigger$.next();
+    await this.layer.removeChildren();
+    await this.init();
   }
 
   async zoomIn() {
     if (await loadImage(this.mapImage)) {
       this.scale /= this.scaleMultiplier;
-      this.onResetWaypoint();
-      this.init();
+      await this.onResetWaypoint();
     }
   }
 
   async zoomOut() {
     if (await loadImage(this.mapImage)) {
       this.scale *= this.scaleMultiplier;
-      this.onResetWaypoint();
-      this.init();
+      await this.onResetWaypoint();
     }
   }
 
-  // onSelectedWaypoint(selectedWaypoint: Waypoint) {
-  //   this.selectedWaypoint = selectedWaypoint;
-  // }
-
-  // todo
-  // onSubmitModel(selectedWaypoint: Waypoint) {
-  //   console.log(selectedWaypoint);
-  //   this.waypointService
-  //     .localize(selectedWaypoint)
-  //     .pipe(
-  //       mergeMap((res) => {
-  //         if (res.success) {
-  //           return this.translateService
-  //             .get('localizationDialog.successMessage')
-  //             .pipe(
-  //               map((msg) => {
-  //                 return {
-  //                   type: 'normal',
-  //                   message: msg,
-  //                 };
-  //               })
-  //             );
-  //         } else {
-  //           return this.translateService
-  //             .get('localizationDialog.failedMessage')
-  //             .pipe(
-  //               map((msg) => {
-  //                 return {
-  //                   type: 'normal',
-  //                   message: `${msg} \n ${res?.message}`,
-  //                 };
-  //               })
-  //             );
-  //         }
-  //       })
-  //     )
-  //     .subscribe((res: { type: any; message: string }) => {
-  //       this.modalComponent.closeTrigger$.next();
-  //       this.sharedService.response$.next({
-  //         type: res.type,
-  //         message: res.message,
-  //       });
-  //     });
-  // }
+  onCloseModel() {
+    this.modalComponent.closeTrigger$.next();
+  }
 }

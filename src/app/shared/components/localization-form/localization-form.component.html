@@ -11,24 +11,30 @@
   </div> -->
 
   <div class="preview-wrapper">
-    <canvas #canvas></canvas>
+    <div class="parent-canvas" id="canvas"></div>
+    <canvas #canvas class="child-canvas"></canvas>
+    <label class="degrees-label">Degrees: {{ degrees }}</label>
     <div class="button-wrapper">
       <button
         class="btn btn-outline-dark"
-        style="width: 50px;"
+        style="width: 50px"
         type="button"
         id="plus"
         value="+"
         (click)="zoomIn()"
-      >+</button>
+      >
+        +
+      </button>
       <button
         class="btn btn-outline-dark"
-        style="width: 50px;"
+        style="width: 50px"
         type="button"
         id="minus"
         value="-"
         (click)="zoomOut()"
-      >-</button>
+      >
+        -
+      </button>
     </div>
   </div>
 </div>
