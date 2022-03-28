@@ -1,9 +1,9 @@
 {
   "name": "hong-chi-smart-wheelchair-frontend",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 0.0.0.0 --configuration production",
+    "start": "ng serve",
     "dev": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
