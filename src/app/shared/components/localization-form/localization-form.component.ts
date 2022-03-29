@@ -384,7 +384,7 @@ export class LocalizationFormComponent implements OnInit {
       this.ctx.scale(scale ? scale : this.scale, scale ? scale : this.scale);
 
       this.ctx.drawImage(image, 0, 0);
-
+      if(!this.isReset){
       const { resolution } = this.metaData;
       const { x, y } = this.currentPositionMetadata;
 
@@ -400,6 +400,7 @@ export class LocalizationFormComponent implements OnInit {
       setTimeout(async () => {
         await this.drawnLidarRedpoint();
       }, 1000);
+    }
     }
     return true;
   }
