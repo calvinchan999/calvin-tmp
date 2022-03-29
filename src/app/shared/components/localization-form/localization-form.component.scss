@@ -27,29 +27,43 @@ canvas {
   padding-top: 30px;
   width: 100%;
   .localization-cancel-button {
-    background-color: #fe0000;
+    background-color: red;
     width: 50%;
     color: white;
     margin: 0 10px 0 10px;
   }
 
   .localization-wapoint-button {
-    background-color: #87ceeb;
+    background-color: green;
     width: 50%;
     color: white;
     margin: 0 10px 0 10px;
   }
 
-  .localization-confirm-button {
-    background-color: #09ff78;
+  .localization-preview-button {
+    background-color: green;
     width: 50%;
-    color: black;
+    color: white;
     margin: 0 10px 0 10px;
   }
+
+  .localization-confirm-reset-waypoint-button{
+    background-color: green;
+    width: 50%;
+    color: white;
+    margin: 0 10px 0 10px;
+  }
+
+  // .localization-confirm-button {
+  //   background-color: #09ff78;
+  //   width: 50%;
+  //   color: black;
+  //   margin: 0 10px 0 10px;
+  // }
 }
 
 .preview-wrapper {
-  height: 650px !important;
+  height: 60vh !important;
   overflow: scroll;
   position: relative;
 }
@@ -97,7 +111,7 @@ canvas {
   z-index: 999;
   position: fixed;
   right: 30px;
-  top: 100px;
+  top: 20px;
 }
 
 
@@ -108,6 +122,8 @@ canvas {
   }
 
   .localization-cancel-button,
+  .localization-preview-button,
+  .localization-confirm-reset-waypoint-button,
   .localization-wapoint-button,
   .localization-confirm-button {
     font-size: 30px;

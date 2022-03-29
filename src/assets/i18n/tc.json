@@ -42,5 +42,8 @@
     "successMessage": "已更新初始點",
     "failedMessage": "更新初始點失敗"
   },
-  "resetWaypoint": "重設初始點"
+  "resetWaypoint": "重設初始點",
+  "confirmResetWaypoint": "進入編輯模式",
+  "backToPreview": "返回預覽模式"
+
 }

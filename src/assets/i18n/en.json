@@ -42,5 +42,7 @@
     "successMessage": "The initial point has been updated",
     "failedMessage": "Update failed"
   },
-  "resetWaypoint": "Reset waypoint"
+  "resetWaypoint": "Reset waypoint",
+  "confirmResetWaypoint": "Edit",
+  "backToPreview": "Preview"
 }

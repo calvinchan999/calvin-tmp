@@ -58,10 +58,7 @@ export class LocalizationFormComponent implements OnInit {
   mapImage: string;
   metaData: Metadata;
 
-  waypoint: any; //  konva
-  line: any; //  konva
   waypointPointer: WaypointPointer = { x: 0, y: 0 };
-  // waypointAngleLineStatus: boolean = false;
 
   radians: number = 0;
   degrees: number = 0;
@@ -75,7 +72,11 @@ export class LocalizationFormComponent implements OnInit {
   };
 
   message: any;
-  robotCurrentPosition: any;
+
+  currentPositionMetadata: any;
+  currentPositionWaypoint: any;
+  waypoint: any; //  konva
+  line: any; //  konva
 
   stage: Stage;
   layer: Layer;
@@ -85,6 +86,7 @@ export class LocalizationFormComponent implements OnInit {
     y: 0,
   };
 
+  isReset: boolean = false;
 
   constructor(
     private modalComponent: ModalComponent,
@@ -112,11 +114,11 @@ export class LocalizationFormComponent implements OnInit {
               .getMapMetaData(map)
               .pipe(tap((metaData) => (this.metaData = metaData)))
           ),
-          // mergeMap(() =>
-          //   this.mapService
-          //     .getLocalizationPose()
-          //     .pipe(tap((pose) => (this.robotCurrentPosition = pose)))
-          // )
+          mergeMap(() =>
+            this.mapService
+              .getLocalizationPose()
+              .pipe(tap((pose) => (this.currentPositionMetadata = pose)))
+          )
         )
         .subscribe(async () => {
           // const { x, y, resolution } = this.metaData;
@@ -136,12 +138,15 @@ export class LocalizationFormComponent implements OnInit {
     ob$.subscribe(() => {
       if (this.stage) {
         this.stage?.on('mousedown touchstart', async (event: any) => {
-          if (this.stage.find('#waypoint').length <= 0) {
-            this.drawnWaypoint(event);
+          if (this.isReset) {
+            if (this.stage.find('#waypoint').length <= 0) {
+              this.drawnWaypoint(event);
+            }
           }
         });
 
         this.waypoint?.on('mousedown touchstart', async (event: any) => {
+          if (this.isReset) {
           this.layer.getChildren().forEach((child) => {
             if (child.className === 'Arrow') {
               child.destroy();
@@ -164,9 +169,11 @@ export class LocalizationFormComponent implements OnInit {
             ],
           });
           this.layer.add(this.line);
+        }
         });
 
         this.stage?.on('mousemove touchmove', async (event: any) => {
+          if (this.isReset) {
           if (!this.line) return;
 
           const pos: any = this.stage.getPointerPosition();
@@ -175,9 +182,11 @@ export class LocalizationFormComponent implements OnInit {
           points[3] = pos.y / this.scale;
           this.line.points(points);
           this.layer.batchDraw();
+          }
         });
 
         this.stage?.on('mouseup touchend', async (event: any) => {
+          if (this.isReset) {
           if (!this.line) {
             return;
           }
@@ -228,7 +237,7 @@ export class LocalizationFormComponent implements OnInit {
                     });
                   }
                 );
-            }
+            }}
           }
         });
       }
@@ -283,7 +292,7 @@ export class LocalizationFormComponent implements OnInit {
   // useless function
   async drawnOriginPoint() {
     const { resolution } = this.metaData;
-    const { x, y } = this.robotCurrentPosition;
+    const { x, y } = this.currentPositionMetadata;
     this.ctx.fillStyle = '#0000FF';
 
     this.ctx.beginPath();
@@ -321,6 +330,7 @@ export class LocalizationFormComponent implements OnInit {
     this.stage.height(image.height);
 
     this.layer = new Layer();
+
     this.stage.add(this.layer);
 
     this.redpointsLayer = new Layer();
@@ -328,7 +338,10 @@ export class LocalizationFormComponent implements OnInit {
 
     this.waypoint = new Circle({
       fill: 'red',
+      name: 'targetPosition',
     });
+
+    console.log(this.currentPositionMetadata);
   }
 
   updateKonvasScale() {
@@ -371,6 +384,22 @@ export class LocalizationFormComponent implements OnInit {
       this.ctx.scale(scale ? scale : this.scale, scale ? scale : this.scale);
 
       this.ctx.drawImage(image, 0, 0);
+
+      const { resolution } = this.metaData;
+      const { x, y } = this.currentPositionMetadata;
+
+      this.currentPositionWaypoint = new Circle({
+        fill: 'blue',
+        name: 'currentPosition',
+        x: Math.abs(x / resolution),
+        y: this.ctx.canvas.height / this.scale - Math.abs(y / resolution),
+        radius: 10,
+      });
+      this.layer.add(this.currentPositionWaypoint);
+
+      setTimeout(async () => {
+        await this.drawnLidarRedpoint();
+      }, 1000);
     }
     return true;
   }
@@ -402,9 +431,8 @@ export class LocalizationFormComponent implements OnInit {
   }
 
   async drawnLidarRedpoint() {
-
     of(this.redpointsLayer.removeChildren())
-      .pipe(   
+      .pipe(
         mergeMap(() =>
           this.mapService.getLidar().pipe(
             tap((data) => {
@@ -425,7 +453,7 @@ export class LocalizationFormComponent implements OnInit {
                   fill: 'red',
                   name: 'redpoint',
                 });
-               
+
                 this.redpointsLayer.add(redpoint);
               }
             })
@@ -494,6 +522,7 @@ export class LocalizationFormComponent implements OnInit {
   async onResetWaypoint() {
     this.waypointPointer = { x: 0, y: 0 };
     this.degrees = 0;
+    // this.isReset = false;
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     await this.layer.removeChildren();
     await this.redpointsLayer.removeChildren();
@@ -512,6 +541,15 @@ export class LocalizationFormComponent implements OnInit {
       this.scale *= this.scaleMultiplier;
       await this.onResetWaypoint();
     }
+  }
+
+  onConfirmResetWaypoint() {
+    this.isReset = true;
+  }
+
+  onBackPreview(){
+    this.isReset = false;
+    this.onResetWaypoint();
   }
 
   onCloseModel() {

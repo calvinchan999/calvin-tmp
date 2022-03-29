@@ -42,6 +42,14 @@
   <button class="btn localization-cancel-button" (click)="onCloseModel()">
     {{ "cancel" | translate }}
   </button>
+
+  <button class="btn localization-confirm-reset-waypoint-button" (click)="onConfirmResetWaypoint()" *ngIf="!isReset">
+    {{ "confirmResetWaypoint" | translate }}
+  </button>
+
+  <button class="btn localization-preview-button" (click)="onBackPreview()" *ngIf="isReset">
+    {{ "backToPreview" | translate }}
+  </button>
   <button
     class="btn localization-wapoint-button"
     *ngIf="waypointPointer.x > 0 && waypointPointer.y > 0"
