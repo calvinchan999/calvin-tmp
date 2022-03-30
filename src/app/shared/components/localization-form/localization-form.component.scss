@@ -27,28 +27,28 @@ canvas {
   padding-top: 30px;
   width: 100%;
   .localization-cancel-button {
-    background-color: red;
+    background-color: #fe0000;
     width: 50%;
     color: white;
     margin: 0 10px 0 10px;
   }
 
   .localization-wapoint-button {
-    background-color: green;
+    background-color: #009fe3;
     width: 50%;
     color: white;
     margin: 0 10px 0 10px;
   }
 
   .localization-preview-button {
-    background-color: green;
+    background-color: #5dab43;
     width: 50%;
     color: white;
     margin: 0 10px 0 10px;
   }
 
   .localization-confirm-reset-waypoint-button{
-    background-color: green;
+    background-color: #5dab43;
     width: 50%;
     color: white;
     margin: 0 10px 0 10px;
@@ -66,11 +66,14 @@ canvas {
   height: 60vh !important;
   overflow: scroll;
   position: relative;
+  overflow-y: scroll;
+  overflow-x: scroll;
 }
 
 .preview-wrapper::-webkit-scrollbar {
   background: white;
-  width: 12px;
+  width: 20px;
+  height: 20px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
