@@ -97,7 +97,7 @@ export class LocalizationFormComponent implements OnInit {
   ) {
     this.setMessage();
     let map: string = '';
-    this.sharedService.currentMap$.subscribe((currentMap) => (map = '5W'));
+    this.sharedService.currentMap$.subscribe((currentMap) => (map = currentMap));
     console.log('localization-form.component line 69: ', map);
     const ob$ = new Observable((observer) => {
       this.mapService
@@ -332,7 +332,6 @@ export class LocalizationFormComponent implements OnInit {
     this.stage.add(this.redpointsLayer);
 
     this.waypoint = new Circle({
-      fill: 'red',
       name: 'targetPosition',
     });
 
@@ -463,11 +462,22 @@ export class LocalizationFormComponent implements OnInit {
       this.waypointPointer = { x: pointer.x, y: pointer.y };
     }
     console.log(this.stage);
-
+   
     this.waypoint.x(this.waypointPointer?.x / this.scale);
     this.waypoint.y(this.waypointPointer?.y / this.scale);
-    this.waypoint.radius(10);
+    this.waypoint.radius(100);
+    this.waypoint.stroke('black');
+    this.waypoint.strokeWidth(4);
     this.waypoint.name = 'waypoint';
+
+    // for display
+    this.layer.add(new Circle({
+      fill: 'red',
+      x: this.waypointPointer?.x / this.scale,
+      y: this.waypointPointer?.y / this.scale,
+      radius: 10
+    }));
+
     this.layer.add(this.waypoint);
 
     console.log(
@@ -497,10 +507,9 @@ export class LocalizationFormComponent implements OnInit {
     if (this.radians < 0) {
       this.radians += 2 * Math.PI;
     }
-  
-    this.degrees = Math.round((this.radians * 180) / Math.PI);
 
-    console.log(this.degrees);
+    this.degrees = Math.round((this.radians * 180) / Math.PI);
+    // console.log(this.degrees);
     const x =
       (this.waypointPointer?.x / this.scale) * this.metaData.resolution -
       Math.abs(this.metaData.x);
