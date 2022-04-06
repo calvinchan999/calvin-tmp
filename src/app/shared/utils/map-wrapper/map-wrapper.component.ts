@@ -57,9 +57,6 @@ export class MapWrapperComponent implements OnInit {
   constructor(private waypointService: WaypointService,private mapService: MapService) {}
 
   ngOnInit(): void {
-    console.log(`ngOnInit`);
-    console.log(this.mapImage);
-    console.log(this.metaData);
     const img$ = new Observable<HTMLImageElement>((observer) => {
       const image = new Image();
       image.onload = () => {
@@ -198,10 +195,11 @@ export class MapWrapperComponent implements OnInit {
                             angle,
                           });
                         }),
-                        mergeMap(async () => {
-                          setTimeout(async () => {
-                            await this.createLidarRedpoints();
-                          }, 2500);
+                        mergeMap(() => {
+                          // setTimeout(async () => {
+                          //   await this.createLidarRedpoints();
+                          // }, 2500);
+                          return this.getLidarData$().pipe(tap(() => this.createLidarRedpoints()));
                         })
                       )
                       .subscribe(() => {
@@ -273,9 +271,6 @@ export class MapWrapperComponent implements OnInit {
 
   createRobotCurrentPosition() {
     const { x, y, height, resolution }: any = this.metaData;
-    // const { xPointer, yPointer } = this.transformToCanvasXY({ x, y });
-    // console.log(xPointer);
-    // console.log(yPointer);
     const currentPosition = new Circle({
       fill: 'blue',
       x: Math.abs((x -this.robotCurrentPosition['x']) / resolution),
