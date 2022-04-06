@@ -10,14 +10,14 @@
     </div>
   </div> -->
 
-  <div class="preview-wrapper">
+  <!-- <div class="preview-wrapper">
     <div class="parent-canvas" id="canvas"></div>
     <canvas #canvas class="child-canvas"></canvas>
     <label class="degrees-label">Degrees: {{ degrees }}</label>
     <div class="button-wrapper">
       <button
-        class="btn btn-outline-dark"
-        style="width: 50px"
+        class="btn btn-md btn-primary"
+        style="width: 70px;margin-right: 5px;"
         type="button"
         id="plus"
         value="+"
@@ -25,9 +25,10 @@
       >
         +
       </button>
+     
       <button
-        class="btn btn-outline-dark"
-        style="width: 50px"
+        class="btn btn-md btn-primary"
+        style="width: 70px;"
         type="button"
         id="minus"
         value="-"
@@ -36,18 +37,32 @@
         -
       </button>
     </div>
-  </div>
+  </div> -->
+  <app-map-wrapper
+    *ngIf="mapImage"
+    [mapImage]="mapImage"
+    [metaData]="metaData"
+    (isUpdatedWaypoint)="isLocalizedLocation($event)"
+  ></app-map-wrapper>
 </div>
 <div class="localization-btn-container d-flex justify-content-around">
   <button class="btn localization-cancel-button" (click)="onCloseModel()">
     {{ "cancel" | translate }}
   </button>
 
-  <button class="btn localization-confirm-reset-waypoint-button" (click)="onConfirmResetWaypoint()" *ngIf="!isReset">
+  <!-- <button
+    class="btn localization-confirm-reset-waypoint-button"
+    (click)="onConfirmResetWaypoint()"
+    *ngIf="!isReset"
+  >
     {{ "confirmResetWaypoint" | translate }}
-  </button>
+  </button> -->
 
-  <button class="btn localization-preview-button" (click)="onBackPreview()" *ngIf="isReset">
+  <!-- <button
+    class="btn localization-preview-button"
+    (click)="onBackPreview()"
+    *ngIf="isReset"
+  >
     {{ "backToPreview" | translate }}
   </button>
   <button
@@ -56,7 +71,7 @@
     (click)="onResetWaypoint()"
   >
     {{ "resetWaypoint" | translate }}
-  </button>
+  </button> -->
   <!-- <button class="btn localization-wapoint-button" *ngIf="isUpdateAngle && waypointIsExist" (click)="onCloseModel()">
     {{ "setWaypoint" | translate }}
   </button>

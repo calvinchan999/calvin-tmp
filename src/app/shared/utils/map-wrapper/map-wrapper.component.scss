@@ -1,0 +1,93 @@
+.map-container {
+  text-align: center;
+  width: 100%;
+  position: relative;
+  height: 100%;
+}
+
+.preview-wrapper {
+  height: 50vh !important;
+  width: 100%;
+  overflow: scroll;
+  position: relative;
+}
+
+.preview-wrapper::-webkit-scrollbar {
+  background: white;
+  width: 12px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.parent-canvas {
+  z-index: 999;
+  position: absolute;
+  padding: 20px 0 0 0;
+}
+
+.child-canvas {
+  z-index: 998;
+  position: absolute;
+}
+
+.degrees-label {
+  position: absolute;
+  left: 20px;
+  z-index: 1000;
+  font-size: 30px;
+}
+
+.button-wrapper {
+  width: 50px;
+  z-index: 1000;
+  position: absolute;
+  right: 10px;
+  margin-top: -60px;
+}
+
+
+
+.localization-btn-container {
+  padding: 5px;
+  width: 100%;
+
+  .localization-preview-button {
+    background-color: #5dab43;
+    width: 100%;
+    color: white;
+    margin: 0;
+  }
+
+  .localization-edit-button{
+    background-color: #009fe3;
+    width: 100%;
+    color: white;
+    margin: 0;
+  }
+}
+
+
+
+@media only screen and (max-width: 900px) {
+  .localization-item {
+    font-size: 45px !important;
+  }
+
+
+  .localization-preview-button,
+  .localization-edit-button {
+    font-size: 30px;
+  }
+}

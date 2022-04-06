@@ -43,6 +43,6 @@
     "failedMessage": "Update failed"
   },
   "resetWaypoint": "Reset waypoint",
-  "confirmResetWaypoint": "Edit",
-  "backToPreview": "Preview"
+  "confirmResetWaypoint": "Go To Edit",
+  "backToPreview": "Go To Preview"
 }

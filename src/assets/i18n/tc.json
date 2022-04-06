@@ -43,7 +43,7 @@
     "failedMessage": "更新初始點失敗"
   },
   "resetWaypoint": "重設初始點",
-  "confirmResetWaypoint": "編輯模式",
-  "backToPreview": "預覽模式"
+  "editMode": "前往編輯模式",
+  "previewMode": "前往預覽模式"
 
 }
