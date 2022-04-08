@@ -5,7 +5,7 @@ import { Circle } from 'konva/lib/shapes/Circle';
 import { Image as KonvaImage } from 'konva/lib/shapes/Image';
 import { Arrow } from 'konva/lib/shapes/Arrow';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { delay, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 
@@ -54,7 +54,12 @@ export class MapWrapperComponent implements OnInit {
   waypoint = new Circle();
   line = new Arrow();
 
-  constructor(private waypointService: WaypointService,private mapService: MapService) {}
+  lineLocked: boolean = false;
+
+  constructor(
+    private waypointService: WaypointService,
+    private mapService: MapService
+  ) {}
 
   ngOnInit(): void {
     const img$ = new Observable<HTMLImageElement>((observer) => {
@@ -110,7 +115,7 @@ export class MapWrapperComponent implements OnInit {
           );
 
           this.waypoint.on('mousedown touchstart', async (event: any) => {
-            if (this.isReset) {
+            if (this.isReset && !this.lineLocked) {
               this.layer.getChildren().forEach((child) => {
                 if (child.className === 'Arrow') {
                   child.destroy();
@@ -154,6 +159,7 @@ export class MapWrapperComponent implements OnInit {
 
           this.waypoint?.on('mousemove touchmove', async (event: any) => {
             if (this.isReset) {
+              if (this.lineLocked) return;
               if (!this.line) return;
               if (this.layer.find('.angleLine').length > 0)
                 this.stage.draggable(false);
@@ -185,6 +191,7 @@ export class MapWrapperComponent implements OnInit {
                   // const ArrowY = Arrow.attrs.points[3];
                   const { draggable } = this.stage.getAttrs();
                   if (!draggable) {
+                    this.lineLocked = true;
                     this.getXYAngle()
                       .pipe(
                         mergeMap((data: any) => {
@@ -199,14 +206,30 @@ export class MapWrapperComponent implements OnInit {
                           // setTimeout(async () => {
                           //   await this.createLidarRedpoints();
                           // }, 2500);
-                          return this.getLidarData$().pipe(tap(() => this.createLidarRedpoints()));
+
+                          return of(null).pipe(
+                            delay(1000),
+                            mergeMap(() => {
+                              return this.getLidarData$().pipe(
+                                tap(() => this.createLidarRedpoints())
+                              );
+                            })
+                          );
                         })
                       )
-                      .subscribe(() => {
-                        this.isUpdatedWaypoint.emit({status: 'success'});
-                      },error => {
-                        this.isUpdatedWaypoint.emit({status: 'failed', error});
-                      });
+                      .subscribe(
+                        () => {
+                          this.isUpdatedWaypoint.emit({ status: 'success' });
+                          this.lineLocked = false;
+                        },
+                        (error) => {
+                          this.isUpdatedWaypoint.emit({
+                            status: 'failed',
+                            error,
+                          });
+                          this.lineLocked = false;
+                        }
+                      );
                   }
                 }
               }
@@ -273,7 +296,7 @@ export class MapWrapperComponent implements OnInit {
     const { x, y, height, resolution }: any = this.metaData;
     const currentPosition = new Circle({
       fill: 'blue',
-      x: Math.abs((x -this.robotCurrentPosition['x']) / resolution),
+      x: Math.abs((x - this.robotCurrentPosition['x']) / resolution),
       y: height - Math.abs((y - this.robotCurrentPosition['y']) / resolution),
       radius: 10,
     });
@@ -300,7 +323,7 @@ export class MapWrapperComponent implements OnInit {
         this.waypoint.setAttrs({
           x: x,
           y: y,
-          radius: 100,
+          radius: 80 / this.scale,
           stroke: 'black',
           strokeWidth: 4,
           name: 'waypoint',
@@ -310,7 +333,7 @@ export class MapWrapperComponent implements OnInit {
           fill: 'red',
           x: x,
           y: y,
-          radius: 10,
+          radius: 10 / this.scale,
         });
 
         this.layer.add(this.waypoint);
@@ -330,7 +353,6 @@ export class MapWrapperComponent implements OnInit {
       yPointer: height - Math.abs(y / resolution),
     };
   }
-  
 
   transformTORosXY() {}
 
@@ -351,6 +373,7 @@ export class MapWrapperComponent implements OnInit {
     let scale: number = this.scale;
     scale /= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(1));
+    console.log('scale: ', scale);
     if (scale < 2) {
       this.scale = scale;
       await this.updateKonvasScale();
@@ -362,6 +385,7 @@ export class MapWrapperComponent implements OnInit {
     let scale: any = this.scale;
     scale *= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(1));
+    console.log('scale: ', scale);
     if (scale >= 1) {
       this.scale = scale;
       await this.updateKonvasScale();
@@ -408,14 +432,20 @@ export class MapWrapperComponent implements OnInit {
     this.degrees = Math.round((radians * 180) / Math.PI); // Degree to Radian Conversion
 
     const metaData: any = this.metaData;
-    const x =
-      (waypoint.x / this.scale) * metaData.resolution -
-      Math.abs(metaData.x / this.scale);
+    // const x =
+    //   (waypoint.x / this.scale) * metaData.resolution -
+    //   Math.abs(metaData.x / this.scale);
+
+    // const y =
+    //   (metaData.height / this.scale - waypoint.y / this.scale) *
+    //     metaData.resolution -
+    //   Math.abs(metaData.y) / this.scale;
+
+    const x = waypoint.x * metaData.resolution - Math.abs(metaData.x);
 
     const y =
-      (metaData.height / this.scale - waypoint.y / this.scale) *
-        metaData.resolution -
-      Math.abs(metaData.y) / this.scale;
+      (metaData.height - waypoint.y) * metaData.resolution -
+      Math.abs(metaData.y);
     console.log(x);
     console.log(y);
     return of({ x, y, angle: radians });
@@ -447,11 +477,11 @@ export class MapWrapperComponent implements OnInit {
     this.isReset = false;
     this.stage.draggable(true);
     this.isUpdatedWaypoint.emit(false);
-    forkJoin([
-      this.getRobotCurrentPosition$(),
-      this.getLidarData$(),
-    ]).subscribe();
-    this.onReset();
+    forkJoin([this.getRobotCurrentPosition$(), this.getLidarData$()]).subscribe(
+      () => {
+        this.onReset();
+      }
+    );
   }
 
   getRobotCurrentPosition$(): Observable<any> {

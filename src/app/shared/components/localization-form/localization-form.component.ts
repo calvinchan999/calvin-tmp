@@ -3,6 +3,7 @@ import {
   OnInit
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs/internal/Subscription';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
@@ -32,6 +33,8 @@ export class LocalizationFormComponent implements OnInit {
   metaData: Metadata;
   message: any;
 
+  sub = new Subscription();
+
   constructor(
     private modalComponent: ModalComponent,
     // private waypointService: WaypointService,
@@ -42,7 +45,7 @@ export class LocalizationFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.setMessage();
-    this.sharedService.currentMap$.subscribe((currentMap) => {
+    this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
       this.mapService
         .getMapImage(currentMap)
         .pipe(
@@ -112,5 +115,9 @@ export class LocalizationFormComponent implements OnInit {
 
   onCloseModel() {
     this.modalComponent.closeTrigger$.next();
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }
