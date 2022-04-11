@@ -46,6 +46,7 @@ export class LocalizationFormComponent implements OnInit {
   ngOnInit(): void {
     this.setMessage();
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
+      console.log('currentMap');
       this.mapService
         .getMapImage(currentMap)
         .pipe(
@@ -104,11 +105,13 @@ export class LocalizationFormComponent implements OnInit {
       this.sharedService.response$.next({
         type: this.message.success.type,
         message: this.message.success.message,
+        parentComponent: 'localizationFormComponent'
       });
     } else if (status === 'failed') {
       this.sharedService.response$.next({
         type: this.message.fail.type,
         message: `${this.message.fail.message} \n ${error.message}`,
+        parentComponent: 'localizationFormComponent'
       });
     }
   }

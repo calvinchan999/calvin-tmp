@@ -23,6 +23,7 @@ export class ModalComponent implements OnInit {
   @ContentChild('modalResponse') response: TemplateRef<any>;
   @Input() closeOnOutsideClick = true;
   @Input() disableClose = false;
+  @Input() localizationFormComponent = null;
   public closeTrigger$ = new Subject<any>();
 
   visible = false;

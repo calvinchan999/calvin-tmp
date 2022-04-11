@@ -31,11 +31,14 @@
     <!-- <button class="btn localization-cancel-button" >
       {{ "cancel" | translate }}
     </button> -->
+  
     <button class="btn localization-edit-button" (click)="onEditMode()" *ngIf="!isReset">
       {{ "editMode" | translate }}
     </button>
 
-    
+      <button class="btn localization-clear-button" (click)="onClearWaypoint()" *ngIf="isReset">
+      {{ "clearWaypoint" | translate }}
+    </button>
     <button class="btn localization-preview-button" (click)="onPreviewMode()" *ngIf="isReset">
       {{ "previewMode" | translate }}
     </button>

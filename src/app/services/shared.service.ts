@@ -18,6 +18,7 @@ export interface Mode {
 export interface Response {
   type: 'normal' | 'warning';
   message: string;
+  parentComponent?: any
 }
 
 export interface Modal {

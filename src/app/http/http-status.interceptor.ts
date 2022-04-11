@@ -10,7 +10,7 @@ import {
 import { Observable } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
@@ -42,7 +42,13 @@ export class HttpStatusInterceptor implements HttpInterceptor {
       }) => {
         const subscription = next
           .handle(req)
-          .pipe(catchError((err) => this.errorHandler(err)))
+          .pipe(
+            catchError((err) => this.errorHandler(err)),
+            finalize(() => {
+              // request completes, errors, or is cancelled
+              this.sharedService.loading$.next(false);
+            })
+          )
           .subscribe(
             (event) => {
               if (event instanceof HttpResponse) {

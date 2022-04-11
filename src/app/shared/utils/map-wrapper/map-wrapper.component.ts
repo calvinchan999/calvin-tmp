@@ -50,8 +50,9 @@ export class MapWrapperComponent implements OnInit {
   robotCurrentPosition: any;
   lidarData: any;
 
-  waypointPointer: Pointer;
+  // waypointPointer: Pointer;
   waypoint = new Circle();
+  centerOfWaypoint = new Circle();
   line = new Arrow();
 
   lineLocked: boolean = false;
@@ -326,18 +327,19 @@ export class MapWrapperComponent implements OnInit {
           radius: 80 / this.scale,
           stroke: 'black',
           strokeWidth: 4,
-          name: 'waypoint',
+          name: 'waypoint'
         });
 
-        const waypointOfCenter = new Circle({
+        this.centerOfWaypoint = new Circle({
+          name:"centerOfWaypoint",
           fill: 'red',
           x: x,
           y: y,
-          radius: 10 / this.scale,
+          radius: 10 / this.scale
         });
 
+        this.layer.add(this.centerOfWaypoint);
         this.layer.add(this.waypoint);
-        this.layer.add(waypointOfCenter);
       })
     );
   }
@@ -460,6 +462,11 @@ export class MapWrapperComponent implements OnInit {
     //   Math.abs(this.metaData.y);
 
     // return of({ x: x, y: y, radians: this.radians });
+  }
+
+  onClearWaypoint(){
+    this.layer.removeChildren();
+    this.laserLayer.removeChildren();
   }
 
   async onReset() {

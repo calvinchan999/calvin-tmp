@@ -63,11 +63,18 @@
   padding: 5px;
   width: 100%;
 
+  .localization-clear-button{
+    background-color: #009fe3;
+    width: 100%;
+    color: white;
+    margin: 2px;
+  }
+
   .localization-preview-button {
     background-color: #5dab43;
     width: 100%;
     color: white;
-    margin: 0;
+    margin: 2px;
   }
 
   .localization-edit-button{
@@ -85,7 +92,7 @@
     font-size: 45px !important;
   }
 
-
+  .localization-clear-button,
   .localization-preview-button,
   .localization-edit-button {
     font-size: 30px;
