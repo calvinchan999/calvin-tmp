@@ -41,15 +41,17 @@ export class ModeFormComponent implements OnInit {
   }
 
   onSubmitModel(selectedMode: Mode) {
-    this.modeService
-      .changeMode(selectedMode)
-      .pipe(mergeMap(() => this.translateService.get('modeDialog.tips1')))
-      .subscribe((tips1: string) => {
-        this.modalComponent.closeTrigger$.next();
-        this.sharedService.response$.next({
-          type: 'normal',
-          message: tips1,
+    if (selectedMode) {
+      this.modeService
+        .changeMode(selectedMode)
+        .pipe(mergeMap(() => this.translateService.get('modeDialog.tips1')))
+        .subscribe((tips1: string) => {
+          this.modalComponent.closeTrigger$.next();
+          this.sharedService.response$.next({
+            type: 'normal',
+            message: tips1,
+          });
         });
-      });
+    }
   }
 }

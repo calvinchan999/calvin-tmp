@@ -5,7 +5,6 @@ import { Config, MqttService } from './services/mqtt.service';
 import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
-import { inherits } from 'util';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +14,7 @@ import { inherits } from 'util';
 export class AppComponent implements OnInit {
   private ngUnsubscribe = new Subject();
   point: number = 0;
+  
   constructor(
     private appConfigService: AppConfigService,
     private mqttService: MqttService,

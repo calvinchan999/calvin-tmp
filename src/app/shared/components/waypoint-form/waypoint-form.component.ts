@@ -42,28 +42,30 @@ export class WaypointFormComponent implements OnInit {
   }
 
   onSubmitModel(selectedWaypoint: Waypoint) {
-    const data: TaskConfig = {
-      taskItemList: [
-        {
-          movement: {
-            waypointName: selectedWaypoint,
+    if (selectedWaypoint) {
+      const data: TaskConfig = {
+        taskItemList: [
+          {
+            movement: {
+              waypointName: selectedWaypoint,
+            },
           },
-        },
-      ],
-    };
-    this.waypointService
-      .sendTask(data)
-      .pipe(
-        mergeMap(() => this.translateService.get('navigatingtoDestination'))
-      )
-      .subscribe((navigatingtoDestination) => {
-        this.sharedService.isOpenModal$.next({
-          modal: 'destination',
-          modalHeader: navigatingtoDestination,
-          isDisableClose: false,
+        ],
+      };
+      this.waypointService
+        .sendTask(data)
+        .pipe(
+          mergeMap(() => this.translateService.get('navigatingtoDestination'))
+        )
+        .subscribe((navigatingtoDestination) => {
+          this.sharedService.isOpenModal$.next({
+            modal: 'destination',
+            modalHeader: navigatingtoDestination,
+            isDisableClose: false,
+          });
+          // this.sharedService.isGoingDestination$.next(true);
+          // this.sharedService.response$.next('模式已更新');
         });
-        // this.sharedService.isGoingDestination$.next(true);
-        // this.sharedService.response$.next('模式已更新');
-      });
+    }
   }
 }
