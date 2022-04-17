@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Type } from '@angular/core';
 import { Stage } from 'konva/lib/Stage';
 import { Layer } from 'konva/lib/Layer';
 import { Circle } from 'konva/lib/shapes/Circle';
@@ -26,12 +26,24 @@ export interface Pointer {
   y: number;
 }
 
+export enum TypeEnum {
+   POSITIONLISTENER= 'positionListener',
+   LOCALIZATIONEDITOR= 'localizationEditor'
+}
+
+export interface ToolsType {
+  type?: TypeEnum
+}
+
 @Component({
   selector: 'app-map-wrapper',
   templateUrl: './map-wrapper.component.html',
   styleUrls: ['./map-wrapper.component.scss'],
 })
-export class MapWrapperComponent implements OnInit {
+export class MapWrapperComponent implements OnInit,  OnChanges {
+  @Input() type: ToolsType; //todo
+  @Input() currentRobotPose: any; //todo
+  @Input() targetWaypoints: any; //todo
   @Input() mapImage: string;
   @Input() metaData: any;
   @Output() isUpdatedWaypoint = new EventEmitter<any>(false);
@@ -60,9 +72,12 @@ export class MapWrapperComponent implements OnInit {
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService
-  ) {}
+  ) {
+   
+  }
 
   ngOnInit(): void {
+    console.log(`type:${this.type}`);
     const img$ = new Observable<HTMLImageElement>((observer) => {
       const image = new Image();
       image.onload = () => {
@@ -249,6 +264,11 @@ export class MapWrapperComponent implements OnInit {
     // }, 1000);
   }
 
+  //todo, testing
+  ngOnChanges(){
+    console.log(this.currentRobotPose);
+  }
+
   init() {
     if (!this.isReset) {
       this.createRobotCurrentPosition();
@@ -296,6 +316,7 @@ export class MapWrapperComponent implements OnInit {
   createRobotCurrentPosition() {
     const { x, y, height, resolution }: any = this.metaData;
     const currentPosition = new Circle({
+      name: 'currentPosition',
       fill: 'blue',
       x: Math.abs((x - this.robotCurrentPosition['x']) / resolution),
       y: height - Math.abs((y - this.robotCurrentPosition['y']) / resolution),
@@ -388,7 +409,7 @@ export class MapWrapperComponent implements OnInit {
     scale *= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(1));
     console.log('scale: ', scale);
-    if (scale >= 1) {
+    if (scale >= 0.5) {
       this.scale = scale;
       await this.updateKonvasScale();
       await this.onReset();

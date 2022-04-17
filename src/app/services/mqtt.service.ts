@@ -21,6 +21,7 @@ export class MqttService {
   public $completion = new Subject<any>();
   public $mapActive = new Subject<any>();
   public $state = new Subject<any>();
+  public $pose = new Subject<any>();
   public clientId: string = '';
   constructor(private _mqttService: NgxMqttService) {}
 
@@ -81,6 +82,14 @@ export class MqttService {
         console.log('rvautotech/fobo/state');
         console.log(new TextDecoder('utf-8').decode(message.payload));
         this.$state.next(new TextDecoder('utf-8').decode(message.payload));
+      });
+
+      this._mqttService
+      .observe('rvautotech/fobo/pose')
+      .subscribe((message: IMqttMessage) => {
+        console.log('rvautotech/fobo/pose');
+        console.log(new TextDecoder('utf-8').decode(message.payload));
+        this.$pose.next(new TextDecoder('utf-8').decode(message.payload));
       });
   }
 

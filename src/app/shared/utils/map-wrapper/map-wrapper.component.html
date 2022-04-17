@@ -24,10 +24,8 @@
     </div>
   <div class="preview-wrapper">
     <div class="parent-canvas" id="canvas"></div>
-    <!-- <canvas #canvas class="child-canvas"></canvas> -->
-    
   </div>
-  <div class="localization-btn-container d-flex justify-content-around">
+  <div class="localization-btn-container d-flex justify-content-around" *ngIf="type ==='localizationEditor'">
     <!-- <button class="btn localization-cancel-button" >
       {{ "cancel" | translate }}
     </button> -->
