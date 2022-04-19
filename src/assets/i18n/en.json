@@ -8,12 +8,12 @@
   "modeChanged": "The mode has been updated with ",
   "robotStatus": {
     "followMe": "Follow Me Mode",
-    "navigation": "Auto Mode",
+    "navigation": "Navigation Mode",
     "error": "Error"
   },
   "mapNotFound": "map not found",
   "mapChanged": "The map has been updated with ",
-  "cancel": "cancel",
+  "cancel": "Cancel",
   "confirm": "confirm",
   "resume": "resume",
   "pause": "pause",
@@ -44,6 +44,6 @@
   },
   "resetWaypoint": "Reset waypoint",
   "clearWaypoint": "Clear Waypoint",
-  "confirmResetWaypoint": "Go To Edit",
-  "backToPreview": "Go To Preview"
+  "editMode": "Go To Edit",
+  "previewMode": "Go To Preview"
 }

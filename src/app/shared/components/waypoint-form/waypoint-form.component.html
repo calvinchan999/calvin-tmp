@@ -1,19 +1,30 @@
 <div class="waypoint-items-container">
-    <div class="waypoint-items">
-      <div
-        class="waypoint-item"
-        *ngFor="let waypoint of waypointLists$ | async"
-        [ngClass]="{ selected: selectedWaypoint === waypoint.name }"
-        (click)="onSelectedWaypoint(waypoint.name)"
-      >
-        {{ waypoint.name }}
-      </div>
+  <div class="waypoint-items">
+    <div
+      class="waypoint-item"
+      *ngFor="let waypoint of waypointLists$ | async"
+      [ngClass]="{ selected: selectedWaypoint === waypoint.name }"
+      (click)="onSelectedWaypoint(waypoint.name)"
+    >
+      {{ waypoint.name }}
     </div>
+    <!-- testing -->
+    <!-- <div
+      class="waypoint-item"
+      (click)="onSelectedWaypoint('WP-101')"
+    >
+      test
+    </div> -->
   </div>
-  <div class="waypoint-btn-container d-flex justify-content-around">
-    <button class="btn waypoint-cancel-button" (click)="onCloseModel()">{{ "cancel" | translate }}</button>
-    <button class="btn waypoint-confirm-button" (click)="onSubmitModel(selectedWaypoint)">
-      {{ "confirm" | translate }}
-    </button>
-  </div>
-  
+</div>
+<div class="waypoint-btn-container d-flex justify-content-around">
+  <button class="btn waypoint-cancel-button" (click)="onCloseModel()">
+    {{ "cancel" | translate }}
+  </button>
+  <button
+    class="btn waypoint-confirm-button"
+    (click)="onSubmitModel(selectedWaypoint)"
+  >
+    {{ "confirm" | translate }}
+  </button>
+</div>

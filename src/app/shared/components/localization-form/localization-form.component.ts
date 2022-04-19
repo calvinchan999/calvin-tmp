@@ -20,15 +20,7 @@ export interface Metadata {
   templateUrl: './localization-form.component.html',
   styleUrls: ['./localization-form.component.scss'],
 })
-export class LocalizationFormComponent implements OnInit {
-  // @ViewChild('canvas', { static: false })
-  // public canvas: ElementRef<HTMLCanvasElement>;
-
-  // waypointLists$: Observable<any> = this.sharedService.currentMap$.pipe(
-  //   mergeMap((map: any) => this.waypointService.getWaypoint(map))
-  // );
-
- 
+export class LocalizationFormComponent implements OnInit { 
   mapImage: string;
   metaData: Metadata;
   message: any;
@@ -37,7 +29,6 @@ export class LocalizationFormComponent implements OnInit {
 
   constructor(
     private modalComponent: ModalComponent,
-    // private waypointService: WaypointService,
     private sharedService: SharedService,
     private translateService: TranslateService,
     private mapService: MapService

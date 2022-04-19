@@ -14,14 +14,13 @@ import { LanguageService } from './services/language.service';
 export class AppComponent implements OnInit {
   private ngUnsubscribe = new Subject();
   point: number = 0;
-  
+
   constructor(
     private appConfigService: AppConfigService,
     private mqttService: MqttService,
     private sharedService: SharedService,
     private spinner: NgxSpinnerService,
-    private languageService: LanguageService,
-    private el: ElementRef
+    private languageService: LanguageService
   ) {
     this.languageService.setInitState();
     const config: Config = this.appConfigService.getConfig();
@@ -38,27 +37,10 @@ export class AppComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    // this.init();
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
-
-  // init() {
-  //   let canvas = <HTMLCanvasElement>(
-  //     this.el.nativeElement.querySelector('#stage')
-  //   );
-  //   let ctx = canvas.getContext('2d');
-  //   if (ctx) {
-  //     ctx.canvas.width = 1024;
-  //     ctx.canvas.height = 800;
-  //   }
-  // }
-
-  // updateRectable() {
-
-  // }
 }

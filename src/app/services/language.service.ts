@@ -4,24 +4,25 @@ import { ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LanguageService {
   language$ = new ReplaySubject<LangChangeEvent>(1);
   translate = this.translateService;
-  
+
   constructor(private translateService: TranslateService) {}
 
   setInitState() {
-    this.translateService.addLangs(['en', 'tc']);
+    this.translateService.addLangs(['en', 'tc', 'sc']);
 
     // const browserLang = (this.translate.getBrowserLang().includes('tc')) ? 'tc' : 'en' ;
     // this.setLang(browserLang);
-    this.setLang('tc');
+    const sessionLang: any = sessionStorage.getItem('language');
+    this.setLang(sessionLang !== undefined  && sessionLang? sessionLang : 'tc');
   }
 
   setLang(lang: string) {
-    this.translateService.onLangChange.pipe(take(1)).subscribe(result => {
+    this.translateService.onLangChange.pipe(take(1)).subscribe((result) => {
       this.language$.next(result);
     });
     this.translateService.use(lang);

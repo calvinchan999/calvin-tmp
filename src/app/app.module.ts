@@ -54,13 +54,12 @@ const appInitializerFn = (appConfig: AppConfigService) => {
     BrowserAnimationsModule,
     MqttModule.forRoot({}),
     TranslateModule.forRoot({
-      defaultLanguage: 'tc',
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
         deps: [HttpClient],
       },
-    }),
+    })
   ],
   providers: [
     HttpClientModule,

@@ -77,7 +77,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
     this.sharedService.loading$.next(false);
     console.log('http-status-interceptor=>', response);
     const httpStatusCode = response.status;
-    const httpErrorCode = response.error.code;
+    const httpErrorCode = response.error?.code;
     const httpErrorText = response.error
       ? response.error.message
         ? response.error.message

@@ -178,6 +178,15 @@ export class DefaultComponent implements OnInit {
     }
   }
 
+  // for testing
+  // ngAfterViewInit() {
+  //   this.sharedService.isOpenModal$.next({
+  //     modal: 'destination',
+  //     modalHeader: 'testing',
+  //     isDisableClose: false,
+  //   });
+  // }
+
   getCurrentMap() {
     this.mapService
       .getActiveMap()

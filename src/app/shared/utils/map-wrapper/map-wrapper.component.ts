@@ -1,9 +1,18 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, Type } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  Type,
+} from '@angular/core';
 import { Stage } from 'konva/lib/Stage';
 import { Layer } from 'konva/lib/Layer';
 import { Circle } from 'konva/lib/shapes/Circle';
 import { Image as KonvaImage } from 'konva/lib/shapes/Image';
 import { Arrow } from 'konva/lib/shapes/Arrow';
+import { Text } from 'konva/lib/shapes/Text';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { delay, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
@@ -27,12 +36,12 @@ export interface Pointer {
 }
 
 export enum TypeEnum {
-   POSITIONLISTENER= 'positionListener',
-   LOCALIZATIONEDITOR= 'localizationEditor'
+  POSITIONLISTENER = 'positionListener',
+  LOCALIZATIONEDITOR = 'localizationEditor',
 }
 
 export interface ToolsType {
-  type?: TypeEnum
+  type?: TypeEnum;
 }
 
 @Component({
@@ -40,7 +49,7 @@ export interface ToolsType {
   templateUrl: './map-wrapper.component.html',
   styleUrls: ['./map-wrapper.component.scss'],
 })
-export class MapWrapperComponent implements OnInit,  OnChanges {
+export class MapWrapperComponent implements OnInit, OnChanges {
   @Input() type: ToolsType; //todo
   @Input() currentRobotPose: any; //todo
   @Input() targetWaypoints: any; //todo
@@ -62,22 +71,33 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
   robotCurrentPosition: any;
   lidarData: any;
 
+  // konvaJs Shapes
   // waypointPointer: Pointer;
   waypoint = new Circle();
   centerOfWaypoint = new Circle();
   line = new Arrow();
+  robotCurrentPositionPointer = new Circle();
+  robotCurrentPositionPointerTooltip = new Text({
+    text: '',
+    fontFamily: 'Calibri',
+    fontSize: 12,
+    padding: 5,
+    textFill: 'white',
+    fill: 'black',
+    alpha: 0.75,
+    visible: false,
+  });
 
   lineLocked: boolean = false;
 
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService
-  ) {
-   
-  }
+  ) {}
 
   ngOnInit(): void {
-    console.log(`type:${this.type}`);
+    console.log(`type: ${this.type}`);
+    console.log(`metaData: ${this.metaData}`);
     const img$ = new Observable<HTMLImageElement>((observer) => {
       const image = new Image();
       image.onload = () => {
@@ -115,145 +135,168 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
           this.backgroundLayer.add(this.backgroundMap);
         }),
         tap(() => {
-          this.backgroundLayer.on(
-            'mousedown touchstart',
-            async (event: any) => {
-              if (this.isReset) {
-                if (this.layer.find('.waypoint').length <= 0) {
-                  this.getPointerXY(event)
-                    .pipe(mergeMap((position) => this.drawnWaypoint$(position)))
-                    .subscribe();
-                } else {
-                  this.stage.draggable(true);
-                }
-              }
-            }
-          );
-
-          this.waypoint.on('mousedown touchstart', async (event: any) => {
-            if (this.isReset && !this.lineLocked) {
-              this.layer.getChildren().forEach((child) => {
-                if (child.className === 'Arrow') {
-                  child.destroy();
-                }
-              });
-              this.getPointerXY(event).subscribe((position) => {
-                this.line.setAttrs({
-                  fill: 'black',
-                  stroke: 'black',
-                  strokeWidth: 4,
-                  // remove line from hit graph, so we can check intersections
-                  listening: false,
-                  name: 'angleLine',
-                  points: [
-                    this.waypoint.x(),
-                    this.waypoint.y(),
-                    position.x,
-                    position.y,
-                  ],
-                });
-                this.layer.add(this.line);
-              });
-              // let pos: any = this.stage.getPointerPosition();
-              // this.line.setAttrs({
-              //   fill: 'black',
-              //   stroke: 'black',
-              //   strokeWidth: 4,
-              //   // remove line from hit graph, so we can check intersections
-              //   listening: false,
-              //   name: 'angleLine',
-              //   points: [
-              //     this.waypoint.x(),
-              //     this.waypoint.y(),
-              //     pos.x / this.scale,
-              //     pos.y / this.scale,
-              //   ],
-              // });
-              // this.layer.add(this.line);
-            }
-          });
-
-          this.waypoint?.on('mousemove touchmove', async (event: any) => {
-            if (this.isReset) {
-              if (this.lineLocked) return;
-              if (!this.line) return;
-              if (this.layer.find('.angleLine').length > 0)
-                this.stage.draggable(false);
-
-              this.getPointerXY(event).subscribe((position) => {
-                const points = this.line.points().slice();
-                points[2] = position.x;
-                points[3] = position.y;
-                this.line.points(points);
-                this.layer.batchDraw();
-              });
-            }
-          });
-
-          this.stage.on('mouseup touchend ', async (event: any) => {
-            if (this.isReset) {
-              if (!this.line) {
-                return;
-              }
-
-              if (!event.target.hasName('target')) {
-                if (this.layer.find('.angleLine').length > 0) {
-                  //todo, debug
-                  console.log('testing');
-                  // const Arrow: any = this.layer
-                  //   .getChildren()
-                  //   .find((i) => i.className === 'Arrow');
-                  // const ArrowX = Arrow.attrs.points[2];
-                  // const ArrowY = Arrow.attrs.points[3];
-                  const { draggable } = this.stage.getAttrs();
-                  if (!draggable) {
-                    this.lineLocked = true;
-                    this.getXYAngle()
+          if (this.type === 'localizationEditor') {
+            this.backgroundLayer.on(
+              'mousedown touchstart',
+              async (event: any) => {
+                if (this.isReset) {
+                  if (this.layer.find('.waypoint').length <= 0) {
+                    this.getPointerXY(event)
                       .pipe(
-                        mergeMap((data: any) => {
-                          const { x, y, angle } = data;
-                          return this.waypointService.initialPose({
-                            x,
-                            y,
-                            angle,
-                          });
-                        }),
-                        mergeMap(() => {
-                          // setTimeout(async () => {
-                          //   await this.createLidarRedpoints();
-                          // }, 2500);
-
-                          return of(null).pipe(
-                            delay(1000),
-                            mergeMap(() => {
-                              return this.getLidarData$().pipe(
-                                tap(() => this.createLidarRedpoints())
-                              );
-                            })
-                          );
-                        })
+                        mergeMap((position) => this.drawnWaypoint$(position))
                       )
-                      .subscribe(
-                        () => {
-                          this.isUpdatedWaypoint.emit({ status: 'success' });
-                          this.lineLocked = false;
-                        },
-                        (error) => {
-                          this.isUpdatedWaypoint.emit({
-                            status: 'failed',
-                            error,
-                          });
-                          this.lineLocked = false;
-                        }
-                      );
+                      .subscribe();
+                  } else {
+                    this.stage.draggable(true);
                   }
                 }
               }
-            }
-          });
+            );
+
+            this.waypoint.on('mousedown touchstart', async (event: any) => {
+              if (this.isReset && !this.lineLocked) {
+                this.layer.getChildren().forEach((child) => {
+                  if (child.className === 'Arrow') {
+                    child.destroy();
+                  }
+                });
+                this.getPointerXY(event).subscribe((position) => {
+                  this.line.setAttrs({
+                    fill: 'black',
+                    stroke: 'black',
+                    strokeWidth: 4,
+                    // remove line from hit graph, so we can check intersections
+                    listening: false,
+                    name: 'angleLine',
+                    points: [
+                      this.waypoint.x(),
+                      this.waypoint.y(),
+                      position.x,
+                      position.y,
+                    ],
+                  });
+                  this.layer.add(this.line);
+                });
+                // let pos: any = this.stage.getPointerPosition();
+                // this.line.setAttrs({
+                //   fill: 'black',
+                //   stroke: 'black',
+                //   strokeWidth: 4,
+                //   // remove line from hit graph, so we can check intersections
+                //   listening: false,
+                //   name: 'angleLine',
+                //   points: [
+                //     this.waypoint.x(),
+                //     this.waypoint.y(),
+                //     pos.x / this.scale,
+                //     pos.y / this.scale,
+                //   ],
+                // });
+                // this.layer.add(this.line);
+              }
+            });
+
+            this.waypoint?.on('mousemove touchmove', async (event: any) => {
+              if (this.isReset) {
+                if (this.lineLocked) return;
+                if (!this.line) return;
+                if (this.layer.find('.angleLine').length > 0)
+                  this.stage.draggable(false);
+
+                this.getPointerXY(event).subscribe((position) => {
+                  const points = this.line.points().slice();
+                  points[2] = position.x;
+                  points[3] = position.y;
+                  this.line.points(points);
+                  this.layer.batchDraw();
+                });
+              }
+            });
+
+            this.stage.on('mouseup touchend ', async (event: any) => {
+              if (this.isReset) {
+                if (!this.line) {
+                  return;
+                }
+
+                if (!event.target.hasName('target')) {
+                  if (this.layer.find('.angleLine').length > 0) {
+                    //todo, debug
+                    console.log('testing');
+                    // const Arrow: any = this.layer
+                    //   .getChildren()
+                    //   .find((i) => i.className === 'Arrow');
+                    // const ArrowX = Arrow.attrs.points[2];
+                    // const ArrowY = Arrow.attrs.points[3];
+                    const { draggable } = this.stage.getAttrs();
+                    if (!draggable) {
+                      this.lineLocked = true;
+                      this.getXYAngle()
+                        .pipe(
+                          mergeMap((data: any) => {
+                            const { x, y, angle } = data;
+                            return this.waypointService.initialPose({
+                              x,
+                              y,
+                              angle,
+                            });
+                          }),
+                          mergeMap(() => {
+                            // setTimeout(async () => {
+                            //   await this.createLidarRedpoints();
+                            // }, 2500);
+
+                            return of(null).pipe(
+                              delay(1000),
+                              mergeMap(() => {
+                                return this.getLidarData$().pipe(
+                                  tap(() => this.createLidarRedpoints())
+                                );
+                              })
+                            );
+                          })
+                        )
+                        .subscribe(
+                          () => {
+                            this.isUpdatedWaypoint.emit({ status: 'success' });
+                            this.lineLocked = false;
+                          },
+                          (error) => {
+                            this.isUpdatedWaypoint.emit({
+                              status: 'failed',
+                              error,
+                            });
+                            this.lineLocked = false;
+                          }
+                        );
+                    }
+                  }
+                }
+              }
+            });
+          }else {
+          // todo tooltip
+          //   this.robotCurrentPositionPointer.on('mousemove touchstart', async (event: any) => {
+          //     console.log('debug');
+          //     const mousePos = event.getPointerPosition();
+          //     this.robotCurrentPositionPointerTooltip.position({
+          //       x: mousePos.x + 5,
+          //       y: mousePos.y + 5,
+          //     });
+          //     this.robotCurrentPositionPointerTooltip.text('Red Circle');
+          //     this.robotCurrentPositionPointerTooltip.show();
+          //   })
+          }
         }),
-        mergeMap(() => this.getRobotCurrentPosition$()),
-        mergeMap(() => this.getLidarData$())
+        // handle 2 cases "localizationEditor" & "positionListener"
+        mergeMap(() =>
+          this.type === 'localizationEditor'
+            ? this.getRobotCurrentPosition$()
+            : of(null)
+        ),
+        mergeMap(() =>
+          this.type === 'localizationEditor' ? this.getLidarData$() : of(null)
+        )
       )
       .subscribe(() => {
         console.log(this.robotCurrentPosition);
@@ -265,14 +308,23 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
   }
 
   //todo, testing
-  ngOnChanges(){
-    console.log(this.currentRobotPose);
+  ngOnChanges() {
+    if (this.currentRobotPose && this.metaData && this.type && this.mapImage) {
+      this.init();
+    }
   }
 
   init() {
     if (!this.isReset) {
-      this.createRobotCurrentPosition();
-      this.createLidarRedpoints();
+      // handle 2 cases "localizationEditor" & "positionListener"
+      // localizationEditor
+      // user can monitior the robot currnet position in positionListener mode
+      if (this.type === 'localizationEditor') {
+        this.createRobotCurrentPosition();
+        this.createLidarRedpoints();
+      } else if (this.type === 'positionListener') {
+        this.createRobotCurrentPosition();
+      }
       //this.createOriginPoint(); // For testing - show the origin point of the robot scanning map
     }
   }
@@ -314,15 +366,51 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
   }
 
   createRobotCurrentPosition() {
-    const { x, y, height, resolution }: any = this.metaData;
-    const currentPosition = new Circle({
-      name: 'currentPosition',
-      fill: 'blue',
-      x: Math.abs((x - this.robotCurrentPosition['x']) / resolution),
-      y: height - Math.abs((y - this.robotCurrentPosition['y']) / resolution),
-      radius: 10,
-    });
-    this.layer.add(currentPosition);
+    of(this.robotCurrentPositionPointer.destroy())
+      .pipe(
+        tap(() => {
+          const { x, y, height, resolution }: any = this.metaData;
+          this.robotCurrentPositionPointer.setAttrs({
+            name: 'currentPosition',
+            fill: 'blue',
+            x: Math.abs(
+              (x -
+                (this.currentRobotPose?.x ??
+                  this.robotCurrentPosition?.x ??
+                  0)) /
+                resolution
+            ),
+            y:
+              height -
+              Math.abs(
+                (y -
+                  (this.currentRobotPose?.y ?? this.robotCurrentPosition?.y) ??
+                  0) / resolution
+              ),
+            radius: 10,
+          });
+          this.layer.add(this.robotCurrentPositionPointer);
+        })
+      )
+      .subscribe();
+
+    // const { x, y, height, resolution }: any = this.metaData;
+    // const currentPosition = new Circle({
+    //   name: 'currentPosition',
+    //   fill: 'blue',
+    //   x: Math.abs(
+    //     (x - (this.robotCurrentPosition?.x )) /
+    //       resolution
+    //   ),
+    //   y:
+    //     height -
+    //     Math.abs(
+    //       (y - (this.robotCurrentPosition?.y) ??
+    //         0) / resolution
+    //     ),
+    //   radius: 10,
+    // });
+    // this.layer.add(currentPosition);
   }
 
   // createOriginPoint(){
@@ -348,15 +436,15 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
           radius: 80 / this.scale,
           stroke: 'black',
           strokeWidth: 4,
-          name: 'waypoint'
+          name: 'waypoint',
         });
 
         this.centerOfWaypoint = new Circle({
-          name:"centerOfWaypoint",
+          name: 'centerOfWaypoint',
           fill: 'red',
           x: x,
           y: y,
-          radius: 10 / this.scale
+          radius: 10 / this.scale,
         });
 
         this.layer.add(this.centerOfWaypoint);
@@ -485,7 +573,7 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
     // return of({ x: x, y: y, radians: this.radians });
   }
 
-  onClearWaypoint(){
+  onClearWaypoint() {
     this.layer.removeChildren();
     this.laserLayer.removeChildren();
   }
@@ -505,6 +593,7 @@ export class MapWrapperComponent implements OnInit,  OnChanges {
     this.isReset = false;
     this.stage.draggable(true);
     this.isUpdatedWaypoint.emit(false);
+    // this.onReset();
     forkJoin([this.getRobotCurrentPosition$(), this.getLidarData$()]).subscribe(
       () => {
         this.onReset();

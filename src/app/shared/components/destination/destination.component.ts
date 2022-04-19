@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -43,7 +43,7 @@ export class DestinationComponent implements OnInit {
 
     this.sub.add(
       this.mqttService.$pose
-        .pipe(tap((pose) => (this.currentRobotPose = pose)))
+        .pipe(map(pose => JSON.parse(pose)),tap((pose) => (this.currentRobotPose = pose)))
         .subscribe()
     );
   }
@@ -66,5 +66,9 @@ export class DestinationComponent implements OnInit {
     setTimeout(() => {
       this.waypointService.deleteTask().subscribe();
     }, 1000);
+  }
+
+  ngOnDestroy() {
+    if(this.sub) this.sub.unsubscribe();
   }
 }

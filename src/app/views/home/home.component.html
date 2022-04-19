@@ -4,7 +4,7 @@
       class="col-md-6 col-xs-12  col-md-offset-2"
       (click)="mode === 'NAVIGATION' && onSubmitWaypont()"
       style="padding: 5px;"
-      *ngIf="role === 'client'"
+      *ngIf="role === 'client' || 'admin'"
     >
       <app-card
         title="waypoint"

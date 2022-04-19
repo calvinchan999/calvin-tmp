@@ -77,8 +77,13 @@ export class HeaderComponent implements OnInit {
   useLanguage() {
     if (this.currentLang === 'tc') {
       this.languageService.setLang('en');
-    } else {
+      sessionStorage.setItem('language', 'en');
+    } else if (this.currentLang === 'en') {
+      this.languageService.setLang('sc');
+      sessionStorage.setItem('language', 'sc');
+    } else if (this.currentLang === 'sc') {
       this.languageService.setLang('tc');
+      sessionStorage.setItem('language', 'tc');
     }
   }
 
@@ -87,18 +92,20 @@ export class HeaderComponent implements OnInit {
   }
 
   getLanguage() {
+    console.log('getLanguage');
     this.languageService.language$
       .pipe(
         mergeMap((data) =>
           this.getTranlateModeMessage$().pipe(
             map((tranlateModeMessage) => ({ ...data, tranlateModeMessage }))
           )
-        )
+        ),
+        tap((language) => {
+          const { lang } = language;
+          this.currentLang =  lang;
+        })
       )
-      .subscribe((language) => {
-        const { lang } = language;
-        this.currentLang = lang;
-      });
+      .subscribe();
   }
 
   getTranlateModeMessage$(): Observable<any> {
