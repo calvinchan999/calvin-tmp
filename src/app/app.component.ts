@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
     private languageService: LanguageService
   ) {
     this.languageService.setInitState();
+    
     const config: Config = this.appConfigService.getConfig();
     if (config) {
       this.mqttService.connectMqtt(config);

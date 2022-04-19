@@ -8,7 +8,7 @@
   "modeChanged": "模式已更新",
   "robotStatus": {
     "followMe": "跟隨模式",
-    "navigation": "自動模式",
+    "navigation": "導航模式",
     "error": "錯誤"
   },
   "mapNotFound": "沒有地圖",
