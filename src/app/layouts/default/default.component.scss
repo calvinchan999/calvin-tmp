@@ -21,6 +21,13 @@
   word-wrap: break-word;
 }
 
+.modal-body {
+  overflow: auto;
+  max-height: calc(100vh - 300px);
+  word-wrap: break-word;
+  
+}
+
 
 @media only screen and (max-width: 900px) {
   .modal-title {
