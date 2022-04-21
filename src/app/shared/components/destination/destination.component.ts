@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
@@ -13,6 +13,7 @@ import { Metadata } from '../localization-form/localization-form.component';
   styleUrls: ['./destination.component.scss'],
 })
 export class DestinationComponent implements OnInit {
+  @Input() payload: any;
   mapImage: string;
   metaData: Metadata;
   currentRobotPose: any;
@@ -43,12 +44,17 @@ export class DestinationComponent implements OnInit {
 
     this.sub.add(
       this.mqttService.$pose
-        .pipe(map(pose => JSON.parse(pose)),tap((pose) => (this.currentRobotPose = pose)))
+        .pipe(
+          map((pose) => JSON.parse(pose)),
+          tap((pose) => (this.currentRobotPose = pose))
+        )
         .subscribe()
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+  }
 
   onPause() {
     setTimeout(() => {
@@ -69,6 +75,6 @@ export class DestinationComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if(this.sub) this.sub.unsubscribe();
+    if (this.sub) this.sub.unsubscribe();
   }
 }

@@ -96,6 +96,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.targetWaypoints);
     console.log(`type: ${this.type}`);
     console.log(`metaData: ${this.metaData}`);
     const img$ = new Observable<HTMLImageElement>((observer) => {
@@ -274,18 +275,21 @@ export class MapWrapperComponent implements OnInit, OnChanges {
                 }
               }
             });
-          }else {
-          // todo tooltip
-          //   this.robotCurrentPositionPointer.on('mousemove touchstart', async (event: any) => {
-          //     console.log('debug');
-          //     const mousePos = event.getPointerPosition();
-          //     this.robotCurrentPositionPointerTooltip.position({
-          //       x: mousePos.x + 5,
-          //       y: mousePos.y + 5,
-          //     });
-          //     this.robotCurrentPositionPointerTooltip.text('Red Circle');
-          //     this.robotCurrentPositionPointerTooltip.show();
-          //   })
+          } else {
+            // todo tooltip
+            this.robotCurrentPositionPointer.on(
+              'mousemove touchstart',
+              async (event: any) => {
+                console.log('debug');
+                const mousePos = event.getPointerPosition();
+                this.robotCurrentPositionPointerTooltip.position({
+                  x: mousePos.x + 5,
+                  y: mousePos.y + 5,
+                });
+                this.robotCurrentPositionPointerTooltip.text('Red Circle');
+                this.robotCurrentPositionPointerTooltip.show();
+              }
+            );
           }
         }),
         // handle 2 cases "localizationEditor" & "positionListener"
@@ -324,6 +328,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
         this.createLidarRedpoints();
       } else if (this.type === 'positionListener') {
         this.createRobotCurrentPosition();
+        this.createTargetPosition();
       }
       //this.createOriginPoint(); // For testing - show the origin point of the robot scanning map
     }
@@ -339,7 +344,8 @@ export class MapWrapperComponent implements OnInit, OnChanges {
         mergeMap(() =>
           of(this.lidarData).pipe(
             tap((data) => {
-              console.log(data);
+              console.log('testing');
+
               const { pointList } = data;
               const { x, y, height, resolution }: any = this.metaData;
               for (let i in pointList) {
@@ -365,6 +371,21 @@ export class MapWrapperComponent implements OnInit, OnChanges {
     return this.mapService.getLocalizationPose();
   }
 
+  createTargetPosition() {
+    const { targetX, targetY, targetAngle } = this.targetWaypoints;
+    const { x, y, height, resolution }: any = this.metaData;
+    const targetPointer = new Circle({
+      name: 'targetPointer',
+      x: Math.abs((x - targetX) / resolution),
+      y: height - Math.abs((y - targetY) / resolution),
+      radius: 10,
+      stroke: 'red',
+      strokeWidth: 4,
+      zIndex: 0
+    });
+    this.layer.add(targetPointer);
+  }
+
   createRobotCurrentPosition() {
     of(this.robotCurrentPositionPointer.destroy())
       .pipe(
@@ -388,6 +409,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
                   0) / resolution
               ),
             radius: 10,
+            zIndex: 1
           });
           this.layer.add(this.robotCurrentPositionPointer);
         })

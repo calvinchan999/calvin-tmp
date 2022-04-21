@@ -28,6 +28,7 @@ export class DefaultComponent implements OnInit {
   modal: string = '';
   modalTitle: string = '';
   isDisableClose: boolean;
+  parentPayload: any = null;
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -102,10 +103,11 @@ export class DefaultComponent implements OnInit {
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
       if (response) {
-        const { modal, modalHeader, isDisableClose } = response;
+        const { modal, modalHeader, isDisableClose, payload } = response;
         this.modal = modal;
         this.modalTitle = modalHeader;
         this.isDisableClose = isDisableClose;
+        this.parentPayload = payload;
         this.dialog.open();
       }
     });

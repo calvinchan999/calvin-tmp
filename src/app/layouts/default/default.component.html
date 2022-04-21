@@ -56,7 +56,7 @@
       <app-mode-form></app-mode-form>
     </div>
     <div *ngSwitchCase="'destination'">
-      <app-destination></app-destination>
+      <app-destination [payload]="parentPayload"></app-destination>
     </div>
   </ng-template>
 </app-modal>

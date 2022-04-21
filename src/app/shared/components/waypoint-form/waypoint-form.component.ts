@@ -52,6 +52,8 @@ export class WaypointFormComponent implements OnInit {
           },
         ],
       };
+      console.log(`selectedWaypoint${selectedWaypoint}`);
+      console.log(this.selectedWaypoint);
       this.waypointService
         .sendTask(data)
         .pipe(
@@ -62,6 +64,11 @@ export class WaypointFormComponent implements OnInit {
             modal: 'destination',
             modalHeader: navigatingtoDestination,
             isDisableClose: false,
+            payload: {
+              targetX: this.selectedWaypoint?.x,
+              targetY: this.selectedWaypoint?.y,
+              targetAngle: this.selectedWaypoint?.angle,
+            }
           });
           // this.sharedService.isGoingDestination$.next(true);
           // this.sharedService.response$.next('模式已更新');

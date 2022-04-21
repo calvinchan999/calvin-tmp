@@ -25,6 +25,7 @@ export interface Modal {
   modal: string;
   modalHeader: string;
   isDisableClose?: boolean;
+  payload?: any;
 }
 
 @Injectable({

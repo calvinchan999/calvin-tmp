@@ -6,7 +6,18 @@
   [class.in]="visibleAnimate"
   *ngIf="visible && !response"
 >
-  <div class="modal-dialog" *ngIf="!loader" style="max-width: 650px !important">
+  <div
+    class="modal-dialog"
+    *ngIf="!loader"
+    style="
+      max-width: 650px !important;
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+      margin: 0;
+    "
+  >
     <div class="modal-content" style="border-radius: 20px">
       <div class="modal-header" *ngIf="header">
         <ng-container *ngTemplateOutlet="header"></ng-container>
@@ -33,7 +44,7 @@
 
 <div
   class="modal fade"
-  style="z-index: 999"
+  style="z-index: 999;"
   role="dialog"
   tabindex="1"
   [class.in]="visibleAnimate"

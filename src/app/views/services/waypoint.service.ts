@@ -6,6 +6,9 @@ import { environment } from 'src/environments/environment';
 
 export interface Waypoint {
   name: string;
+  x: number;
+  y: number;
+  angle: number;
 }
 
 export interface TaskConfig {
