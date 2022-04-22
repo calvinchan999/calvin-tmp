@@ -1,10 +1,12 @@
-
-<div class="container-fluid" style="height: 100%;margin-top: 20px;width: 100vw;" >
-  <div class="row ">
+<div
+  class="container-fluid"
+  style="height: 100%; margin-top: 20px; width: 100vw"
+>
+  <div class="row">
     <div
-      class="col-md-12 col-xs-12  col-md-offset-2"
+      class="col-md-12 col-xs-12 col-md-offset-2"
       (click)="mode === 'NAVIGATION' && onSubmitWaypont()"
-      style="padding: 5px;"
+      style="padding: 5px"
       *ngIf="role === 'client' || 'admin'"
     >
       <app-card
@@ -13,19 +15,34 @@
         [disable]="mode !== 'NAVIGATION' ? true : false"
       ></app-card>
     </div>
-    <div class="col-md-12 col-xs-12   col-md-offset-2" (click)="onDockToStation()" style="padding: 5px;" *ngIf="role === 'admin'">
+    <div
+      class="col-md-12 col-xs-12 col-md-offset-2"
+      (click)="onDockToStation()"
+      style="padding: 5px"
+      *ngIf="role === 'admin'"
+    >
       <app-card title="docking" icon="power"></app-card>
     </div>
-    <div class="col-md-12 col-xs-12   col-md-offset-2" (click)="onSubmitSOS()" style="padding: 5px;"  *ngIf="role === 'client'">
+    <div
+      class="col-md-12 col-xs-12 col-md-offset-2"
+      (click)="onSubmitSOS()"
+      style="padding: 5px"
+      *ngIf="role === 'client'"
+    >
       <app-card title="sos" icon="wifi"></app-card>
     </div>
-    <div class="col-md-12 col-xs-12   col-md-offset-2" (click)="onChangeMap()" style="padding: 5px;"  *ngIf="role === 'admin'">
+    <div
+      class="col-md-12 col-xs-12 col-md-offset-2"
+      (click)="onChangeMap()"
+      style="padding: 5px"
+      *ngIf="role === 'admin'"
+    >
       <app-card title="map" icon="map"></app-card>
     </div>
     <div
-      class="col-md-12 col-xs-12   col-md-offset-2"
+      class="col-md-12 col-xs-12 col-md-offset-2"
       (click)="mode === 'NAVIGATION' && onSubmitLocalization()"
-      style="padding: 5px;"
+      style="padding: 5px"
       *ngIf="role === 'admin'"
     >
       <app-card
@@ -34,7 +51,12 @@
         [disable]="mode !== 'NAVIGATION' ? true : false"
       ></app-card>
     </div>
-    <div class="col-md-12 col-xs-12   col-md-offset-2" (click)="onChangeMode()" style="padding: 5px;"  *ngIf="role === 'admin'">
+    <div
+      class="col-md-12 col-xs-12 col-md-offset-2"
+      (click)="onChangeMode()"
+      style="padding: 5px"
+      *ngIf="role === 'admin'"
+    >
       <app-card title="mode" icon="loyalty"></app-card>
     </div>
   </div>
