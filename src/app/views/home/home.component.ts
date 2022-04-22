@@ -54,11 +54,12 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    this.sharedService.isOpenModal$.next({ 
-      modal: 'map',
-      modalHeader: 'map',
-      isDisableClose: false
-    });
+    // this.sharedService.isOpenModal$.next({ 
+    //   modal: 'map',
+    //   modalHeader: 'map',
+    //   isDisableClose: false
+    // });
+    this.router.navigate(['/hong-chi/map']);
   }
 
   onSubmitLocalization() {

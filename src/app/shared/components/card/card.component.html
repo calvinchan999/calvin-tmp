@@ -2,12 +2,14 @@
   <div
     fxLayoutAlign="center center"
     class="p-3"
-    [ngClass]="{'block-disable': disable === true, 'block' : disable === false }"
+    [ngClass]="{ 'block-disable': disable === true, block: disable === false }"
   >
-    <div class="icon-container">
-      <i class="material-icons icon">{{ icon }}</i>
+    <div class="card-body">
+      <div class="icon-container">
+        <i class="material-icons icon">{{ icon }}</i>
+      </div>
+      <h2 *ngIf="title; else loading">{{ title | translate }}</h2>
+      <ng-template #loading><h2>Loading..</h2></ng-template>
     </div>
-    <h2 *ngIf="title; else loading">{{ title | translate }}</h2>
-    <ng-template #loading><h2>Loading..</h2></ng-template>
   </div>
 </div>

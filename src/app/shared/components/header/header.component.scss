@@ -4,23 +4,23 @@
 }
 
 .navbar {
-  background-color: #5dab43;
-  max-height: 100px;
+  background-color: #052344;
+  max-height: 70px;
   height: 100%;
-  border-bottom: 10px rgba(0, 0, 0, 0.2) solid;
-  border-bottom-right-radius: 25px;
+  // border-bottom: 10px rgba(0, 0, 0, 0.2) solid;
+  // border-bottom-right-radius: 25px;
 }
 
 .mode {
   color: #fff;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 10px;
 }
 
 .map {
   color: #fff;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 10px;
 }
 
 .nav-link {
@@ -48,6 +48,7 @@
   top: 0;
   height: 100%;
   margin: auto;
+  filter: drop-shadow(1px 1px white) drop-shadow(-0.1px -0.1px 0 white) drop-shadow(0.1px 0.1px 0 white);
   .battery {
     position: relative;
     width: 5em;
@@ -87,11 +88,11 @@
 
 @media only screen and (max-width: 900px) {
   .mode {
-    font-size: 35px;
+    font-size: 25px;
   }
 
   .map {
-    font-size: 35px;
+    font-size: 25px;
   }
 }
 

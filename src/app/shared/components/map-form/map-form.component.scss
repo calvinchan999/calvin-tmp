@@ -2,11 +2,13 @@
   text-align: center;
   width: 100%;
   .map-items {
-    display: flex;
+    // display: flex;
     // justify-content: center;
     // padding: 0 20px 0px 20px;
     overflow: scroll;
-    overflow-y: hidden;
+    overflow-x: hidden;
+    flex-flow: row wrap;
+    flex-direction: column;
     .map-item {
       width: 100%;
       border: 4px solid #765e31;
@@ -42,7 +44,7 @@
 
 @media only screen and (max-width: 900px) {
   .map-item {
-    font-size: 45px  !important;
+    font-size: 35px  !important;
   }
 
   .map-cancel-button {

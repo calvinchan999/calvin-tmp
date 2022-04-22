@@ -4,28 +4,45 @@
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
       style="flex: 1"
     >
-      {{ modeTranslation }}
-  
+      <label
+        style="
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        "
+      >
+        {{ modeTranslation }}</label
+      >
     </div>
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
     >
-      {{ map ? map : mapTranslation }}
+      <label
+        style="
+          overflow: hidden;
+          text-overflow: ellipsis;
+          width: 50px;
+          white-space: nowrap;
+          text-align: end;
+        "
+        >{{ map ? map : mapTranslation }}</label
+      >
     </div>
 
     <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-end"
-      style="flex: 1;height: 100px;"
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-center"
+      style="flex: 1"
     >
       <ul class="navbar-nav ms-auto">
+        
         <li class="nav-item admin-container" (click)="useAdminMode()">
-          <i class="material-icons nav-link" style="font-size: 3.5em"
-            >admin_panel_settings</i
+          <i class="material-icons nav-link" style="font-size: 2.5em"
+            >account_circle</i
           >
         </li>
         <li class="nav-item language-container" (click)="useLanguage()">
-          <i class="material-icons nav-link" style="font-size: 3.5em"
-            >translate</i
+          <i class="material-icons nav-link" style="font-size: 2.5em"
+            >language</i
           >
         </li>
         <li class="nav-item battery-container" placement="bottom">

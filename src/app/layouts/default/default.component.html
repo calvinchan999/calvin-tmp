@@ -2,8 +2,10 @@
   <div fxFlex="none" style="position: sticky; top: 0; z-index: 2">
     <app-header></app-header>
   </div>
-  <div fxFlex fxLayoutAlign="center start">
+  <div fxFlex  class="content">
+    <div fxLayout="column"  fxLayoutAlign="center stretch">
     <router-outlet></router-outlet>
+  </div>
   </div>
   <!-- <div fxFlex="none">
     <app-footer></app-footer>

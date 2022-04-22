@@ -11,9 +11,10 @@
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;
-  position: absolute;
-  height: 100%;
-  width: 100%;
+  // position: absolute;
+  // height: 100%;
+  // width: 100%;
+  background-color: #364E68;
 }
 
 .modal-title {
@@ -23,7 +24,7 @@
 
 .modal-body {
   overflow: auto;
-  max-height: calc(100vh - 300px);
+  // max-height: calc(100vh - 300px);
   word-wrap: break-word;
   
 }
@@ -31,6 +32,6 @@
 
 @media only screen and (max-width: 900px) {
   .modal-title {
-    font-size: 45px !important;
+    font-size: 35px !important;
   }
 }

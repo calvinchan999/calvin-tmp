@@ -7,8 +7,8 @@
   "mode": "Mode",
   "modeChanged": "The mode has been updated with ",
   "robotStatus": {
-    "followMe": "Follow Me Mode",
-    "navigation": "Navigation Mode",
+    "followMe": "FollowMe",
+    "navigation": "Navigation",
     "error": "Error"
   },
   "mapNotFound": "map not found",
