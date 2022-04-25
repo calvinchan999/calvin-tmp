@@ -3,6 +3,7 @@
     fxLayoutAlign="center center"
     class="p-3"
     [ngClass]="{ 'block-disable': disable === true, block: disable === false }"
+    (click)="onClickEvent()"
   >
     <div class="card-body">
       <div class="icon-container">

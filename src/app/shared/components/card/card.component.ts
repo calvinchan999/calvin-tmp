@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-card',
@@ -9,7 +9,7 @@ export class CardComponent implements OnInit {
   @Input() title: string;
   @Input() icon: string;
   @Input() disable: boolean = false;
-
+  @Output() eventTrigger = new EventEmitter<boolean>();
   constructor() { }
 
   ngOnInit(): void {
@@ -18,6 +18,10 @@ export class CardComponent implements OnInit {
   ngOnChanges() {
     // console.log(this.title);
     // console.log('onchange :', this.disable);
+  }
+
+  onClickEvent(){
+    this.eventTrigger.emit(true);
   }
 
 }

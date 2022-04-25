@@ -117,7 +117,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
         tap((img) => {
           this.stage = new Stage({
             container: 'canvas',
-            width: img.width,
+            width: window.innerWidth,
             height: img.height,
             draggable: true,
           });

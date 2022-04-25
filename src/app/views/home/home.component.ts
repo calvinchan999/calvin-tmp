@@ -9,7 +9,6 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-
   mode: string;
   role: string;
   constructor(public router: Router, private sharedService: SharedService) {
@@ -17,11 +16,11 @@ export class HomeComponent implements OnInit {
     this.sharedService.currentMode$.subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
-    })
+    });
 
     this.sharedService.userRole$.subscribe((role: string) => {
       console.log(role);
-      this.role = role
+      this.role = role;
     });
   }
 
@@ -30,32 +29,34 @@ export class HomeComponent implements OnInit {
   }
 
   onSubmitWaypont() {
-    // this.sharedService.isOpenModal$.next({ 
+    // this.sharedService.isOpenModal$.next({
     //   modal: 'waypoint',
     //   modalHeader: 'waypoint',
     //   isDisableClose: false
     // });
-    this.router.navigate(['/hong-chi/waypoint']);
+    if (this.mode === 'NAVIGATION') {
+      this.router.navigate(['/hong-chi/waypoint']);
+    }
   }
 
   onDockToStation() {
-    this.sharedService.isOpenModal$.next({ 
+    this.sharedService.isOpenModal$.next({
       modal: 'docking',
       modalHeader: 'docking',
-      isDisableClose: false
+      isDisableClose: false,
     });
   }
 
   onSubmitSOS() {
-    this.sharedService.isOpenModal$.next({ 
+    this.sharedService.isOpenModal$.next({
       modal: 'sos',
       modalHeader: 'sos',
-      isDisableClose: false
+      isDisableClose: false,
     });
   }
 
   onChangeMap() {
-    // this.sharedService.isOpenModal$.next({ 
+    // this.sharedService.isOpenModal$.next({
     //   modal: 'map',
     //   modalHeader: 'map',
     //   isDisableClose: false
@@ -64,15 +65,17 @@ export class HomeComponent implements OnInit {
   }
 
   onSubmitLocalization() {
-    this.sharedService.isOpenModal$.next({ 
-      modal: 'localization',
-      modalHeader: 'localization',
-      isDisableClose: false
-    });
+    if (this.mode === 'NAVIGATION') {
+      this.sharedService.isOpenModal$.next({
+        modal: 'localization',
+        modalHeader: 'localization',
+        isDisableClose: false,
+      });
+    }
   }
 
   onChangeMode() {
-    // this.sharedService.isOpenModal$.next({ 
+    // this.sharedService.isOpenModal$.next({
     //   modal: 'mode',
     //   modalHeader: 'mode',
     //   isDisableClose: false

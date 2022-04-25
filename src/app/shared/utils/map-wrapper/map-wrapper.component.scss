@@ -11,6 +11,7 @@
   overflow: hidden;
   position: relative;
   border: solid black;
+  background: whitesmoke;
 }
 
 // .preview-wrapper::-webkit-scrollbar {
@@ -36,6 +37,7 @@
   z-index: 999;
   position: absolute;
   // padding: 20px 0 0 0;
+  width: 500px;
 }
 
 .child-canvas {
