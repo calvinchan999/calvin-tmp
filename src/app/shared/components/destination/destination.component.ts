@@ -25,21 +25,23 @@ export class DestinationComponent implements OnInit {
     private mqttService: MqttService
   ) {
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
-      console.log('currentMap');
-      this.mapService
-        .getMapImage(currentMap)
-        .pipe(
-          mergeMap(async (data) => {
-            let img: string = URL.createObjectURL(data);
-            return (this.mapImage = await img);
-          }),
-          mergeMap(() =>
-            this.mapService
-              .getMapMetaData(currentMap)
-              .pipe(tap((metaData) => (this.metaData = metaData)))
+      console.log('currentMap: ', currentMap);
+      if (currentMap) {
+        this.mapService
+          .getMapImage(currentMap)
+          .pipe(
+            mergeMap(async (data) => {
+              let img: string = URL.createObjectURL(data);
+              return (this.mapImage = await img);
+            }),
+            mergeMap(() =>
+              this.mapService
+                .getMapMetaData(currentMap)
+                .pipe(tap((metaData) => (this.metaData = metaData)))
+            )
           )
-        )
-        .subscribe();
+          .subscribe();
+      }
     });
 
     this.sub.add(
@@ -52,9 +54,7 @@ export class DestinationComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   onPause() {
     setTimeout(() => {

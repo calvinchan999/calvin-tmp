@@ -23,6 +23,12 @@
   font-size: 10px;
 }
 
+.path {
+  color: #fff;
+  font-weight: bold;
+  font-size: 10px;
+}
+
 .nav-link {
   color: #fff;
   max-height: inherit;
@@ -36,42 +42,42 @@
   height: 100%;
 }
 
-.admin-container{
+.admin-container {
   position: relative;
   left: 0;
   top: 0;
   height: 100%;
 }
 .battery-container {
-  position: relative;
-  left: 0;
-  top: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   height: 100%;
-  margin: auto;
-  filter: drop-shadow(1px 1px white) drop-shadow(-0.1px -0.1px 0 white) drop-shadow(0.1px 0.1px 0 white);
-  .battery {
-    position: relative;
-    width: 5em;
-    top: 0;
-    left: 0;
-  }
-  .battery-charging {
-    position: absolute;
-    left: 28px;
-    animation: fade 600ms infinite;
-  }
+  // margin: auto;
+  // filter: drop-shadow(1px 1px white) drop-shadow(-0.1px -0.1px 0 white) drop-shadow(0.1px 0.1px 0 white);
+  // .battery {
+  //   position: relative;
+  //   width: 5em;
+  //   top: 0;
+  //   left: 0;
+  // }
+  // .battery-charging {
+  //   position: absolute;
+  //   left: 28px;
+  //   animation: fade 600ms infinite;
+  // }
   .battery-percentage {
-    position: absolute;
-    top: 25%;
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
     font-size: 18px;
     font-weight: bold;
     width: 30px;
     text-align: center;
+    color: white;
   }
+}
+
+.icon {
+  font-size: 2.5em;
+  color: #fff;
 }
 
 @keyframes fade {
@@ -89,9 +95,11 @@
 @media only screen and (max-width: 900px) {
   .mode {
     font-size: 25px;
+    width: 100px;
   }
 
-  .map {
+  .map,
+  .path {
     font-size: 25px;
   }
 }

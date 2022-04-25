@@ -1,4 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+$mdi-font-path: "~@mdi/font/fonts";
+@import "~@mdi/font/scss/materialdesignicons.scss";
 
 body,
 html {
@@ -14,14 +16,14 @@ html {
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
-html,
-body {
-  height: 100%;
-  width: 100%;
-}
-body {
-  margin: 0;
-}
+// html,
+// body {
+//   height: 100%;
+//   width: 100%;
+// }
+// body {
+//   margin: 0;
+// }
 
 @font-face {
   font-family: 'Material Icons';

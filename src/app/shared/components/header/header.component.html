@@ -1,15 +1,11 @@
 <nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
-  <div class="container-fluid">
+  <div class="container-fluid" *ngIf="currentUrl === '/hong-chi'">
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
       style="flex: 1"
     >
       <label
-        style="
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        "
+        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
       >
         {{ modeTranslation }}</label
       >
@@ -33,43 +29,89 @@
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-center"
       style="flex: 1"
     >
-      <ul class="navbar-nav ms-auto">
-        
-        <li class="nav-item admin-container" (click)="useAdminMode()">
-          <i class="material-icons nav-link" style="font-size: 2.5em"
-            >account_circle</i
+      <ul class="navbar-nav ms-auto" style="display: flex; gap: 5px">
+        <li
+          class="nav-item battery-container"
+          placement="bottom"
+          (click)="isShowBatteryPercentage()"
+        >
+          <label
+            class="battery-percentage"
+            style="text-align: end"
+            *ngIf="showBatteryPercentage"
+            >{{ percentage }}%</label
           >
+          <i
+            class="mdi mdi-battery-alert-variant-outline battery-icon icon"
+            *ngIf="powerSupplyStatus !== 'CHARGING' && percentage <= 0"
+          ></i>
+          <i
+            class="mdi mdi-battery-low battery-icon icon"
+            *ngIf="
+              powerSupplyStatus !== 'CHARGING' &&
+              percentage > 0 &&
+              percentage <= 10
+            "
+          ></i>
+          <i
+            class="mdi mdi-battery-medium battery-icon icon"
+            *ngIf="
+              powerSupplyStatus !== 'CHARGING' &&
+              percentage > 10 &&
+              percentage < 60
+            "
+          ></i>
+          <i
+            class="mdi mdi-battery-high battery-icon icon"
+            *ngIf="powerSupplyStatus !== 'CHARGING' && percentage >= 60"
+          ></i>
+
+          <i
+            class="mdi mdi-battery-charging battery-icon icon"
+            *ngIf="powerSupplyStatus === 'CHARGING'"
+          ></i>
+        </li>
+
+        <li class="nav-item admin-container" (click)="useAdminMode()">
+          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
+          <i class="mdi mdi-account-circle icon"></i>
         </li>
         <li class="nav-item language-container" (click)="useLanguage()">
-          <i class="material-icons nav-link" style="font-size: 2.5em"
-            >language</i
-          >
-        </li>
-        <li class="nav-item battery-container" placement="bottom">
-          <img
-            src="assets/images/battery-low.png"
-            class="battery"
-            *ngIf="percentage <= 10"
-          />
-          <img
-            src="assets/images/battery-mid.png"
-            class="battery"
-            *ngIf="percentage > 10 && percentage < 60"
-          />
-          <img
-            src="assets/images/battery.png"
-            class="battery"
-            *ngIf="percentage >= 60"
-          />
-          <img
-            src="assets/images/charging.png"
-            class="battery-charging"
-            style="width: 2em"
-            *ngIf="powerSupplyStatus === 'CHARGING'"
-          />
-          <label class="battery-percentage">{{ percentage }}%</label>
+          <!-- <i class="material-icons nav-link icon">language</i> -->
+          <i class="mdi mdi-web icon"></i>
         </li>
       </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid" *ngIf="currentUrl !== '/hong-chi'">
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center"
+      style="flex: 1"
+    >
+      <!-- <label
+        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
+      >
+        {{ modeTranslation }}</label
+      > -->
+      <i class="material-icons icon" (click)="backToPreviousPage()"
+        >arrow_back_ios_new</i
+      >
+      <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon>
+    </div>
+    <div
+      class="navbar-collapse collapse flex-sm-grow-auto justify-content-start align-self-center path"
+    >
+      <label
+        style="
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: start;
+          width: 100%;
+          white-space: nowrap;
+        "
+        >{{ currentPageTitle }}</label
+      >
     </div>
   </div>
 </nav>

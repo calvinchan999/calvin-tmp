@@ -30,11 +30,12 @@ export class HomeComponent implements OnInit {
   }
 
   onSubmitWaypont() {
-    this.sharedService.isOpenModal$.next({ 
-      modal: 'waypoint',
-      modalHeader: 'waypoint',
-      isDisableClose: false
-    });
+    // this.sharedService.isOpenModal$.next({ 
+    //   modal: 'waypoint',
+    //   modalHeader: 'waypoint',
+    //   isDisableClose: false
+    // });
+    this.router.navigate(['/hong-chi/waypoint']);
   }
 
   onDockToStation() {
@@ -71,10 +72,11 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMode() {
-    this.sharedService.isOpenModal$.next({ 
-      modal: 'mode',
-      modalHeader: 'mode',
-      isDisableClose: false
-    });
+    // this.sharedService.isOpenModal$.next({ 
+    //   modal: 'mode',
+    //   modalHeader: 'mode',
+    //   isDisableClose: false
+    // });
+    this.router.navigate(['/hong-chi/mode']);
   }
 }

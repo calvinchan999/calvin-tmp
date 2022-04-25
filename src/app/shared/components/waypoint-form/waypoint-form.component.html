@@ -11,13 +11,17 @@
   </div>
 </div>
 <div class="waypoint-btn-container d-flex justify-content-around">
-  <button class="btn waypoint-cancel-button" (click)="onCloseModel()">
+  <!-- <button class="btn waypoint-cancel-button" (click)="onCloseModel()">
     {{ "cancel" | translate }}
-  </button>
+  </button> -->
   <button
+    *ngIf="selectedWaypoint"
     class="btn waypoint-confirm-button"
     (click)="onSubmitModel(selectedWaypoint?.name)"
   >
-    {{ "confirm" | translate }}
+  <i class="material-icons mode-confirm-button-icon">arrow_forward_ios</i>
+  <label class="waypoint-confirm-button-title">{{
+    "confirm" | translate
+  }}</label>
   </button>
 </div>

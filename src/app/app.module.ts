@@ -23,6 +23,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MapComponent } from './views/map/map.component';
+import { ModeComponent } from './views/mode/mode.component';
+import { MatIconModule } from '@angular/material/icon';
+import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-list.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -43,7 +46,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, MapComponent],
+  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -60,7 +63,8 @@ const appInitializerFn = (appConfig: AppConfigService) => {
         useFactory: createTranslateLoader,
         deps: [HttpClient],
       },
-    })
+    }),
+    MatIconModule,
   ],
   providers: [
     HttpClientModule,

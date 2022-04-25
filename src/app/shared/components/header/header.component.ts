@@ -1,10 +1,18 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  ActivationEnd,
+  NavigationEnd,
+  Router,
+} from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, Observable, of, pipe } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -21,41 +29,79 @@ export class HeaderComponent implements OnInit {
   modeTranslation: string = '';
   mapTranslation: string = '';
 
+  currentUrl: string = '';
+  currentPageTitle: string = '';
+  showBatteryPercentage: boolean = false;
+
+  sub = new Subscription();
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
     private languageService: LanguageService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location
   ) {
-    combineLatest(
-      this.sharedService.currentMode$,
-      this.sharedService.currentMap$
-    )
-      .pipe(
-        tap((response: any) => {
-          this.mode = response[0];
-          this.map = response[1];
-          return response;
-        }),
-        mergeMap(() =>
-          this.translateService
-            .get('mapNotFound')
-            .pipe(
-              tap((mapTranslation) => (this.mapTranslation = mapTranslation))
-            )
-        ),
-        mergeMap(() => this.getTranlateModeMessage$())
+    this.sub.add(
+      this.router.events
+        .pipe(
+          filter((event) => event instanceof NavigationEnd),
+          map(() => this.route.snapshot),
+          map((route) => {
+            while (route.firstChild) {
+              route = route.firstChild;
+            }
+            return route;
+          })
+        )
+        .subscribe((route: ActivatedRouteSnapshot) => {
+          console.log(route.data);
+          const { title } = route.data;
+          this.currentPageTitle = title;
+        })
+    );
+
+    this.sub.add(
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          // event is an instance of NavigationEnd, get url!
+          this.currentUrl = event.urlAfterRedirects;
+        }
+      })
+    );
+
+    this.sub.add(
+      combineLatest(
+        this.sharedService.currentMode$,
+        this.sharedService.currentMap$
       )
-      .subscribe(() => {
-        // if (this.mode.length > 0 && this.map.length > 0) {
-        //   this.sharedService.loading$.next(false);
-        // }
-      });
+        .pipe(
+          tap((response: any) => {
+            this.mode = response[0];
+            this.map = response[1];
+            return response;
+          }),
+          mergeMap(() =>
+            this.translateService
+              .get('mapNotFound')
+              .pipe(
+                tap((mapTranslation) => (this.mapTranslation = mapTranslation))
+              )
+          ),
+          mergeMap(() => this.getTranlateModeMessage$())
+        )
+        .subscribe(() => {
+          // if (this.mode.length > 0 && this.map.length > 0) {
+          //   this.sharedService.loading$.next(false);
+          // }
+        })
+    );
   }
 
   ngOnInit() {
-    this.getBattery();
-    this.getLanguage();
+    this.sub.add(this.getBattery());
+    this.sub.add(this.getLanguage());
   }
 
   // ngDoCheck() {
@@ -70,6 +116,7 @@ export class HeaderComponent implements OnInit {
         const { powerSupplyStatus, percentage } = JSON.parse(battery);
         this.powerSupplyStatus = powerSupplyStatus;
         this.percentage = Math.round(percentage * 100);
+        console.log(this.percentage);
       }
     });
   }
@@ -102,7 +149,7 @@ export class HeaderComponent implements OnInit {
         ),
         tap((language) => {
           const { lang } = language;
-          this.currentLang =  lang;
+          this.currentLang = lang;
         })
       )
       .subscribe();
@@ -122,5 +169,17 @@ export class HeaderComponent implements OnInit {
           (modeTranslation: string) => (this.modeTranslation = modeTranslation)
         )
       );
+  }
+
+  isShowBatteryPercentage() {
+    this.showBatteryPercentage = this.showBatteryPercentage ? false : true;
+  }
+
+  backToPreviousPage() {
+    this.location.back();
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

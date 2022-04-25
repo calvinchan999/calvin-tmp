@@ -192,7 +192,7 @@ export class DefaultComponent implements OnInit {
   getCurrentMap() {
     this.mapService
       .getActiveMap()
-      .pipe(retry(3), delay(3000))
+      .pipe(retry(3), delay(1000))
       .subscribe((response: MapResponse) => {
         console.log(response);
         const { name } = response;
@@ -203,7 +203,7 @@ export class DefaultComponent implements OnInit {
   getCurrentMode() {
     this.modeService
       .getMode()
-      .pipe(retry(3), delay(3000))
+      .pipe(retry(3), delay(1000))
       .subscribe((response: ModeResponse) => {
         console.log('mode: ', response);
         const { state } = response;

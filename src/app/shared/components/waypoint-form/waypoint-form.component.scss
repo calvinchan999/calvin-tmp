@@ -1,43 +1,85 @@
-.waypoint-items-container {
+
+
+.waypoint-items-container  {
   text-align: center;
   width: 100%;
+  height: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
   .waypoint-items {
     display: flex;
-    // justify-content: center;
-    // padding: 0 20px 0px 20px;
-    overflow: scroll;
-    overflow-y: hidden;
+    gap: 10px;
+    margin: 15px 20px 0 20px;
+    flex-direction: column;
+    height: auto;
     .waypoint-item {
+      min-height: 80px;
       width: 100%;
-      border: 4px solid #765e31;
-      border-radius: 5px;
+      border: 4px solid #00B8D4;
+      border-radius: 10px;
       flex: 0 0 30%;
-      margin: 5px;
+      // margin: 5px;
       color: rgb(0, 0, 0);
       font-size: 2rem;
+      color: #00B8D4;
     }
     .selected {
-      background-color: #e0e0e0;
+      background-color: #00B8D4;
+      color: #fff;
     }
   }
 }
 
+// .waypoint-btn-container {
+//   padding-top: 30px;
+//   width: 100%;
+//   .waypoint-cancel-button {
+//     background-color: #fe0000;
+//     width: 50%;
+//     color: white;
+//     margin: 0 10px 0 10px;
+//   }
+//   .waypoint-confirm-button {
+//     background-color: #09ff78;
+//     width: 50%;
+//     color: black;
+//     margin: 0 10px 0 10px;
+//   }
+// }
+
+
 .waypoint-btn-container {
-  padding-top: 30px;
-  width: 100%;
-  .waypoint-cancel-button {
-    background-color: #fe0000;
-    width: 50%;
-    color: white;
-    margin: 0 10px 0 10px;
-  }
+  // padding-top: 30px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 0px 20px 20px 0;
   .waypoint-confirm-button {
-    background-color: #09ff78;
-    width: 50%;
-    color: black;
-    margin: 0 10px 0 10px;
+    // background-color: #09ff78;
+    // width: 50%;
+    // color: black;
+    // margin: 0 10px 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    color: #fff;
+    background-color: #00B8D4;
+    // margin-top: 24px;
+    font-size: 22px;
+    .waypoint-confirm-button-icon {
+      text-align: center;
+    }
+
+    .waypoint-confirm-button-title{
+      text-align: center;
+    }
   }
 }
+
 
 @media only screen and (max-width: 900px) {
   .waypoint-item {

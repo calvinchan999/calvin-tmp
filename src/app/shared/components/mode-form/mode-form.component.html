@@ -1,18 +1,33 @@
-<div class="mode-items-container">
-  <div class="mode-items">
-    <div
-      class="mode-item"
-      *ngFor="let mode of modeLists$ | async"
-      [ngClass]="{ selected: selectedMode === mode.name }"
-      (click)="currentMode !== mode.name && onSelectedMode(mode.name)"
-    >
-      {{ mode.name }}
+<div class="mode-form">
+  <div class="mode-items-container">
+    <div class="mode-items">
+      <div
+        class="mode-item"
+        *ngFor="let mode of modeLists$ | async"
+        [ngClass]="{ selected: selectedMode === mode.name }"
+        (click)="onSelectedMode(mode.name)"
+      >
+        <!-- <i class="material-icons">account-arrow-left</i> -->
+        <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon>
+        <labe class="mode-item-name">{{ mode.name }}</labe>
+      </div>
     </div>
   </div>
-</div>
-<div class="mode-btn-container d-flex justify-content-around">
-  <button class="btn mode-cancel-button" (click)="onCloseModel()">{{ "cancel" | translate }}</button>
-  <button class="btn mode-confirm-button" (click)="onSubmitModel(selectedMode)">
-    {{ "confirm" | translate }}
-  </button>
+  <div class="mode-btn-container d-flex justify-content-around">
+    <!-- <button class="btn mode-cancel-button" (click)="onCloseModel()">
+      {{ "cancel" | translate }}
+    </button> -->
+    <!-- <button
+      class="btn mode-confirm-button"
+      (click)="onSubmitModel(selectedMode)"
+    >
+      {{ "confirm" | translate }}
+    </button> -->
+    <button class="btn mode-confirm-button" (click)="onSubmitModel(selectedMode)" *ngIf="selectedMode">
+      <i class="material-icons mode-confirm-button-icon">arrow_forward_ios</i>
+      <label class="map-confirm-button-title">{{
+        "confirm" | translate
+      }}</label>
+    </button>
+  </div>
 </div>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
@@ -28,7 +29,8 @@ export class WaypointFormComponent implements OnInit {
     private mapService: MapService,
     private modalComponent: ModalComponent,
     private sharedService: SharedService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {}
@@ -60,15 +62,25 @@ export class WaypointFormComponent implements OnInit {
           mergeMap(() => this.translateService.get('navigatingtoDestination'))
         )
         .subscribe((navigatingtoDestination) => {
-          this.sharedService.isOpenModal$.next({
-            modal: 'destination',
-            modalHeader: navigatingtoDestination,
-            isDisableClose: false,
-            payload: {
-              targetX: this.selectedWaypoint?.x,
-              targetY: this.selectedWaypoint?.y,
-              targetAngle: this.selectedWaypoint?.angle,
-            }
+          // this.sharedService.isOpenModal$.next({
+          //   modal: 'destination',
+          //   modalHeader: navigatingtoDestination,
+          //   isDisableClose: false,
+          //   payload: {
+          //     targetX: this.selectedWaypoint?.x,
+          //     targetY: this.selectedWaypoint?.y,
+          //     targetAngle: this.selectedWaypoint?.angle,
+          //   }
+          // });
+          const payload = JSON.stringify({
+            targetX: this.selectedWaypoint?.x,
+            targetY: this.selectedWaypoint?.y,
+            targetAngle: this.selectedWaypoint?.angle,
+          });
+          this.router.navigate(['/hong-chi/waypoint/destination'], {
+            queryParams: {
+              payload,
+            },
           });
           // this.sharedService.isGoingDestination$.next(true);
           // this.sharedService.response$.next('模式已更新');

@@ -14,8 +14,8 @@ import { ModeService, Mode } from 'src/app/views/services/mode.service';
 })
 export class ModeFormComponent implements OnInit {
   modeLists$: Observable<any> = of([
-    { name: 'FOLLOW_ME' },
-    { name: 'NAVIGATION' },
+    { name: 'FOLLOW_ME',icon: 'account-arrow-left' },
+    { name: 'NAVIGATION', icon: 'sync' },
   ]);
   selectedMode: Mode;
   currentMode: string;
@@ -33,6 +33,7 @@ export class ModeFormComponent implements OnInit {
   }
 
   onSelectedMode(mode: Mode) {
+    console.log(mode);
     this.selectedMode = mode;
   }
 

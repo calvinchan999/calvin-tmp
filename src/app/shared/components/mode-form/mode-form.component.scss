@@ -1,48 +1,102 @@
-.mode-items-container {
-  text-align: center;
+.mode-form {
+  position: relative;
   width: 100%;
+  height: 100%;
+}
+
+.mode-items-container {
+  height: calc(100vh - 250px);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
   .mode-items {
     display: flex;
-    justify-content: center;
-    overflow: scroll;
-    padding: 0 20px 0px 20px;
-    overflow-y: hidden;
+    flex-direction: row;
+    gap: 50px;
     .mode-item {
-      width: 100%;
-      border: 4px solid #765e31;
-      border-radius: 5px;
-      flex: 0 0 50%;
-      margin: 5px;
-      color: rgb(0, 0, 0);
-      font-size: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+      width: 300px;
+      border: 4px solid #00b8d4;
+      border-radius: 10px;
+      color: #00b8d4;
+      position: relative;
+    }
+    .mode-item-icon {
+      position: absolute;
+      top: 0;
+      font-size: 10em;
+    }
+    .mode-item-name {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      font-size: 42px;
+      padding-bottom: 30px;
     }
     .selected {
-      background-color: #e0e0e0;
+      background-color: #00b8d4;
+      color: #fff;
     }
   }
 }
 
+
+
+// .mode-btn-container {
+//   padding-top: 30px;
+//   width: 100%;
+//   .mode-cancel-button {
+//     background-color: #fe0000;
+//     width: 50%;
+//     color: white;
+//     margin: 0 10px 0 10px;
+//   }
+//   .mode-confirm-button {
+//     background-color: #09ff78;
+//     width: 50%;
+//     color: black;
+//     margin: 0 10px 0 10px;
+//   }
+// }
+
 .mode-btn-container {
-  padding-top: 30px;
-  width: 100%;
-  .mode-cancel-button {
-    background-color: #fe0000;
-    width: 50%;
-    color: white;
-    margin: 0 10px 0 10px;
-  }
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 0px 20px 20px 0;
   .mode-confirm-button {
-    background-color: #09ff78;
-    width: 50%;
-    color: black;
-    margin: 0 10px 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    color: #fff;
+    background-color: #00b8d4;
+    // margin-top: 24px;
+    font-size: 22px;
+    .mode-confirm-button-icon {
+      text-align: center;
+    }
+
+    .mode-confirm-button-title {
+      text-align: center;
+    }
   }
 }
-
 
 @media only screen and (max-width: 900px) {
   .mode-item {
-    font-size: 35px  !important;
+    font-size: 35px !important;
   }
 
   .mode-cancel-button {
@@ -51,5 +105,21 @@
 
   .mode-confirm-button {
     font-size: 35px;
+  }
+  .mode-items-container {
+    .mode-items {
+      .mode-item {
+        height: 150px;
+        width: 150px;
+      }
+      .mode-item-icon {
+        font-size: 2.5em;
+        top: -10px;
+      }
+      .mode-item-name {
+        font-size: 22px;
+        padding-bottom: 10px;
+      }
+    }
   }
 }
