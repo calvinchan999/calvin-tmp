@@ -1,4 +1,4 @@
-<div fxFill fxLayout="row" class="card-container">
+<div fxFill fxLayout="row" class="container-fluid card-container">
   <div
     fxLayoutAlign="center center"
     class="p-3"
@@ -7,7 +7,7 @@
   >
     <div class="card-body">
       <div class="icon-container">
-        <i class="material-icons icon">{{ icon }}</i>
+        <i class="mdi mdi-{{ icon }} icon"></i>
       </div>
       <h2 *ngIf="title; else loading">{{ title | translate }}</h2>
       <ng-template #loading><h2>Loading..</h2></ng-template>

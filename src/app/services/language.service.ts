@@ -17,7 +17,7 @@ export class LanguageService {
 
     // const browserLang = (this.translate.getBrowserLang().includes('tc')) ? 'tc' : 'en' ;
     // this.setLang(browserLang);
-    const sessionLang: any = sessionStorage.getItem('language');
+    const sessionLang: any = localStorage.getItem('language');
     this.setLang(sessionLang !== undefined  && sessionLang? sessionLang : 'tc');
   }
 

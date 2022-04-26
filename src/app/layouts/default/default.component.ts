@@ -38,8 +38,6 @@ export class DefaultComponent implements OnInit {
     private translateService: TranslateService,
     private httpStatusService: HttpStatusService
   ) {
-
-
     this.mqttService.$completion
       .pipe(
         map((feedback) => JSON.parse(feedback)),
@@ -73,6 +71,9 @@ export class DefaultComponent implements OnInit {
           if (message.length > 0) {
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
+            setTimeout(() => {
+              this.router.navigate(['/']);
+            }, 2000);
           }
         }
       });
@@ -173,10 +174,10 @@ export class DefaultComponent implements OnInit {
 
   ngOnInit() {
     this.initializeErrors();
-    if (!sessionStorage.getItem('role')) {
+    if (!localStorage.getItem('role')) {
       this.sharedService._userRole().subscribe();
     } else {
-      this.sharedService.userRole$.next(String(sessionStorage.getItem('role')));
+      this.sharedService.userRole$.next(String(localStorage.getItem('role')));
     }
   }
 
@@ -213,17 +214,16 @@ export class DefaultComponent implements OnInit {
 
   initializeErrors() {
     this.httpStatusService
-    .getHttpStatus()
-    .pipe(takeUntil(this.ngUnsubscribe))
-    .subscribe((errors: any) => {
-      console.log(errors);
-      if (errors.inFlight) {
-        const message = 'Status : ' + errors.errorCode + " - " + errors.errorMsg;
-        this.sharedService.response$.next({ type: 'warning', message });
-   
-      }
-    });
-
+      .getHttpStatus()
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((errors: any) => {
+        console.log(errors);
+        if (errors.inFlight) {
+          const message =
+            'Status : ' + errors.errorCode + ' - ' + errors.errorMsg;
+          this.sharedService.response$.next({ type: 'warning', message });
+        }
+      });
   }
 
   ngOnDestroy() {

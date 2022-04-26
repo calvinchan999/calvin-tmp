@@ -17,12 +17,12 @@
   "confirm": "confirm",
   "resume": "resume",
   "pause": "pause",
-  "sosDialog":{
-    "tips1" : "Are you sure to execute the SOS signal?",
+  "sosDialog": {
+    "tips1": "Are you sure to execute the SOS signal?",
     "tips2": "SOS signal has been issued"
   },
   "dockingDialog": {
-    "tips1": "Return to charging point?",
+    "tips1": "Are you sure return to charging station?",
     "tips2": "Returning to charging station",
     "tips3": "Robot Charging...",
     "tips4": "Please leave the charging area",
@@ -31,11 +31,11 @@
   "mapDialog": {
     "tips1": "The map has been updated"
   },
-  "modeDialog":{
+  "modeDialog": {
     "tips1": "The mode has been updated"
   },
-  "arrivedAtDestination" : "Arrived at destination",
-  "cancelledTask" : "The Task has been cancelled",
+  "arrivedAtDestination": "Arrived at destination",
+  "cancelledTask": "The Task has been cancelled",
   "information": "Information",
   "navigatingtoDestination": "Destination",
   "localizationDialog": {

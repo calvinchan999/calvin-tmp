@@ -44,14 +44,14 @@ export class SharedService {
   constructor() {}
 
   _userRole(): Observable<any> {
-    if (typeof sessionStorage.getItem('role') !== 'string' ||　!sessionStorage.getItem('role')) {
-      sessionStorage.setItem('role', 'client');
+    if (typeof localStorage.getItem('role') !== 'string' ||　!localStorage.getItem('role')) {
+      localStorage.setItem('role', 'client');
       this.userRole$.next("client");
-    } else if (sessionStorage.getItem('role') === 'client') {
-      sessionStorage.setItem('role', 'admin');
+    } else if (localStorage.getItem('role') === 'client') {
+      localStorage.setItem('role', 'admin');
       this.userRole$.next('admin');
-    } else if (sessionStorage.getItem('role') === 'admin') {
-      sessionStorage.setItem('role', 'client');
+    } else if (localStorage.getItem('role') === 'admin') {
+      localStorage.setItem('role', 'client');
       this.userRole$.next('client');
     }
     return of(null);

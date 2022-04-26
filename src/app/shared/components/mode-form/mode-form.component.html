@@ -23,9 +23,13 @@
     >
       {{ "confirm" | translate }}
     </button> -->
-    <button class="btn mode-confirm-button" (click)="onSubmitModel(selectedMode)" *ngIf="selectedMode">
-      <i class="material-icons mode-confirm-button-icon">arrow_forward_ios</i>
-      <label class="map-confirm-button-title">{{
+    <button
+      class="btn mode-confirm-button"
+      (click)="onSubmitModel(selectedMode)"
+      *ngIf="selectedMode"
+    >
+      <i class="mdi mdi-chevron-right mode-confirm-button-icon"></i>
+      <label class="mode-confirm-button-title">{{
         "confirm" | translate
       }}</label>
     </button>

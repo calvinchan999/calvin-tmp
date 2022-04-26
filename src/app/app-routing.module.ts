@@ -31,6 +31,10 @@ const routes: Routes = [
       {
         path: 'waypoint',
         loadChildren: () => import('./views/waypoint/waypoint.module').then(m => m.WaypointModule)
+      },
+      {
+        path: 'charging',
+        loadChildren: () => import('./views/charging/charging.module').then(m => m.ChargingModule)
       }
     ],
   },

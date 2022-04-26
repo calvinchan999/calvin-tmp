@@ -1,9 +1,13 @@
-.container-fluid {
+.destination-container {
+  
+
   .spuare-group {
     display: flex;
+    width: 100%;
+
     .square-button {
-      height: 200px;
-      width: 80px;
+      height: 125px;
+      width: 125px;
       margin: 0 auto;
       display: flex;
       flex: 0 0 25%;
@@ -11,35 +15,53 @@
       align-items: center;
       flex-direction: column;
       gap: 5px;
-      //   transition: 1s ease-in-out;
       background-color: transparent;
     }
 
     .square-button:active {
-      box-shadow: -2px -2px 5px #000;
+      // box-shadow: -2px -2px 5px rgb(250, 0, 0);
+      filter: drop-shadow(1px 1px white) drop-shadow(-0.1px -0.1px 0 white)
+        drop-shadow(0.1px 0.1px 0 white);
     }
   }
 }
 
 .pause {
-  background-color: rgba(255, 0, 0, 0.596);
-  border-radius: 5px;
+  color: #c39813;
+  border-radius: 10px;
+  border: 3px solid #c39813;
 }
 
 .resume {
-  background-color: rgb(10, 255, 51);
-  border-radius: 5px;
+  color: #00bbd4;
+  border-radius: 10px;
+  border: 3px solid #00bbd4;
 }
 
 .cancel {
-  background-color: rgb(255, 0, 0);
-  border-radius: 5px;
+  color: #e8284c;
+  border-radius: 10px;
+  border: 3px solid #e8284c;
 }
 
+.icon {
+  position: absolute;
+  bottom: 5px;
+  font-size: 6em;
+}
+.title {
+  position: absolute;
+  bottom: 0;
+  font-size: 25px;
+}
+
+.map{
+  height:60vh;
+}
 
 @media only screen and (max-width: 900px) {
   .map-item {
-    font-size: 35px  !important;
+    font-size: 35px !important;
   }
 
   .map-cancel-button {
@@ -48,5 +70,9 @@
 
   .map-confirm-button {
     font-size: 35px;
+  }
+  
+  .map {
+    height: 400px;
   }
 }

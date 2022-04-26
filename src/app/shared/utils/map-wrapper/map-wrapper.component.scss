@@ -6,7 +6,7 @@
 }
 
 .preview-wrapper {
-  height: 50vh !important;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   position: relative;
@@ -36,14 +36,9 @@
 .parent-canvas {
   z-index: 999;
   position: absolute;
-  // padding: 20px 0 0 0;
   width: 500px;
 }
 
-.child-canvas {
-  z-index: 998;
-  position: absolute;
-}
 
 .degrees-label {
   position: absolute;
@@ -57,7 +52,7 @@
   z-index: 1000;
   position: absolute;
   right: 10px;
-  // margin-top: -60px;
+  top: 10px;
 }
 
 

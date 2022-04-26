@@ -1,18 +1,22 @@
+
 <div fxFlexFill fxLayout="column">
-  <div fxFlex="none" style="position: sticky; top: 0; z-index: 2">
+  <div fxFlex="none">
     <app-header></app-header>
   </div>
-  <div fxFlex  class="content">
-    <div fxLayout="column"  fxLayoutAlign="center stretch">
+  <div class="content" fxFlex fxLayout="column" fxLayoutAlign="start stretch">
     <router-outlet></router-outlet>
   </div>
-  </div>
+
   <!-- <div fxFlex="none">
     <app-footer></app-footer>
   </div> -->
 </div>
 
-<app-modal #responseDialog disableClose="true" localizationFormComponent="response?.localizationFormComponent">
+<app-modal
+  #responseDialog
+  disableClose="true"
+  localizationFormComponent="response?.localizationFormComponent"
+>
   <!-- <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
     ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
   > -->

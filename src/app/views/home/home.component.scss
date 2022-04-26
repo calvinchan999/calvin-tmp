@@ -1,3 +1,14 @@
-.container-fluid {
-  // overflow: scroll;
+.home-container {
+  width: 100%;
+  position: relative;
+  .home-items {
+    // overflow-x: hidden;
+    // height: 75vh;
+  }
 }
+
+// @media screen and ( max-height: 800px) {
+//   .home-container {
+//     height: calc(100vh - 100px);
+//   }
+// }

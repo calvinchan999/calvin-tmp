@@ -1,59 +1,56 @@
-<div
-  class="container"
-  style="height: 100%; margin-top: 20px; width: 100vw"
->
-  <div class="row">
-    <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
-      style="padding: 5px"
-      *ngIf="role === 'client' || 'admin'"
-    >
-      <app-card
-        title="waypoint"
-        icon="fmd_good"
-        [disable]="mode !== 'NAVIGATION' ? true : false"
-        (eventTrigger)="onSubmitWaypont()"
-      ></app-card>
-    </div>
-    <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
-      style="padding: 5px"
-      *ngIf="role === 'admin'"
-    >
-      <app-card title="docking" icon="power" (eventTrigger)="onDockToStation()"></app-card>
-    </div>
-    <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
-      style="padding: 5px"
-      *ngIf="role === 'client'"
-    >
-      <app-card title="sos" icon="wifi" (eventTrigger)="onSubmitSOS()"></app-card>
-    </div>
-    <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
-      style="padding: 5px"
-      *ngIf="role === 'admin'"
-    >
-      <app-card title="map" icon="map" (eventTrigger)="onChangeMap()"></app-card>
-    </div>
-    <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
-      style="padding: 5px"
-      *ngIf="role === 'admin'"
-    >
-      <app-card
-        title="localization"
-        icon="edit_location"
-        [disable]="mode !== 'NAVIGATION' ? true : false"
-        (eventTrigger)="onSubmitLocalization()"
-      ></app-card>
-    </div>
-    <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
-      style="padding: 5px"
-      *ngIf="role === 'admin'"
-    >
-      <app-card title="mode" icon="loyalty"  (eventTrigger)="onChangeMode()"></app-card>
+<div class="container-fluid home-container">
+  <div class="home-items">
+    <div class="row" style="margin: auto">
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="role === 'client' || 'admin'"
+      >
+        <app-card
+          title="waypoint"
+          icon="map-marker-distance"
+          [disable]="mode !== 'NAVIGATION' ? true : false"
+          (eventTrigger)="onSubmitWaypont()"
+        ></app-card>
+      </div>
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+        <app-card
+          title="docking"
+          icon="battery-charging"
+          (eventTrigger)="onDockToStation()"
+        ></app-card>
+      </div>
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="role === 'client'"
+      >
+        <app-card
+          title="sos"
+          icon="bell-ring-outline"
+          (eventTrigger)="onSubmitSOS()"
+        ></app-card>
+      </div>
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+        <app-card
+          title="map"
+          icon="map"
+          (eventTrigger)="onChangeMap()"
+        ></app-card>
+      </div>
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+        <app-card
+          title="localization"
+          icon="map-marker-radius-outline"
+          [disable]="mode !== 'NAVIGATION' ? true : false"
+          (eventTrigger)="onSubmitLocalization()"
+        ></app-card>
+      </div>
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+        <app-card
+          title="mode"
+          icon="map-marker-path"
+          (eventTrigger)="onChangeMode()"
+        ></app-card>
+      </div>
     </div>
   </div>
 </div>

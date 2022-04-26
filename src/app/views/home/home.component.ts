@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
 // import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
@@ -40,11 +40,12 @@ export class HomeComponent implements OnInit {
   }
 
   onDockToStation() {
-    this.sharedService.isOpenModal$.next({
-      modal: 'docking',
-      modalHeader: 'docking',
-      isDisableClose: false,
-    });
+    // this.sharedService.isOpenModal$.next({
+    //   modal: 'docking',
+    //   modalHeader: 'docking',
+    //   isDisableClose: false,
+    // });
+    this.router.navigate(['/hong-chi/charging']);
   }
 
   onSubmitSOS() {

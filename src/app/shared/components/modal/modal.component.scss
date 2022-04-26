@@ -19,14 +19,23 @@
   min-height: 100%;
   background-color: rgba(0, 0, 0, 0.75);
   z-index: 42;
+  color: white;
 }
 
 .modal.in {
   opacity: 1;
 }
 
+.modal-header {
+  background-color: #202020;
+  border-bottom: 0px solid;
+}
+
+
+
 .modal-dialog {
   width: 100%;
+  background-color: #121212;
 }
 
 .model-content {
@@ -36,6 +45,15 @@
 
 .modal-response-dialog {
   width: 100%;
+}
+
+.modal-response{
+  background-color: #121212;
+}
+
+.icon {
+  font-size: 2em;
+  color: white;
 }
 
 // .modal-response-content {

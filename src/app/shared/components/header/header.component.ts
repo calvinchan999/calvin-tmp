@@ -124,13 +124,13 @@ export class HeaderComponent implements OnInit {
   useLanguage() {
     if (this.currentLang === 'tc') {
       this.languageService.setLang('en');
-      sessionStorage.setItem('language', 'en');
+      localStorage.setItem('language', 'en');
     } else if (this.currentLang === 'en') {
       this.languageService.setLang('sc');
-      sessionStorage.setItem('language', 'sc');
+      localStorage.setItem('language', 'sc');
     } else if (this.currentLang === 'sc') {
       this.languageService.setLang('tc');
-      sessionStorage.setItem('language', 'tc');
+      localStorage.setItem('language', 'tc');
     }
   }
 
