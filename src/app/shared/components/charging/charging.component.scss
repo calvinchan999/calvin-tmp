@@ -1,11 +1,45 @@
-.charging-btn-container {
-  padding-top: 30px;
-  width: 100%;
-  .cancel-button {
-    background-color: #fe0000;
-    width: 100%;
-    color: white;
+.charging-container {
+  color: white;
+  height: 100%;
+  .charging-icon {
+    font-size: 6em;
   }
+
+  .charging-btn-container {
+    padding-top: 30px;
+    width: 100%;
+  }
+}
+
+.cancel-button {
+  border: 3px solid #fe0000;
+  border-radius: 10px;
+  color: #fe0000;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 150px;
+  height: 150px;
+  font-size: 35px;
+  overflow: hidden;
+}
+
+.docking-tips {
+  margin: 20px;
+  // font-size: 35px;
+}
+
+.close-icon {
+  font-size: 4em;
+  position: relative;
+  top: -60px;
+}
+.close-title {
+  position: relative;
+  top: -120px;
+  font-size: 25px;
 }
 
 @media only screen and (max-width: 900px) {
@@ -18,9 +52,23 @@
   }
 
   .docking-tips {
-    font-size: 35px !important;
+    font-size: 30px;
+    // margin: 10px;
   }
+
   .cancel-button {
-    font-size: 35px;
+    font-size: 30px;
+    width: 125px;
+    height: 125px;
+  }
+
+  .close-icon {
+    font-size: 3.5em;
+    top: -40px;
+  }
+
+  .close-title {
+    font-size: 23px;
+    top: -80px;
   }
 }

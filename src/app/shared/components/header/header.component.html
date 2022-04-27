@@ -4,9 +4,7 @@
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
       style="flex: 1"
     >
-      <label
-        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
-      >
+      <label style="overflow: hidden; white-space: nowrap">
         {{ modeTranslation }}</label
       >
     </div>
@@ -16,10 +14,9 @@
       <label
         style="
           overflow: hidden;
-          text-overflow: ellipsis;
-          width: 50px;
+          width: 90px;
           white-space: nowrap;
-          text-align: end;
+          text-align: center;
         "
         >{{ map ? map : mapTranslation }}</label
       >
@@ -94,7 +91,7 @@
       >
         {{ modeTranslation }}</label
       > -->
-      <i class="mdi mdi-chevron-left icon" (click)="backToPreviousPage()"></i>
+      <i class="mdi mdi-chevron-left icon" (click)="backToPreviousPage()" *ngIf="blockPreviousButton"></i>
       <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon>
     </div>
     <div

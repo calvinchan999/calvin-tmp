@@ -5,6 +5,7 @@ import { Config, MqttService } from './services/mqtt.service';
 import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,7 @@ export class AppComponent implements OnInit {
     private languageService: LanguageService
   ) {
     this.languageService.setInitState();
-    
+
     const config: Config = this.appConfigService.getConfig();
     if (config) {
       this.mqttService.connectMqtt(config);

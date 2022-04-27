@@ -11,7 +11,6 @@
     *ngIf="!loader"
     style="
       max-width: 650px !important;
-      padding: 20px;
       position: absolute;
       top: 50%;
       -ms-transform: translateY(-50%);
@@ -19,19 +18,17 @@
       margin: 0;
     "
   >
-    <div
-      class="modal-content"
-      style="border-radius: 20px; background-color: inherit; border: 5px solid #202020;"
-    >
-      <div class="modal-header" *ngIf="header">
-        <ng-container *ngTemplateOutlet="header"></ng-container>
+  <div class="modal-header" *ngIf="header">
+    <ng-container *ngTemplateOutlet="header"></ng-container>
 
-        <i
-          class="mdi mdi-close icon"
-          *ngIf="disableClose"
-          (click)="close()"
-        ></i>
-      </div>
+    <i
+      class="mdi mdi-close icon"
+      *ngIf="disableClose"
+      (click)="close()"
+    ></i>
+  </div>  
+  <div class="modal-content" style="background-color: inherit">
+      
       <div class="modal-body" *ngIf="body">
         <ng-container *ngTemplateOutlet="body"></ng-container>
       </div>
@@ -60,8 +57,7 @@
         height: auto;
         display: flex;
         text-align: center;
-        border-radius: 20px;
-        border: 5px solid #202020;
+
         background-color: inherit;
       "
     >

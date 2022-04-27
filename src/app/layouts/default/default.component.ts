@@ -2,10 +2,19 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, Subject, Subscription } from 'rxjs';
-import { delay, filter, map, mergeMap, retry, takeUntil } from 'rxjs/operators';
+import {
+  delay,
+  filter,
+  map,
+  mergeMap,
+  retry,
+  takeUntil,
+  tap,
+} from 'rxjs/operators';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { ToastrService } from 'src/app/services/toastr.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapResponse, MapService } from 'src/app/views/services/map.service';
 import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
@@ -36,7 +45,8 @@ export class DefaultComponent implements OnInit {
     private mapService: MapService,
     private mqttService: MqttService,
     private translateService: TranslateService,
-    private httpStatusService: HttpStatusService
+    private httpStatusService: HttpStatusService,
+    private toastrService: ToastrService
   ) {
     this.mqttService.$completion
       .pipe(
@@ -82,13 +92,24 @@ export class DefaultComponent implements OnInit {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
         if (chargingStatus === 'CHARGING') {
-          this.responseDialog.onCloseWithoutRefresh();
-          this.dialog.onCloseWithoutRefresh();
-          this.chargingDialog.open();
+          // this.responseDialog.onCloseWithoutRefresh();
+          // this.dialog.onCloseWithoutRefresh();
+          // this.chargingDialog.open();
+          this.translateService
+            .get('dockingDialog.tips2')
+            .pipe(
+              tap((tips2: string) => this.toastrService.removeByMessage(tips2)),
+              tap(() =>
+                this.router.navigate(['/hong-chi/charging/charging-mqtt'])
+              )
+            )
+            .subscribe();
         } else if (chargingStatus === 'NOT_CHARGING') {
-          this.dialog.onCloseWithoutRefresh();
-          this.chargingDialog.onCloseWithoutRefresh();
-          this.sharedService.loading$.next(false);
+          // this.dialog.onCloseWithoutRefresh();
+          // this.chargingDialog.onCloseWithoutRefresh();
+          // this.sharedService.loading$.next(false);
+
+          this.router.navigate(['/']);
         }
       }
     });

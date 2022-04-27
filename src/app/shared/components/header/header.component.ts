@@ -13,6 +13,7 @@ import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { Location } from '@angular/common';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-header',
@@ -32,6 +33,7 @@ export class HeaderComponent implements OnInit {
   currentUrl: string = '';
   currentPageTitle: string = '';
   showBatteryPercentage: boolean = false;
+  blockPreviousButton: boolean = false;
 
   sub = new Subscription();
   constructor(
@@ -67,6 +69,21 @@ export class HeaderComponent implements OnInit {
         if (event instanceof NavigationEnd) {
           // event is an instance of NavigationEnd, get url!
           this.currentUrl = event.urlAfterRedirects;
+          const backToPreviousButtonBackLists = [
+            {
+              backlist: '/hong-chi/charging/charging-mqtt',
+            },
+          ];
+          const data: any = _.find(backToPreviousButtonBackLists, [
+            'backlist',
+            this.currentUrl,
+          ]);
+
+          if (data) {
+            this.blockPreviousButton = false;
+          } else {
+            this.blockPreviousButton = true;
+          }
         }
       })
     );

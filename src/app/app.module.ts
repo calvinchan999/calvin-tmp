@@ -26,7 +26,7 @@ import { MapComponent } from './views/map/map.component';
 import { ModeComponent } from './views/mode/mode.component';
 import { MatIconModule } from '@angular/material/icon';
 import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-list.component';
-
+import { ToastrModule } from 'ngx-toastr';
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
@@ -65,6 +65,11 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       },
     }),
     MatIconModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-full-width',
+      preventDuplicates: true,
+      disableTimeOut: true
+    })
   ],
   providers: [
     HttpClientModule,

@@ -6,5 +6,15 @@
     align-items: center;
   "
 >
-  <app-docking-form></app-docking-form>
+  <ng-container *ngIf="pageStage === 'main'; else sub;">
+    <app-docking-form (isUpdate)="updatePageStage($event)"></app-docking-form>
+  </ng-container>
+  <ng-template #sub>
+    <div class="docking-sub-content">
+      <i class="mdi mdi-truck-fast-outline icon"></i>
+      <div class="docking-sub-title-container">
+        <h2 class="docking-sub-title">{{ "dockingDialog.tips2" | translate }}</h2>
+      </div>
+    </div>
+  </ng-template>
 </div>

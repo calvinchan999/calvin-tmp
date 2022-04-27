@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ChargingMqttComponent } from './charging-mqtt/charging-mqtt.component';
 import { DockingComponent } from './docking/docking.component';
 
 const routes: Routes = [
@@ -16,6 +17,11 @@ const routes: Routes = [
         data: { title: 'charging-dialog' },
         component: DockingComponent,
       },
+      {
+        path: 'charging-mqtt',
+        data: { title: 'charging-mqtt' },
+        component: ChargingMqttComponent,
+      }
     ],
   },
 ];
