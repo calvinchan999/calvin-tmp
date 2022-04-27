@@ -18,17 +18,12 @@
       margin: 0;
     "
   >
-  <div class="modal-header" *ngIf="header">
-    <ng-container *ngTemplateOutlet="header"></ng-container>
+    <div class="modal-header" *ngIf="header">
+      <ng-container *ngTemplateOutlet="header"></ng-container>
 
-    <i
-      class="mdi mdi-close icon"
-      *ngIf="disableClose"
-      (click)="close()"
-    ></i>
-  </div>  
-  <div class="modal-content" style="background-color: inherit">
-      
+      <i class="mdi mdi-close icon" *ngIf="disableClose" (click)="close()"></i>
+    </div>
+    <div class="modal-content" style="background-color: inherit">
       <div class="modal-body" *ngIf="body">
         <ng-container *ngTemplateOutlet="body"></ng-container>
       </div>
