@@ -27,6 +27,7 @@ import { ModeComponent } from './views/mode/mode.component';
 import { MatIconModule } from '@angular/material/icon';
 import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-list.component';
 import { ToastrModule } from 'ngx-toastr';
+import { LocalizationComponent } from './views/localization/localization.component';
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
@@ -46,7 +47,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent],
+  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent, LocalizationComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

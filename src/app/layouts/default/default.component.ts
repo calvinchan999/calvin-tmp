@@ -26,8 +26,8 @@ import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
 })
 export class DefaultComponent implements OnInit {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
-  @ViewChild('destinationDialog') destinationDialog: ModalComponent;
-  @ViewChild('chargingDialog') chargingDialog: ModalComponent;
+  // @ViewChild('destinationDialog') destinationDialog: ModalComponent;
+  // @ViewChild('chargingDialog') chargingDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();

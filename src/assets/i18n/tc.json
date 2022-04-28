@@ -6,6 +6,12 @@
   "localization": "設定初始點",
   "mode": "更換模式",
   "modeChanged": "模式已更新",
+  "currentMap": "地圖",
+  "charging": "充電",
+  "chargingDialog": "充電",
+  "chargingMqtt": "充電",
+  "waypointList": "目的地",
+  "destination": "目的地",
   "robotStatus": {
     "followMe": "跟隨模式",
     "navigation": "導航模式",

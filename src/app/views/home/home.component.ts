@@ -67,11 +67,12 @@ export class HomeComponent implements OnInit {
 
   onSubmitLocalization() {
     if (this.mode === 'NAVIGATION') {
-      this.sharedService.isOpenModal$.next({
-        modal: 'localization',
-        modalHeader: 'localization',
-        isDisableClose: false,
-      });
+      // this.sharedService.isOpenModal$.next({
+      //   modal: 'localization',
+      //   modalHeader: 'localization',
+      //   isDisableClose: false,
+      // });
+      this.router.navigate(['/hong-chi/localization']);
     }
   }
 

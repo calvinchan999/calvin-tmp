@@ -5,21 +5,36 @@
 
 .navbar {
   background-color: #052344;
-  max-height: 70px;
+  max-height: 100px;
   height: 100%;
-  position: sticky; 
+  position: sticky;
 }
 
 .mode {
   color: #fff;
   font-weight: bold;
   font-size: 10px;
+  flex: 1;
+}
+
+.mode-title {
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .map {
   color: #fff;
   font-weight: bold;
   font-size: 10px;
+  flex: 1;
+  text-align: right;
+}
+
+.map-title {
+  overflow: hidden;
+  width: 100px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .path {
@@ -47,6 +62,7 @@
   top: 0;
   height: 100%;
 }
+
 .battery-container {
   display: flex;
   flex-direction: row;
@@ -65,12 +81,17 @@
   //   left: 28px;
   //   animation: fade 600ms infinite;
   // }
+
   .battery-percentage {
     font-size: 18px;
     font-weight: bold;
     width: 30px;
     text-align: center;
     color: white;
+  }
+
+  .battery-charging-icon {
+    animation: fade 600ms infinite;
   }
 
   // .battery-charging-icon {
@@ -113,12 +134,8 @@
   }
 }
 
-// nav-link nb-icon {
-//   font-size: 3rem;
-// }
-
-// @media only screen and (min-width : 992px) {
-//   .navbar {
-//       height: 20rem;
-//   }
-// }
+@media (width < 350px) {
+  .map-title {
+    text-align: end;
+  }
+}

@@ -12,88 +12,77 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-
-  .mode-items {
-    display: flex;
-    flex-direction: row;
-    gap: 50px;
-    .mode-item {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 300px;
-      width: 300px;
-      border: 4px solid #00b8d4;
-      border-radius: 10px;
-      color: #00b8d4;
-      position: relative;
-    }
-    .mode-item-icon {
-      position: absolute;
-      top: 0;
-      font-size: 10em;
-    }
-    .mode-item-name {
-      position: absolute;
-      bottom: 0;
-      text-align: center;
-      font-size: 42px;
-      padding-bottom: 30px;
-    }
-    .selected {
-      background-color: #00b8d4;
-      color: #fff;
-    }
-  }
 }
 
-// .mode-btn-container {
-//   padding-top: 30px;
-//   width: 100%;
-//   .mode-cancel-button {
-//     background-color: #fe0000;
-//     width: 50%;
-//     color: white;
-//     margin: 0 10px 0 10px;
-//   }
-//   .mode-confirm-button {
-//     background-color: #09ff78;
-//     width: 50%;
-//     color: black;
-//     margin: 0 10px 0 10px;
-//   }
-// }
+.mode-items {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+}
+
+.mode-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 300px;
+  border: 4px solid #00b8d4;
+  border-radius: 10px;
+  color: #00b8d4;
+  position: relative;
+}
+
+.mode-item-icon {
+  position: absolute;
+  top: 0;
+  font-size: 10em;
+}
+
+.mode-item-name {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  font-size: 42px;
+  padding-bottom: 30px;
+}
+
+.selected {
+  background-color: #00b8d4;
+  color: #fff;
+}
 
 .mode-btn-container {
   position: fixed;
   bottom: 0;
   right: 0;
   margin: 0px 20px 20px 0;
-  .mode-confirm-button {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    color: #fff;
-    background-color: #00b8d4;
-    font-size: 22px;
-    .mode-confirm-button-icon {
-      text-align: center;
-      font-size: 4em;
-      position: absolute;
-      bottom: 0;
-    }
+}
 
-    .mode-confirm-button-title {
-      text-align: center;
-      position: absolute;
-      bottom: 10px;
-    }
-  }
+.mode-confirm-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  color: #fff;
+  background-color: #00b8d4;
+  font-size: 22px;
+}
+
+.mode-confirm-button-icon {
+  text-align: center;
+  font-size: 4em;
+  position: absolute;
+  bottom: 0;
+}
+
+.mode-confirm-button-title {
+  text-align: center;
+  position: absolute;
+  bottom: 10px;
 }
 
 @media only screen and (max-width: 900px) {
@@ -108,20 +97,32 @@
   .mode-confirm-button {
     font-size: 35px;
   }
-  .mode-items-container {
-    .mode-items {
-      .mode-item {
-        height: 150px;
-        width: 150px;
-      }
-      .mode-item-icon {
-        font-size: 2.5em;
-        top: -10px;
-      }
-      .mode-item-name {
-        font-size: 22px;
-        padding-bottom: 10px;
-      }
-    }
+
+  // .mode-items-container {
+  // }
+
+  .mode-items {
+    font-size: 22px;
+  }
+
+  .mode-item {
+    height: 150px;
+    width: 150px;
+  }
+  .mode-item-icon {
+    font-size: 2.5em;
+    top: -10px;
+  }
+  .mode-item-name {
+    font-size: 22px;
+    padding-bottom: 10px;
+  }
+
+  .mode-confirm-button-icon {
+    font-size: 2.5em;
+  }
+
+  .mode-confirm-button-title {
+    font-size: 22px;
   }
 }

@@ -13,6 +13,7 @@ import { Circle } from 'konva/lib/shapes/Circle';
 import { Image as KonvaImage } from 'konva/lib/shapes/Image';
 import { Arrow } from 'konva/lib/shapes/Arrow';
 import { Text } from 'konva/lib/shapes/Text';
+import { Shape } from 'konva/lib/Shape';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { delay, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
@@ -76,6 +77,8 @@ export class MapWrapperComponent implements OnInit, OnChanges {
   waypoint = new Circle();
   centerOfWaypoint = new Circle();
   line = new Arrow();
+  angleLabel = new Text();
+
   robotCurrentPositionPointer = new Circle();
   robotCurrentPositionPointerTooltip = new Text({
     text: '',
@@ -118,7 +121,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
           this.stage = new Stage({
             container: 'canvas',
             width: window.innerWidth,
-            height: img.height,
+            height: window.innerHeight,
             draggable: true,
           });
 
@@ -208,6 +211,8 @@ export class MapWrapperComponent implements OnInit, OnChanges {
                   const points = this.line.points().slice();
                   points[2] = position.x;
                   points[3] = position.y;
+                  //todo, create
+
                   this.line.points(points);
                   this.layer.batchDraw();
                 });
@@ -223,7 +228,6 @@ export class MapWrapperComponent implements OnInit, OnChanges {
                 if (!event.target.hasName('target')) {
                   if (this.layer.find('.angleLine').length > 0) {
                     //todo, debug
-                    console.log('testing');
                     // const Arrow: any = this.layer
                     //   .getChildren()
                     //   .find((i) => i.className === 'Arrow');
@@ -235,12 +239,16 @@ export class MapWrapperComponent implements OnInit, OnChanges {
                       this.getXYAngle()
                         .pipe(
                           mergeMap((data: any) => {
-                            const { x, y, angle } = data;
-                            return this.waypointService.initialPose({
-                              x,
-                              y,
-                              angle,
-                            });
+                            const { x, y, angle, degrees } = data;
+                            return this.waypointService
+                              .initialPose({
+                                x,
+                                y,
+                                angle,
+                              })
+                              .pipe(
+                                mergeMap(() => this.createAngleLabel(degrees))
+                              );
                           }),
                           mergeMap(() => {
                             // setTimeout(async () => {
@@ -344,8 +352,6 @@ export class MapWrapperComponent implements OnInit, OnChanges {
         mergeMap(() =>
           of(this.lidarData).pipe(
             tap((data) => {
-              console.log('testing');
-
               const { pointList } = data;
               const { x, y, height, resolution }: any = this.metaData;
               for (let i in pointList) {
@@ -374,15 +380,37 @@ export class MapWrapperComponent implements OnInit, OnChanges {
   createTargetPosition() {
     const { targetX, targetY, targetAngle } = this.targetWaypoints;
     const { x, y, height, resolution }: any = this.metaData;
-    const targetPointer = new Circle({
+    // const targetPointer = new Circle({
+    //   name: 'targetPointer',
+    //   x: Math.abs((x - targetX) / resolution),
+    //   y: height - Math.abs((y - targetY) / resolution),
+    //   radius: 10,
+    //   stroke: 'red',
+    //   strokeWidth: 4,
+    //   zIndex: 0,
+    // });
+    const targetPointer = new Shape({
       name: 'targetPointer',
       x: Math.abs((x - targetX) / resolution),
       y: height - Math.abs((y - targetY) / resolution),
-      radius: 10,
+      zIndex: -1,
+      fill: '#00D2FF',
       stroke: 'red',
-      strokeWidth: 4,
-      zIndex: 0
+      strokeWidth: 5,
+      sceneFunc: function (context, shape) {
+        context.beginPath();
+        context.moveTo(0, -20);
+        context.lineTo(0, 20);
+
+        context.moveTo(-20, 0);
+        context.lineTo(20, 0);
+
+        context.stroke();
+        context.closePath();
+        context.fillStrokeShape(shape);
+      },
     });
+
     this.layer.add(targetPointer);
   }
 
@@ -409,7 +437,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
                   0) / resolution
               ),
             radius: 10,
-            zIndex: 1
+            zIndex: 1,
           });
           this.layer.add(this.robotCurrentPositionPointer);
         })
@@ -433,6 +461,24 @@ export class MapWrapperComponent implements OnInit, OnChanges {
     //   radius: 10,
     // });
     // this.layer.add(currentPosition);
+  }
+
+  createAngleLabel(degrees: number): Observable<any> {
+    const { x, y } = this.centerOfWaypoint.getAttrs();
+    this.angleLabel.setAttrs({
+      x,
+      y,
+      text: `${degrees}°`,
+      fontSize: 30,
+      fontFamily:
+        'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
+      fill: 'blue',
+      name: 'angleLabel',
+    });
+
+    return of(this.angleLabel.destroy()).pipe(
+      tap(() => this.layer.add(this.angleLabel))
+    );
   }
 
   // createOriginPoint(){
@@ -490,16 +536,15 @@ export class MapWrapperComponent implements OnInit, OnChanges {
   transformTORosXY() {}
 
   updateKonvasScale() {
-    const { height, width }: any = this.metaData;
+    // const { height, width }: any = this.metaData;
     const scale = this.scale;
-    this.stage?.scale({ x: scale, y: scale });
-    this.stage.width(width * this.scale);
-    this.stage.height(height * this.scale);
-
+    this.stage.scale({ x: scale, y: scale });
+    // this.stage.width(width * this.scale);
+    // this.stage.height(height * this.scale);
+    this.layer.scale({ x: scale, y: scale });
     this.backgroundLayer.scale({ x: scale, y: scale });
 
     this.laserLayer.scale({ x: scale, y: scale });
-    this.layer.scale({ x: scale, y: scale });
   }
 
   async zoomIn() {
@@ -581,7 +626,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
       Math.abs(metaData.y);
     console.log(x);
     console.log(y);
-    return of({ x, y, angle: radians });
+    return of({ x, y, angle: radians, degrees: this.degrees });
 
     // const x =
     //   (this.waypointPointer?.x / this.scale) * this.metaData.resolution -

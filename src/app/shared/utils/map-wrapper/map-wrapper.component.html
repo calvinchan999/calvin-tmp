@@ -1,58 +1,58 @@
 <div class="map-container">
-  <label class="degrees-label">Degrees: {{degrees}}</label>
-    <div class="button-wrapper">
-      <button
-        class="btn btn-primary"
-        style="width: 50px; margin-bottom: 3px"
-        type="button"
-        id="plus"
-        value="+"
-        (click)="zoomIn()"
-      >
-        +
-      </button>
-      <button
-        class="btn btn-primary"
-        style="width: 50px"
-        type="button"
-        id="minus"
-        value="-"
-        (click)="zoomOut()"
-      >
-        -
-      </button>
-    </div>
-  <div class="preview-wrapper">
-    <div class="parent-canvas" id="canvas"></div>
-  </div>
-  <div class="localization-btn-container d-flex justify-content-around" *ngIf="type ==='localizationEditor'">
-    <!-- <button class="btn localization-cancel-button" >
-      {{ "cancel" | translate }}
-    </button> -->
-  
-    <button class="btn localization-edit-button" (click)="onEditMode()" *ngIf="!isReset">
-      {{ "editMode" | translate }}
-    </button>
-
-      <button class="btn localization-clear-button" (click)="onClearWaypoint()" *ngIf="isReset">
-      {{ "clearWaypoint" | translate }}
-    </button>
-    <button class="btn localization-preview-button" (click)="onPreviewMode()" *ngIf="isReset">
-      {{ "previewMode" | translate }}
-    </button>
-    <!-- 
-  
-    <button class="btn localization-preview-button" (click)="onBackPreview()" *ngIf="isReset">
-      {{ "backToPreview" | translate }}
+  <!-- <label class="degrees-label">Degrees: {{ degrees }}</label> -->
+  <div class="button-wrapper">
+    <button
+      class="btn btn-primary"
+      style="width: 50px; margin-bottom: 3px"
+      type="button"
+      id="plus"
+      value="+"
+      (click)="zoomIn()"
+    >
+      +
     </button>
     <button
-      class="btn localization-wapoint-button"
-      *ngIf="waypointPointer.x > 0 && waypointPointer.y > 0"
-      (click)="onResetWaypoint()"
+      class="btn btn-primary"
+      style="width: 50px"
+      type="button"
+      id="minus"
+      value="-"
+      (click)="zoomOut()"
     >
-      {{ "resetWaypoint" | translate }}
-    </button> -->
-  
+      -
+    </button>
   </div>
-  
+  <div class="preview-wrapper">
+    <div class="parent-canvas" id="canvas"></div>
+    <div
+    class="localization-btn-container d-flex justify-content-around"
+    *ngIf="type === 'localizationEditor'"
+  >
+    <button
+      class="btn localization-edit-button"
+      (click)="onEditMode()"
+      *ngIf="!isReset"
+    >
+      <i class="mdi mdi-pencil icon"></i>
+      <!-- {{ "editMode" | translate }} -->
+    </button>
+    <button
+      class="btn localization-clear-button"
+      (click)="onClearWaypoint()"
+      *ngIf="isReset"
+    >
+      <i class="mdi mdi-refresh icon"></i>
+      <!-- {{ "clearWaypoint" | translate }} -->
+    </button>
+    <button
+      class="btn localization-preview-button"
+      (click)="onPreviewMode()"
+      *ngIf="isReset"
+    >
+      <i class="mdi mdi-eye icon"></i>
+      <!-- {{ "previewMode" | translate }} -->
+    </button>
+  </div>
+  </div>
+ 
 </div>

@@ -15,7 +15,7 @@ const routes: Routes = [
       },
       {
         path: 'waypoint-list',
-        data: { title: 'waypoint-list' },
+        data: { title: 'waypointList' },
         component: WaypointListComponent,
       },
       {

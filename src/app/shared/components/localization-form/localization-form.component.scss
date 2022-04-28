@@ -1,137 +1,53 @@
-.localization-items-container {
+// .localization-items-container {
+//   text-align: center;
+//   width: 100%;
+//   .localization-items {
+//     display: flex;
+//     overflow: scroll;
+//     overflow-y: hidden;
+//     .localization-item {
+//       width: 100%;
+//       border: 4px solid #765e31;
+//       border-radius: 5px;
+//       flex: 0 0 30%;
+//       margin: 5px;
+//       color: rgb(0, 0, 0);
+//       font-size: 2rem;
+//     }
+//     .selected {
+//       background-color: #e0e0e0;
+//     }
+//   }
+// }
+
+.localization-map-wrapper {
   text-align: center;
   width: 100%;
-  .localization-items {
-    display: flex;
-    overflow: scroll;
-    overflow-y: hidden;
-    .localization-item {
-      width: 100%;
-      border: 4px solid #765e31;
-      border-radius: 5px;
-      flex: 0 0 30%;
-      margin: 5px;
-      color: rgb(0, 0, 0);
-      font-size: 2rem;
-    }
-    .selected {
-      background-color: #e0e0e0;
-    }
-  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-canvas {
-  display: block;
+
+.localization-map-container {
+  flex: 1;
+  height: 100%;
 }
 
 .localization-btn-container {
+  flex: 1;
   padding-top: 5px;
   width: 100%;
-  .localization-cancel-button {
-    background-color: #fe0000;
-    width: 100%;
-    color: white;
-    margin: 0 5px 0 5px;
-  }
-
-  .localization-wapoint-button {
-    background-color: #009fe3;
-    width: 50%;
-    color: white;
-    margin: 0 10px 0 10px;
-  }
-
-  .localization-preview-button {
-    background-color: #5dab43;
-    width: 50%;
-    color: white;
-    margin: 0 10px 0 10px;
-  }
-
-  .localization-confirm-reset-waypoint-button{
-    background-color: #5dab43;
-    width: 50%;
-    color: white;
-    margin: 0 10px 0 10px;
-  }
-
-  // .localization-confirm-button {
-  //   background-color: #09ff78;
-  //   width: 50%;
-  //   color: black;
-  //   margin: 0 10px 0 10px;
-  // }
 }
-
-.preview-wrapper {
-  height: 60vh !important;
-  // overflow: scroll;
-  position: relative;
-
+.localization-cancel-button {
+  background-color: #fe0000;
+  width: 100%;
+  height: 70px;
+  color: white;
+  margin: 0 5px 0 5px;
 }
-
-.preview-wrapper::-webkit-scrollbar {
-  background: white;
-  width: 20px;
-  height: 20px;
-}
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-.parent-canvas {
-  z-index: 999;
-  position: absolute;
-}
-
-.child-canvas {
-  z-index: 998;
-  position: absolute;
-}
-
-.degrees-label{
-  position: fixed;
-  top: 110px;
-  left: 20px;
-  z-index: 999;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-size: 30px;
-}
-
-.button-wrapper {
-  // width: 70px;
-  height:50px;
-  z-index: 999;
-  position: fixed;
-  right: 30px;
-  top: 20px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-
 
 @media only screen and (max-width: 900px) {
-  .localization-item {
-    font-size: 35px !important;
-  }
-
-  .localization-cancel-button,
-  .localization-preview-button,
-  .localization-confirm-reset-waypoint-button,
-  .localization-wapoint-button,
-  .localization-confirm-button {
+  .localization-cancel-button {
     font-size: 30px;
   }
 }

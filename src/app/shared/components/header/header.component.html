@@ -2,24 +2,13 @@
   <div class="container-fluid" *ngIf="currentUrl === '/hong-chi'">
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
-      style="flex: 1"
     >
-      <label style="overflow: hidden; white-space: nowrap">
-        {{ modeTranslation }}</label
-      >
+      <label class="mode-title"> {{ modeTranslation }}</label>
     </div>
     <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-center map"
     >
-      <label
-        style="
-          overflow: hidden;
-          width: 90px;
-          white-space: nowrap;
-          text-align: center;
-        "
-        >{{ map ? map : mapTranslation }}</label
-      >
+      <label class="map-title">{{ map ? map : mapTranslation }} </label>
     </div>
 
     <div
@@ -91,8 +80,12 @@
       >
         {{ modeTranslation }}</label
       > -->
-      <i class="mdi mdi-chevron-left icon" (click)="backToPreviousPage()" *ngIf="blockPreviousButton"></i>
-      <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon>
+      <i
+        class="mdi mdi-chevron-left icon"
+        (click)="backToPreviousPage()"
+        *ngIf="blockPreviousButton"
+      ></i>
+      <!-- <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon> -->
     </div>
     <div
       class="navbar-collapse collapse flex-sm-grow-auto justify-content-start align-self-center path"
@@ -105,8 +98,7 @@
           width: 100%;
           white-space: nowrap;
         "
-        >{{ currentPageTitle }}</label
-      >
+        >{{ currentPageTitle | translate }}</label>
     </div>
   </div>
 </nav>

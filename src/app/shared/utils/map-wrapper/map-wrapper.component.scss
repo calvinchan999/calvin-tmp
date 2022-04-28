@@ -39,7 +39,6 @@
   width: 500px;
 }
 
-
 .degrees-label {
   position: absolute;
   left: 20px;
@@ -55,35 +54,61 @@
   top: 10px;
 }
 
-
-
 .localization-btn-container {
-  padding: 5px;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px 10px;
+  // width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: 999;
+  align-items: start;
+  flex: 1;
 
-  .localization-clear-button{
-    background-color: #009fe3;
-    width: 100%;
-    color: white;
+  .localization-clear-button {
+    background-color: transparent;
+    border: 2px solid #00b8d4;
+    border-radius: 100%;
+    color: #00b8d4;
+   
     margin: 2px;
+    justify-content: center;
+    display: flex;
+    flex:1;
   }
 
   .localization-preview-button {
-    background-color: #5dab43;
-    width: 100%;
-    color: white;
+    background-color: transparent;
+    border: 2px solid #5dab43;
+    border-radius: 100%;
+    color: #5dab43;
+  
     margin: 2px;
+
+    justify-content: center;
+    display: flex;
+    flex:1;
   }
 
-  .localization-edit-button{
-    background-color: #009fe3;
-    width: 100%;
-    color: white;
+  .localization-edit-button {
+    background-color: transparent;
+    border: 2px solid #00b8d4;
+    border-radius: 100%;
+    color: #00b8d4;
+    
     margin: 0;
+
+    justify-content: center;
+    display: flex;
+    flex:1;
+    
   }
 }
 
-
+.icon {
+  font-size: 1em;
+}
 
 @media only screen and (max-width: 900px) {
   .localization-item {

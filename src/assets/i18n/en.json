@@ -6,6 +6,12 @@
   "localization": "Localization",
   "mode": "Mode",
   "modeChanged": "The mode has been updated with ",
+  "currentMap": "Current Map",
+  "charging": "Charge",
+  "chargingDialog": "Charge",
+  "chargingMqtt": "Charge",
+  "waypointList": "Destination",
+  "destination": "Destination",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",

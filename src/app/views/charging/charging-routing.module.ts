@@ -14,12 +14,12 @@ const routes: Routes = [
       },
       {
         path: 'charging-dialog',
-        data: { title: 'charging-dialog' },
+        data: { title: 'chargingDialog' },
         component: DockingComponent,
       },
       {
         path: 'charging-mqtt',
-        data: { title: 'charging-mqtt' },
+        data: { title: 'chargingMqtt' },
         component: ChargingMqttComponent,
       }
     ],
