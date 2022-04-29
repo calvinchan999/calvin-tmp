@@ -396,14 +396,14 @@ export class MapWrapperComponent implements OnInit, OnChanges {
       zIndex: -1,
       fill: '#00D2FF',
       stroke: 'red',
-      strokeWidth: 5,
+      strokeWidth: 7,
       sceneFunc: function (context, shape) {
         context.beginPath();
-        context.moveTo(0, -20);
-        context.lineTo(0, 20);
+        context.moveTo(0, -30);
+        context.lineTo(0, 30);
 
-        context.moveTo(-20, 0);
-        context.lineTo(20, 0);
+        context.moveTo(-30, 0);
+        context.lineTo(30, 0);
 
         context.stroke();
         context.closePath();
