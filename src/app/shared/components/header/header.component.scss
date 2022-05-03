@@ -20,6 +20,7 @@
 .mode-title {
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .map {
@@ -27,13 +28,14 @@
   font-weight: bold;
   font-size: 10px;
   flex: 1;
-  text-align: right;
+  // text-align: center;
 }
 
 .map-title {
   overflow: hidden;
-  width: 100px;
+  max-width: 300px;
   white-space: nowrap;
+  text-overflow: ellipsis;
   text-align: center;
 }
 

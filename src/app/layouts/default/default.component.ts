@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { of, Subject, Subscription } from 'rxjs';
@@ -201,6 +201,7 @@ export class DefaultComponent implements OnInit {
       this.sharedService.userRole$.next(String(localStorage.getItem('role')));
     }
   }
+  
 
   // for testing
   // ngAfterViewInit() {

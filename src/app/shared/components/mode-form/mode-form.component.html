@@ -4,12 +4,14 @@
       <div
         class="mode-item"
         *ngFor="let mode of modeLists$ | async"
-        [ngClass]="{ selected: selectedMode === mode.name }"
-        (click)="onSelectedMode(mode.name)"
+        [ngClass]="{ selected: selectedMode === mode.value }"
+        (click)="onSelectedMode(mode.value)"
       >
         <!-- <i class="material-icons">account-arrow-left</i> -->
         <i class="mdi mdi-{{ mode?.icon }} mode-item-icon"></i>
-        <labe class="mode-item-name">{{ mode.name }}</labe>
+        <labe class="mode-item-name">{{
+          tranlateModeName(mode.name) | async
+        }}</labe>
       </div>
     </div>
   </div>

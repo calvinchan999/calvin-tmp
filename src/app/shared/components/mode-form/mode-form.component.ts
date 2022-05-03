@@ -14,8 +14,8 @@ import { ModeService, Mode } from 'src/app/views/services/mode.service';
 })
 export class ModeFormComponent implements OnInit {
   modeLists$: Observable<any> = of([
-    { name: 'FOLLOW_ME',icon: 'account-arrow-left' },
-    { name: 'NAVIGATION', icon: 'sync' },
+    { name: 'followMe', value: 'FOLLOW_ME', icon: 'account-arrow-left' },
+    { name: 'navigation', value: 'NAVIGATION', icon: 'sync' },
   ]);
   selectedMode: Mode;
   currentMode: string;
@@ -54,5 +54,9 @@ export class ModeFormComponent implements OnInit {
           });
         });
     }
+  }
+
+  tranlateModeName(name: string): Observable<string> {
+    return this.translateService.get(`robotStatus.${name}`);
   }
 }
