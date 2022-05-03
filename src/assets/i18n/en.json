@@ -42,7 +42,6 @@
   },
   "arrivedAtDestination": "Arrived at destination",
   "cancelledTask": "The Task has been cancelled",
-  "information": "Information",
   "navigatingtoDestination": "Destination",
   "localizationDialog": {
     "successMessage": "The initial point has been updated",
@@ -51,5 +50,13 @@
   "resetWaypoint": "Reset waypoint",
   "clearWaypoint": "Clear Waypoint",
   "editMode": "Go To Edit",
-  "previewMode": "Go To Preview"
+  "previewMode": "Go To Preview",
+  "normal": "Information",
+  "warning": "Warning",
+  "login": "Login",
+  "account": "User Account",
+  "password": "Password",
+  "loginError": {
+    "error1": "Please enter a valid username and password"
+  }
 }

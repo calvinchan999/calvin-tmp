@@ -23,8 +23,8 @@
   "confirm": "确认",
   "resume": "重新开始",
   "pause": "暂停",
-  "sosDialog":{
-    "tips1" : "你确定要执行SOS信号吗？",
+  "sosDialog": {
+    "tips1": "你确定要执行SOS信号吗？",
     "tips2": "已经发出SOS信号"
   },
   "dockingDialog": {
@@ -37,12 +37,11 @@
   "mapDialog": {
     "tips1": "地图已更新"
   },
-  "modeDialog":{
+  "modeDialog": {
     "tips1": "模式已更新"
   },
-  "arrivedAtDestination" : "已到达目的地",
-  "cancelledTask" : "任务已取消",
-  "information": "信息",
+  "arrivedAtDestination": "已到达目的地",
+  "cancelledTask": "任务已取消",
   "navigatingtoDestination": "导航至目的地",
   "localizationDialog": {
     "successMessage": "已更新初始点",
@@ -51,6 +50,13 @@
   "resetWaypoint": "重设初始点",
   "clearWaypoint": "清除初始点",
   "editMode": "前往编辑模式",
-  "previewMode": "前往预览模式"
-
+  "previewMode": "前往预览模式",
+  "normal": "信息",
+  "warning": "警告",
+  "login": "登录",
+  "account": "用户帐户",
+  "password": "密码",
+  "loginError": {
+    "error1": "请输入有效用户的帐号和密码"
+  }
 }

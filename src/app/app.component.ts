@@ -5,7 +5,6 @@ import { Config, MqttService } from './services/mqtt.service';
 import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',

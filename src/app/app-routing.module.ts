@@ -5,7 +5,7 @@ import { HomeComponent } from './views/home/home.component';
 import { LocalizationComponent } from './views/localization/localization.component';
 import { MapComponent } from './views/map/map.component';
 import { ModeComponent } from './views/mode/mode.component';
-import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-list.component';
+import { SignInComponent } from './views/sign-in/sign-in.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'hong-chi', pathMatch: 'full' },
@@ -46,6 +46,11 @@ const routes: Routes = [
         path: 'localization',
         data: { title: 'localization' },
         component: LocalizationComponent,
+      },
+      {
+        path: 'login',
+        data: { title: 'signIn' },
+        component: SignInComponent,
       },
     ],
   },

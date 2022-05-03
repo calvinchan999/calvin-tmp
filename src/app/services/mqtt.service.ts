@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService as NgxMqttService } from 'ngx-mqtt';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
 
 export interface Mqtt {
   ip_address: string;
   port_no: number;
+  protocol: 'ws' | 'wss';
 }
 
 export interface Config {
@@ -26,15 +27,17 @@ export class MqttService {
   constructor(private _mqttService: NgxMqttService) {}
 
   connectMqtt(config: Config) {
+    if(config) {
+
     // clientId generate randam id
     this.clientId = UUID.UUID();
-
+    
     this._mqttService.connect({
       hostname: config.mqtt.ip_address,
       port: Number(config.mqtt.port_no),
       path: '/mqtt',
       clientId: this.clientId,
-      protocol: 'ws',
+      protocol: config.mqtt.protocol,
     });
 
     this._mqttService.onConnect.subscribe((connack) => {
@@ -91,6 +94,7 @@ export class MqttService {
         console.log(new TextDecoder('utf-8').decode(message.payload));
         this.$pose.next(new TextDecoder('utf-8').decode(message.payload));
       });
+    }
   }
 
   public unsafePublish(topic: string, payload: string): Observable<void> {

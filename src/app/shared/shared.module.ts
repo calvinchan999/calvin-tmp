@@ -17,6 +17,7 @@ import { SosFormComponent } from './components/sos-form/sos-form.component';
 import { WaypointFormComponent } from './components/waypoint-form/waypoint-form.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MapWrapperComponent } from './utils/map-wrapper/map-wrapper.component';
+import { TextboxComponent } from './components/textbox/textbox.component';
 
 @NgModule({
   imports: [
@@ -40,7 +41,8 @@ import { MapWrapperComponent } from './utils/map-wrapper/map-wrapper.component';
     ModeFormComponent,
     SosFormComponent,
     WaypointFormComponent,
-    MapWrapperComponent
+    MapWrapperComponent,
+    TextboxComponent
   ],
   exports: [
     HeaderComponent,
@@ -55,7 +57,8 @@ import { MapWrapperComponent } from './utils/map-wrapper/map-wrapper.component';
     ModeFormComponent,
     SosFormComponent,
     WaypointFormComponent,
-    MapWrapperComponent
+    MapWrapperComponent,
+    TextboxComponent
   ],
   providers: [ModalComponent],
 })

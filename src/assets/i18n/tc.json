@@ -23,8 +23,8 @@
   "confirm": "確認",
   "resume": "重新開始",
   "pause": "暫停",
-  "sosDialog":{
-    "tips1" : "你確定要執行SOS信號嗎？",
+  "sosDialog": {
+    "tips1": "你確定要執行SOS信號嗎？",
     "tips2": "已經發出SOS信號"
   },
   "dockingDialog": {
@@ -37,12 +37,11 @@
   "mapDialog": {
     "tips1": "地圖已更新"
   },
-  "modeDialog":{
+  "modeDialog": {
     "tips1": "模式已更新"
   },
-  "arrivedAtDestination" : "已到達目的地",
-  "cancelledTask" : "任務已取消",
-  "information": "信息",
+  "arrivedAtDestination": "已到達目的地",
+  "cancelledTask": "任務已取消",
   "navigatingtoDestination": "導航至目的地",
   "localizationDialog": {
     "successMessage": "已更新初始點",
@@ -51,6 +50,13 @@
   "resetWaypoint": "重設初始點",
   "clearWaypoint": "清除初始點",
   "editMode": "前往編輯模式",
-  "previewMode": "前往預覽模式"
-
+  "previewMode": "前往預覽模式",
+  "normal": "信息",
+  "warning": "警告",
+  "login": "登錄",
+  "account": "用戶帳戶",
+  "password": "密碼",
+  "loginError": {
+    "error1": "請輸入有效的用戶帳號和密碼"
+  }
 }

@@ -17,7 +17,7 @@ import { environment } from 'src/environments/environment';
 import { AppHttpInterceptor } from './http/app-http.interceptor';
 import { HttpStatusInterceptor } from './http/http-status.interceptor';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { MqttModule } from 'ngx-mqtt';
+import { IMqttServiceOptions, MqttModule } from 'ngx-mqtt';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -28,9 +28,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-list.component';
 import { ToastrModule } from 'ngx-toastr';
 import { LocalizationComponent } from './views/localization/localization.component';
+import { SignInComponent } from './views/sign-in/sign-in.component';
+
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
+// const config: Config = AppConfigService.getConfig();
+
+const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
+  connectOnCreate: false
+};
 
 const appInitializerFn = (appConfig: AppConfigService) => {
   return async () => {
@@ -47,7 +54,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent, LocalizationComponent],
+  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent, LocalizationComponent, SignInComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -57,7 +64,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
     SharedModule,
     NgxSpinnerModule,
     BrowserAnimationsModule,
-    MqttModule.forRoot({}),
+    MqttModule.forRoot(MQTT_SERVICE_OPTIONS),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

@@ -5,7 +5,8 @@
   },
   "mqtt": {
     "ip_address": "127.0.0.1",
-    "port_no": 61614
+    "port_no": 61614,
+    "protocol": "ws"
   },
   "battery": {
     "upperLimit": "0.9",

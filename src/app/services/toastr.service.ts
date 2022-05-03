@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActiveToast, Toast, ToastrService as ToastService } from 'ngx-toastr';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+
 @Injectable({
   providedIn: 'root',
 })

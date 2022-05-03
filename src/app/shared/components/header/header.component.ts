@@ -196,6 +196,10 @@ export class HeaderComponent implements OnInit {
     this.location.back();
   }
 
+  goToDashboard() {
+    this.router.navigate(['/']);
+  }
+
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
