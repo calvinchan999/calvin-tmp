@@ -11,7 +11,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanDeactivate<u
   constructor(private authService: AuthService, private router: Router) { }
 
   private async checkAuth(state?: RouterStateSnapshot) {
-    console.log('checkAuth');
     const isAuth = this.authService.isAuthenticated();
     if (isAuth) {
       return true;
