@@ -29,6 +29,7 @@ import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-l
 import { ToastrModule } from 'ngx-toastr';
 import { LocalizationComponent } from './views/localization/localization.component';
 import { SignInComponent } from './views/sign-in/sign-in.component';
+import { SignOutComponent } from './views/sign-out/sign-out.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -54,7 +55,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent, LocalizationComponent, SignInComponent],
+  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent, LocalizationComponent, SignInComponent, SignOutComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

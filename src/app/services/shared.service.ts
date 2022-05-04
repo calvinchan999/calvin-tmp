@@ -40,20 +40,20 @@ export class SharedService {
   // public isGoingDestination$ = new Subject<boolean>();
   // public isDynamicAction$ = new Subject<Type>();
   public isOpenModal$ = new Subject<Modal>();
-  public userRole$ = new BehaviorSubject<string>('');
+  // public userRole$ = new BehaviorSubject<string>('');
   constructor() {}
 
-  _userRole(): Observable<any> {
-    if (typeof localStorage.getItem('role') !== 'string' ||　!localStorage.getItem('role')) {
-      localStorage.setItem('role', 'client');
-      this.userRole$.next("client");
-    } else if (localStorage.getItem('role') === 'client') {
-      localStorage.setItem('role', 'admin');
-      this.userRole$.next('admin');
-    } else if (localStorage.getItem('role') === 'admin') {
-      localStorage.setItem('role', 'client');
-      this.userRole$.next('client');
-    }
-    return of(null);
-  }
+  // _userRole(): Observable<any> {
+  //   if (typeof localStorage.getItem('role') !== 'string' ||　!localStorage.getItem('role')) {
+  //     localStorage.setItem('role', 'client');
+  //     this.userRole$.next("client");
+  //   } else if (localStorage.getItem('role') === 'client') {
+  //     localStorage.setItem('role', 'admin');
+  //     this.userRole$.next('admin');
+  //   } else if (localStorage.getItem('role') === 'admin') {
+  //     localStorage.setItem('role', 'client');
+  //     this.userRole$.next('client');
+  //   }
+  //   return of(null);
+  // }
 }

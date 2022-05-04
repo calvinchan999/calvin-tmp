@@ -38,7 +38,7 @@
   </ng-template>
 </app-modal> -->
 
-<app-modal #dialog>
+<app-modal #dialog [disableClose]="isDisableClose">
   <ng-template #modalHeader
     ><h2 class="modal-title">{{ modalTitle | translate }}</h2></ng-template
   >
@@ -63,6 +63,9 @@
     </div>
     <div *ngSwitchCase="'destination'">
       <app-destination [payload]="parentPayload"></app-destination>
+    </div>
+    <div *ngSwitchCase="'signout'">
+      <app-sign-out></app-sign-out>
     </div>
   </ng-template>
 </app-modal>

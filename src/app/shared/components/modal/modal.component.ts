@@ -5,6 +5,7 @@ import {
   ElementRef,
   HostListener,
   Input,
+  OnChanges,
   OnInit,
   TemplateRef,
 } from '@angular/core';
@@ -38,8 +39,7 @@ export class ModalComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy() {
     // Prevent modal from not executing its closing actions if the user navigated away (for example,

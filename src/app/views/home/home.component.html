@@ -3,7 +3,7 @@
     <div class="row" style="margin: auto">
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="role === 'client' || 'admin'"
+        
       >
         <app-card
           title="waypoint"
@@ -12,7 +12,7 @@
           (eventTrigger)="onSubmitWaypont()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0">
         <app-card
           title="docking"
           icon="battery-charging"
@@ -21,7 +21,7 @@
       </div>
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="role === 'client'"
+        
       >
         <app-card
           title="sos"
@@ -29,14 +29,14 @@
           (eventTrigger)="onSubmitSOS()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0">
         <app-card
           title="map"
           icon="map"
           (eventTrigger)="onChangeMap()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0">
         <app-card
           title="localization"
           icon="map-marker-radius-outline"
@@ -44,7 +44,7 @@
           (eventTrigger)="onSubmitLocalization()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="role === 'admin'">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0">
         <app-card
           title="mode"
           icon="map-marker-path"

@@ -11,6 +11,7 @@ import {
   takeUntil,
   tap,
 } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -46,7 +47,8 @@ export class DefaultComponent implements OnInit {
     private mqttService: MqttService,
     private translateService: TranslateService,
     private httpStatusService: HttpStatusService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private authService: AuthService
   ) {
     this.mqttService.$completion
       .pipe(
@@ -124,6 +126,8 @@ export class DefaultComponent implements OnInit {
     });
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
+      console.log(`response`);
+      console.log(response);
       if (response) {
         const { modal, modalHeader, isDisableClose, payload } = response;
         this.modal = modal;
@@ -131,6 +135,29 @@ export class DefaultComponent implements OnInit {
         this.isDisableClose = isDisableClose;
         this.parentPayload = payload;
         this.dialog.open();
+      }
+    });
+
+    this.sharedService.refresh$.subscribe((refresh: boolean) => {
+      if (refresh) {
+        this.authService.refreshToken().subscribe(
+          () => {
+            console.log('refresh token success');
+            this.sharedService.refresh$.next(false);
+            this.router.navigate(['/']);
+            location.reload();
+          },
+          (err) => {
+            console.log('refresh toke fail');
+            this.sharedService.refresh$.next(false);
+            this.router.navigate(['/']);
+            location.reload();
+            // this.sharedService.modalAction.next({
+            //   entry: this.entry,
+            //   title: 'refreshAuthFail',
+            // });
+          }
+        );
       }
     });
 
@@ -195,13 +222,12 @@ export class DefaultComponent implements OnInit {
 
   ngOnInit() {
     this.initializeErrors();
-    if (!localStorage.getItem('role')) {
-      this.sharedService._userRole().subscribe();
-    } else {
-      this.sharedService.userRole$.next(String(localStorage.getItem('role')));
-    }
+    // if (!localStorage.getItem('role')) {
+    //   this.sharedService._userRole().subscribe();
+    // } else {
+    //   this.sharedService.userRole$.next(String(localStorage.getItem('role')));
+    // }
   }
-  
 
   // for testing
   // ngAfterViewInit() {
@@ -215,7 +241,7 @@ export class DefaultComponent implements OnInit {
   getCurrentMap() {
     this.mapService
       .getActiveMap()
-      .pipe(retry(3), delay(1000))
+      // .pipe(retry(3), delay(1000))
       .subscribe((response: MapResponse) => {
         console.log(response);
         const { name } = response;
@@ -226,7 +252,7 @@ export class DefaultComponent implements OnInit {
   getCurrentMode() {
     this.modeService
       .getMode()
-      .pipe(retry(3), delay(1000))
+      // .pipe(retry(3), delay(1000))
       .subscribe((response: ModeResponse) => {
         console.log('mode: ', response);
         const { state } = response;

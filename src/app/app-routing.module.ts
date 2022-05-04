@@ -1,10 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 import { DefaultComponent } from './layouts/default/default.component';
 import { HomeComponent } from './views/home/home.component';
-import { LocalizationComponent } from './views/localization/localization.component';
-import { MapComponent } from './views/map/map.component';
-import { ModeComponent } from './views/mode/mode.component';
 import { SignInComponent } from './views/sign-in/sign-in.component';
 
 const routes: Routes = [
@@ -12,6 +10,7 @@ const routes: Routes = [
   {
     path: 'hong-chi',
     component: DefaultComponent,
+
     children: [
       {
         path: '',
@@ -21,12 +20,16 @@ const routes: Routes = [
       {
         path: 'map',
         data: { title: 'currentMap' },
-        component: MapComponent,
+        canActivateChild: [AuthGuard],
+        loadChildren: () =>
+          import('./views/map/map.module').then((m) => m.MapModule),
       },
       {
         path: 'mode',
         data: { title: 'mode' },
-        component: ModeComponent,
+        canActivateChild: [AuthGuard],
+        loadChildren: () =>
+          import('./views/mode/mode.module').then((m) => m.ModeModule),
       },
       {
         path: 'waypoint',
@@ -37,6 +40,7 @@ const routes: Routes = [
       },
       {
         path: 'charging',
+        canActivateChild: [AuthGuard],
         loadChildren: () =>
           import('./views/charging/charging.module').then(
             (m) => m.ChargingModule
@@ -44,8 +48,12 @@ const routes: Routes = [
       },
       {
         path: 'localization',
+        canActivateChild: [AuthGuard],
         data: { title: 'localization' },
-        component: LocalizationComponent,
+        loadChildren: () =>
+          import('./views/localization/localization.module').then(
+            (m) => m.LocalizationModule
+          ),
       },
       {
         path: 'login',

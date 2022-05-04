@@ -200,7 +200,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
               }
             });
 
-            this.waypoint?.on('mousemove touchmove', async (event: any) => {
+            this.waypoint?.on('mousemove touchmove ', async (event: any) => {
               if (this.isReset) {
                 if (this.lineLocked) return;
                 if (!this.line) return;
@@ -219,7 +219,11 @@ export class MapWrapperComponent implements OnInit, OnChanges {
               }
             });
 
-            this.stage.on('mouseup touchend ', async (event: any) => {
+            // this.stage.on('mouseup touchend ', async (event: any) => {
+            this.waypoint.on('mouseup mouseout touchend touchout ', async (event: any) => {
+              // if(!event.target.hasName('waypoint')){
+              //   console.log(`out of circle`);
+              // }
               if (this.isReset) {
                 if (!this.line) {
                   return;

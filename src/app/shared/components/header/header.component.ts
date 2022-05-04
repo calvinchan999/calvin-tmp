@@ -14,6 +14,7 @@ import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { Location } from '@angular/common';
 import * as _ from 'lodash';
+import { Auth, AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -36,6 +37,7 @@ export class HeaderComponent implements OnInit {
   blockPreviousButton: boolean = false;
 
   sub = new Subscription();
+  user: string;
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
@@ -43,7 +45,8 @@ export class HeaderComponent implements OnInit {
     private translateService: TranslateService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location
+    private location: Location,
+    private authService: AuthService
   ) {
     this.sub.add(
       this.router.events
@@ -72,6 +75,9 @@ export class HeaderComponent implements OnInit {
           const backToPreviousButtonBackLists = [
             {
               backlist: '/hong-chi/charging/charging-mqtt',
+            },
+            {
+              backlist: '/hong-chi/charging/charging-dialog',
             },
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [
@@ -119,6 +125,26 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.sub.add(this.getBattery());
     this.sub.add(this.getLanguage());
+    this.getUserAuth();
+  }
+
+  getUserAuth() {
+    this.authService
+      .payload$()
+      .pipe(
+        map((payload) => {
+          return JSON.parse(payload);
+        }),
+        tap((payload: Auth) => {
+          try {
+            const { userId } = payload;
+            this.user = userId;
+          } catch (e) {
+            console.log(e);
+          }
+        })
+      )
+      .subscribe();
   }
 
   // ngDoCheck() {
@@ -151,8 +177,21 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  useAdminMode() {
-    this.sharedService._userRole().subscribe();
+  // useAdminMode() {
+  //   this.sharedService._userRole().subscribe();
+  // }
+
+  goToLogin() {
+    this.router.navigate(['/hong-chi/login']);
+  }
+
+  goToLogout() {
+    console.log(`go to logout`);
+    this.sharedService.isOpenModal$.next({
+      modal: 'signout',
+      modalHeader: 'sign out',
+      isDisableClose: true,
+    });
   }
 
   getLanguage() {

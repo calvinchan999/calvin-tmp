@@ -5,6 +5,12 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { catchError, finalize, tap } from 'rxjs/operators';
 
+export interface Auth {
+  userId: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -45,7 +51,7 @@ export class AuthService {
     console.log(this.appConfigService.getConfig());
     console.log(loginUrl);
     return this.http
-      .post<{ userId: string; accessToken: string; refreshToken: string }>(
+      .post<Auth>(
         loginUrl,
         { userId, password }
       )
@@ -65,11 +71,7 @@ export class AuthService {
     // location.reload();
   }
 
-  private async storeToken(data: {
-    userId?: string;
-    accessToken: string;
-    refreshToken: string;
-  }): Promise<void> {
+  private async storeToken(data: Auth): Promise<void> {
     if (this.isAuthenticated()) {
       const oldPayload = await JSON.parse(this.payload());
 

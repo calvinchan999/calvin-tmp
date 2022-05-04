@@ -95,7 +95,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         break;
       case 403:
         this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
-        setTimeout(() => this.sharedService.refresh$.next(true), 3000);
+        setTimeout(() => this.sharedService.refresh$.next(true), 1000);
         break;
       default:
         this.status.setHttpStatus(true, httpStatusCode, httpErrorText);

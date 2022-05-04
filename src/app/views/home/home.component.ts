@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { map, tap } from 'rxjs/operators';
+import { Auth, AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
 // import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
@@ -11,21 +13,43 @@ import { SharedService } from 'src/app/services/shared.service';
 export class HomeComponent implements OnInit {
   mode: string;
   role: string;
-  constructor(public router: Router, private sharedService: SharedService) {
+  user: string;
+  constructor(
+    public router: Router,
+    private sharedService: SharedService,
+    private authService: AuthService
+  ) {
     // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
     this.sharedService.currentMode$.subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
     });
 
-    this.sharedService.userRole$.subscribe((role: string) => {
-      console.log(role);
-      this.role = role;
-    });
+    this.authService
+      .payload$()
+      .pipe(
+        map((payload) => {
+          return JSON.parse(payload);
+        }),
+        tap((payload: Auth) => {
+          try {
+            const { userId } = payload;
+            this.user = userId;
+          } catch (e) {
+            console.log(e);
+          }
+        })
+      )
+      .subscribe();
+
+    // this.sharedService.userRole$.subscribe((role: string) => {
+    //   console.log(role);
+    //   this.role = role;
+    // });
   }
 
   ngOnInit() {
-    console.log('this.role : ', this.role);
+    // console.log('this.role : ', this.role);
   }
 
   onSubmitWaypont() {

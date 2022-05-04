@@ -57,8 +57,14 @@
             *ngIf="powerSupplyStatus === 'CHARGING'"
           ></i>
         </li>
+        <!-- login -->
+        <li class="nav-item admin-container" (click)="goToLogin()" *ngIf="currentUrl === '/hong-chi' && user?.length <= 0">
+          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
+          <i class="mdi mdi-account-circle icon"></i>
+        </li>
 
-        <li class="nav-item admin-container" (click)="useAdminMode()" *ngIf="currentUrl === '/hong-chi'">
+        <!-- logout -->
+        <li class="nav-item admin-container" (click)="goToLogout()" *ngIf="currentUrl === '/hong-chi' && user?.length > 0">
           <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
