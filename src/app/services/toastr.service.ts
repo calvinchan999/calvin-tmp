@@ -13,7 +13,7 @@ export class ToastrService {
     this.currentToastlists.push(
       this.toastr.info(msg, '', {
         disableTimeOut: true,
-        tapToDismiss: false,
+        tapToDismiss: true,
       })
     );
   }

@@ -59,7 +59,7 @@ export class WaypointFormComponent implements OnInit {
       this.waypointService
         .sendTask(data)
         .pipe(
-          mergeMap(() => this.translateService.get('navigatingtoDestination'))
+          // mergeMap(() => this.translateService.get('navigatingtoDestination'))
         )
         .subscribe((navigatingtoDestination) => {
           // this.sharedService.isOpenModal$.next({

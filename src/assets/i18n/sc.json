@@ -58,5 +58,9 @@
   "password": "密码",
   "loginError": {
     "error1": "请输入有效用户的帐号和密码"
+  },
+  "signout": "登出",
+  "signoutDialog":{
+    "tips1": "你确定你要登出吗？"
   }
 }

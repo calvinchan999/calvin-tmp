@@ -22,14 +22,12 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { MapComponent } from './views/map/map.component';
-import { ModeComponent } from './views/mode/mode.component';
+
 import { MatIconModule } from '@angular/material/icon';
-import { WaypointListComponent } from './views/waypoint/waypoint-list/waypoint-list.component';
+
 import { ToastrModule } from 'ngx-toastr';
-import { LocalizationComponent } from './views/localization/localization.component';
+
 import { SignInComponent } from './views/sign-in/sign-in.component';
-import { SignOutComponent } from './views/sign-out/sign-out.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -37,7 +35,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 // const config: Config = AppConfigService.getConfig();
 
 const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
-  connectOnCreate: false
+  connectOnCreate: false,
 };
 
 const appInitializerFn = (appConfig: AppConfigService) => {
@@ -55,7 +53,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, MapComponent, ModeComponent, WaypointListComponent, LocalizationComponent, SignInComponent, SignOutComponent],
+  declarations: [AppComponent, HomeComponent, SignInComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -77,8 +75,8 @@ const appInitializerFn = (appConfig: AppConfigService) => {
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-full-width',
       preventDuplicates: true,
-      disableTimeOut: true
-    })
+      disableTimeOut: true,
+    }),
   ],
   providers: [
     HttpClientModule,

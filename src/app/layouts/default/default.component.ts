@@ -27,8 +27,6 @@ import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
 })
 export class DefaultComponent implements OnInit {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
-  // @ViewChild('destinationDialog') destinationDialog: ModalComponent;
-  // @ViewChild('chargingDialog') chargingDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
@@ -121,20 +119,24 @@ export class DefaultComponent implements OnInit {
         this.response = response;
         setTimeout(() => {
           this.responseDialog.open();
-        });
+        }, 1000);
       }
     });
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
-      console.log(`response`);
-      console.log(response);
       if (response) {
         const { modal, modalHeader, isDisableClose, payload } = response;
-        this.modal = modal;
-        this.modalTitle = modalHeader;
-        this.isDisableClose = isDisableClose;
-        this.parentPayload = payload;
-        this.dialog.open();
+        if (modal) {
+          this.modal = modal;
+          this.modalTitle = modalHeader;
+          this.isDisableClose = isDisableClose;
+          this.parentPayload = payload;
+          this.dialog.open();
+        } else {
+          this.dialog.onCloseWithoutRefresh();
+        }
+      } else {
+        this.dialog.onCloseWithoutRefresh();
       }
     });
 
@@ -144,14 +146,20 @@ export class DefaultComponent implements OnInit {
           () => {
             console.log('refresh token success');
             this.sharedService.refresh$.next(false);
-            this.router.navigate(['/']);
-            location.reload();
+            this.reloadCurrentRoute();
           },
           (err) => {
             console.log('refresh toke fail');
             this.sharedService.refresh$.next(false);
-            this.router.navigate(['/']);
-            location.reload();
+            of(
+              this.sharedService.response$.next({
+                type: 'normal',
+                message: 'refreshTokenFail',
+              })
+            )
+              .pipe(tap(() => setTimeout(() => this.redirectToHome(), 1000)))
+              .subscribe();
+
             // this.sharedService.modalAction.next({
             //   entry: this.entry,
             //   title: 'refreshAuthFail',
@@ -239,6 +247,7 @@ export class DefaultComponent implements OnInit {
   // }
 
   getCurrentMap() {
+    console.log('getCurrentMap');
     this.mapService
       .getActiveMap()
       // .pipe(retry(3), delay(1000))
@@ -272,6 +281,15 @@ export class DefaultComponent implements OnInit {
           this.sharedService.response$.next({ type: 'warning', message });
         }
       });
+  }
+
+  reloadCurrentRoute() {
+    const currentUrl = this.router.url;
+    this.router.navigate([currentUrl]).then(() => location.reload());
+  }
+
+  redirectToHome() {
+    this.router.navigate(['/']).then(() => location.reload());
   }
 
   ngOnDestroy() {

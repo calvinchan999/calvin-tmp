@@ -189,7 +189,7 @@ export class HeaderComponent implements OnInit {
     console.log(`go to logout`);
     this.sharedService.isOpenModal$.next({
       modal: 'signout',
-      modalHeader: 'sign out',
+      modalHeader: 'signout',
       isDisableClose: true,
     });
   }
@@ -236,7 +236,10 @@ export class HeaderComponent implements OnInit {
   }
 
   goToDashboard() {
-    this.router.navigate(['/']);
+    // this.router.navigate(['/']);
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/']);
+    });
   }
 
   ngOnDestroy() {

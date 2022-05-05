@@ -17,12 +17,12 @@
     "navigation": "Navigation",
     "error": "Error"
   },
-  "mapNotFound": "map not found",
+  "mapNotFound": "Map not found",
   "mapChanged": "The map has been updated with ",
   "cancel": "Cancel",
-  "confirm": "confirm",
-  "resume": "resume",
-  "pause": "pause",
+  "confirm": "Confirm",
+  "resume": "Resume",
+  "pause": "Pause",
   "sosDialog": {
     "tips1": "Are you sure to execute the SOS signal?",
     "tips2": "SOS signal has been issued"
@@ -58,5 +58,9 @@
   "password": "Password",
   "loginError": {
     "error1": "Please enter a valid username and password"
+  },
+  "signout": "Sign out",
+  "signoutDialog":{
+    "tips1": "Are you sure you want to logout?"
   }
 }

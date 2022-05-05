@@ -43,7 +43,9 @@ export class SignInComponent implements OnInit {
       const { account, password } = form;
       this.authService.login(account, password).pipe(
         tap(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/']).then(() => {
+            location.reload();
+          });
         })
       ).subscribe();
     } else {

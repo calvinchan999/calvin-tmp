@@ -5,6 +5,8 @@ import { Config, MqttService } from './services/mqtt.service';
 import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
+import { IndexedDbService } from './services/indexed-db.service';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -14,13 +16,14 @@ import { LanguageService } from './services/language.service';
 export class AppComponent implements OnInit {
   private ngUnsubscribe = new Subject();
   point: number = 0;
-
+  db: any;
   constructor(
     private appConfigService: AppConfigService,
     private mqttService: MqttService,
     private sharedService: SharedService,
     private spinner: NgxSpinnerService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private indexedDbService: IndexedDbService
   ) {
     this.languageService.setInitState();
 
@@ -29,6 +32,14 @@ export class AppComponent implements OnInit {
       this.mqttService.connectMqtt(config);
     }
 
+    this.indexedDbService
+      .createDatabase()
+      .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
+      .subscribe();
+      // this.indexedDbService.addlogs({ type: 'testggggg', description: 'tasdest' });
+    // for (let i = 0; i < 100000; i++) {
+    //   this.indexedDbService.addlogs({ type: 'testg', description: 'test' });
+    // }
     this.sharedService.loading$.subscribe((status) => {
       if (status) {
         this.spinner.show();

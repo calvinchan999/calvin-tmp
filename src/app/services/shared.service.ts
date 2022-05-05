@@ -18,12 +18,11 @@ export interface Mode {
 export interface Response {
   type: 'normal' | 'warning';
   message: string;
-  parentComponent?: any
 }
 
 export interface Modal {
-  modal: string;
-  modalHeader: string;
+  modal: string | null;
+  modalHeader: string | null;
   isDisableClose?: boolean;
   payload?: any;
 }

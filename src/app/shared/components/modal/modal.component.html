@@ -10,15 +10,24 @@
     class="modal-dialog"
     *ngIf="!loader"
     style="
-     
+      max-width: 550px;
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+      margin: 0;
     "
   >
-    <div class="modal-header" *ngIf="header">
-      <ng-container *ngTemplateOutlet="header"></ng-container>
-
-      <i class="mdi mdi-close icon" *ngIf="disableClose" (click)="close()"></i>
-    </div>
     <div class="modal-content" style="background-color: inherit">
+      <div class="modal-header" *ngIf="header">
+        <ng-container *ngTemplateOutlet="header"></ng-container>
+
+        <i
+          class="mdi mdi-close icon"
+          *ngIf="disableClose"
+          (click)="close()"
+        ></i>
+      </div>
       <div class="modal-body" *ngIf="body">
         <ng-container *ngTemplateOutlet="body"></ng-container>
       </div>
@@ -27,7 +36,8 @@
       </div>
     </div>
   </div>
-<!-- </div> -->
+  <!-- </div> -->
+</div>
 
 <div
   class="modal fade"

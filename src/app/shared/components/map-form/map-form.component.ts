@@ -39,12 +39,12 @@ export class MapFormComponent implements OnInit {
       };
       this.mapService
         .changeMap(data)
-        .pipe(mergeMap(() => this.translateService.get('mapDialog.tips1')))
-        .subscribe((tips1) => {
+        // .pipe(mergeMap(() => this.translateService.get('mapDialog.tips1')))
+        .subscribe(() => {
           this.modalComponent.closeTrigger$.next();
           this.sharedService.response$.next({
             type: 'normal',
-            message: tips1,
+            message: 'mapDialog.tips1',
           });
         });
     }

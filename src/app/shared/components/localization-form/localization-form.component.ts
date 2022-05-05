@@ -1,14 +1,10 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapService } from 'src/app/views/services/map.service';
-
 
 export interface Metadata {
   x: number;
@@ -20,7 +16,7 @@ export interface Metadata {
   templateUrl: './localization-form.component.html',
   styleUrls: ['./localization-form.component.scss'],
 })
-export class LocalizationFormComponent implements OnInit { 
+export class LocalizationFormComponent implements OnInit {
   mapImage: string;
   metaData: Metadata;
   message: any;
@@ -37,24 +33,26 @@ export class LocalizationFormComponent implements OnInit {
   ngOnInit(): void {
     this.setMessage();
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
-      console.log('currentMap');
-      this.mapService
-        .getMapImage(currentMap)
-        .pipe(
-          mergeMap(async (data) => {
-            let img: string = URL.createObjectURL(data);
-            return (this.mapImage = await img);
-          }),
-          mergeMap(() =>
-            this.mapService
-              .getMapMetaData(currentMap)
-              .pipe(tap((metaData) => (this.metaData = metaData)))
+      // console.log('currentMap');
+      if (currentMap) {
+        this.mapService
+          .getMapImage(currentMap)
+          .pipe(
+            mergeMap(async (data) => {
+              let img: string = URL.createObjectURL(data);
+              return (this.mapImage = await img);
+            }),
+            mergeMap(() =>
+              this.mapService
+                .getMapMetaData(currentMap)
+                .pipe(tap((metaData) => (this.metaData = metaData)))
+            )
           )
-        )
-        .subscribe(() => {
-          console.log(this.metaData);
-          console.log(this.mapImage);
-        });
+          .subscribe(() => {
+            // console.log(this.metaData);
+            // console.log(this.mapImage);
+          });
+      }
     });
   }
 
@@ -96,13 +94,11 @@ export class LocalizationFormComponent implements OnInit {
       this.sharedService.response$.next({
         type: this.message.success.type,
         message: this.message.success.message,
-        parentComponent: 'localizationFormComponent'
       });
     } else if (status === 'failed') {
       this.sharedService.response$.next({
         type: this.message.fail.type,
         message: `${this.message.fail.message} \n ${error.message}`,
-        parentComponent: 'localizationFormComponent'
       });
     }
   }

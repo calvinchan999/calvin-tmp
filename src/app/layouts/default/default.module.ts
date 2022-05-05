@@ -5,8 +5,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
-// import { HomeComponent } from 'src/app/views/home/home.component';
-
 
 @NgModule({
   imports: [
@@ -14,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
     SharedModule,
     RouterModule,
     FlexLayoutModule,
-    TranslateModule.forChild(),
+    TranslateModule.forChild()
   ],
   declarations: [DefaultComponent]
 })
