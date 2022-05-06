@@ -12,6 +12,7 @@
   "chargingMqtt": "充電",
   "waypointList": "目的地",
   "destination": "目的地",
+  "downloadLogs": "下載錯誤日誌",
   "robotStatus": {
     "followMe": "跟隨模式",
     "navigation": "導航模式",

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, tap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { Auth, AuthService } from 'src/app/services/auth.service';
+import { IndexedDbService } from 'src/app/services/indexed-db.service';
 import { SharedService } from 'src/app/services/shared.service';
 // import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
@@ -17,7 +18,8 @@ export class HomeComponent implements OnInit {
   constructor(
     public router: Router,
     private sharedService: SharedService,
-    private authService: AuthService
+    private authService: AuthService,
+    private indexedDbService: IndexedDbService
   ) {
     // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
     this.sharedService.currentMode$.subscribe((mode: string) => {
@@ -107,5 +109,14 @@ export class HomeComponent implements OnInit {
     //   isDisableClose: false
     // });
     this.router.navigate(['/hong-chi/mode']);
+  }
+
+  onDownloadLogs() {
+    this.indexedDbService
+      .getLogs()
+      .pipe(
+        mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
+      )
+      .subscribe();
   }
 }

@@ -5,7 +5,6 @@ import {
   OnChanges,
   OnInit,
   Output,
-  Type,
 } from '@angular/core';
 import { Stage } from 'konva/lib/Stage';
 import { Layer } from 'konva/lib/Layer';
@@ -80,16 +79,16 @@ export class MapWrapperComponent implements OnInit, OnChanges {
   angleLabel = new Text();
 
   robotCurrentPositionPointer = new Circle();
-  robotCurrentPositionPointerTooltip = new Text({
-    text: '',
-    fontFamily: 'Calibri',
-    fontSize: 12,
-    padding: 5,
-    textFill: 'white',
-    fill: 'black',
-    alpha: 0.75,
-    visible: false,
-  });
+  // robotCurrentPositionPointerTooltip = new Text({
+  //   text: '',
+  //   fontFamily: 'Calibri',
+  //   fontSize: 12,
+  //   padding: 5,
+  //   textFill: 'white',
+  //   fill: 'black',
+  //   alpha: 0.75,
+  //   visible: false,
+  // });
 
   lineLocked: boolean = false;
 
@@ -220,88 +219,93 @@ export class MapWrapperComponent implements OnInit, OnChanges {
             });
 
             // this.stage.on('mouseup touchend ', async (event: any) => {
-            this.waypoint.on('mouseup mouseout touchend touchout ', async (event: any) => {
-              // if(!event.target.hasName('waypoint')){
-              //   console.log(`out of circle`);
-              // }
-              if (this.isReset) {
-                if (!this.line) {
-                  return;
-                }
+            this.waypoint.on(
+              'mouseup mouseout touchend touchout ',
+              async (event: any) => {
+                // if(!event.target.hasName('waypoint')){
+                //   console.log(`out of circle`);
+                // }
+                if (this.isReset) {
+                  if (!this.line) {
+                    return;
+                  }
 
-                if (!event.target.hasName('target')) {
-                  if (this.layer.find('.angleLine').length > 0) {
-                    //todo, debug
-                    // const Arrow: any = this.layer
-                    //   .getChildren()
-                    //   .find((i) => i.className === 'Arrow');
-                    // const ArrowX = Arrow.attrs.points[2];
-                    // const ArrowY = Arrow.attrs.points[3];
-                    const { draggable } = this.stage.getAttrs();
-                    if (!draggable) {
-                      this.lineLocked = true;
-                      this.getXYAngle()
-                        .pipe(
-                          mergeMap((data: any) => {
-                            const { x, y, angle, degrees } = data;
-                            return this.waypointService
-                              .initialPose({
-                                x,
-                                y,
-                                angle,
-                              })
-                              .pipe(
-                                mergeMap(() => this.createAngleLabel(degrees))
-                              );
-                          }),
-                          mergeMap(() => {
-                            // setTimeout(async () => {
-                            //   await this.createLidarRedpoints();
-                            // }, 2500);
-
-                            return of(null).pipe(
-                              delay(1000),
-                              mergeMap(() => {
-                                return this.getLidarData$().pipe(
-                                  tap(() => this.createLidarRedpoints())
+                  if (!event.target.hasName('target')) {
+                    if (this.layer.find('.angleLine').length > 0) {
+                      //todo, debug
+                      // const Arrow: any = this.layer
+                      //   .getChildren()
+                      //   .find((i) => i.className === 'Arrow');
+                      // const ArrowX = Arrow.attrs.points[2];
+                      // const ArrowY = Arrow.attrs.points[3];
+                      const { draggable } = this.stage.getAttrs();
+                      if (!draggable) {
+                        this.lineLocked = true;
+                        this.getXYAngle()
+                          .pipe(
+                            mergeMap((data: any) => {
+                              const { x, y, angle, degrees } = data;
+                              return this.waypointService
+                                .initialPose({
+                                  x,
+                                  y,
+                                  angle,
+                                })
+                                .pipe(
+                                  mergeMap(() => this.createAngleLabel(degrees))
                                 );
-                              })
-                            );
-                          })
-                        )
-                        .subscribe(
-                          () => {
-                            this.isUpdatedWaypoint.emit({ status: 'success' });
-                            this.lineLocked = false;
-                          },
-                          (error) => {
-                            this.isUpdatedWaypoint.emit({
-                              status: 'failed',
-                              error,
-                            });
-                            this.lineLocked = false;
-                          }
-                        );
+                            }),
+                            mergeMap(() => {
+                              // setTimeout(async () => {
+                              //   await this.createLidarRedpoints();
+                              // }, 2500);
+
+                              return of(null).pipe(
+                                delay(1000),
+                                mergeMap(() => {
+                                  return this.getLidarData$().pipe(
+                                    tap(() => this.createLidarRedpoints())
+                                  );
+                                })
+                              );
+                            })
+                          )
+                          .subscribe(
+                            () => {
+                              this.isUpdatedWaypoint.emit({
+                                status: 'success',
+                              });
+                              this.lineLocked = false;
+                            },
+                            (error) => {
+                              this.isUpdatedWaypoint.emit({
+                                status: 'failed',
+                                error,
+                              });
+                              this.lineLocked = false;
+                            }
+                          );
+                      }
                     }
                   }
                 }
               }
-            });
+            );
           } else {
             // todo tooltip
-            this.robotCurrentPositionPointer.on(
-              'mousemove touchstart',
-              async (event: any) => {
-                console.log('debug');
-                const mousePos = event.getPointerPosition();
-                this.robotCurrentPositionPointerTooltip.position({
-                  x: mousePos.x + 5,
-                  y: mousePos.y + 5,
-                });
-                this.robotCurrentPositionPointerTooltip.text('Red Circle');
-                this.robotCurrentPositionPointerTooltip.show();
-              }
-            );
+            // this.robotCurrentPositionPointer.on(
+            //   'mousemove touchstart',
+            //   async (event: any) => {
+            //     console.log('debug');
+            //     const mousePos = event.getPointerPosition();
+            //     this.robotCurrentPositionPointerTooltip.position({
+            //       x: mousePos.x + 5,
+            //       y: mousePos.y + 5,
+            //     });
+            //     this.robotCurrentPositionPointerTooltip.text('Red Circle');
+            //     this.robotCurrentPositionPointerTooltip.show();
+            //   }
+            // );
           }
         }),
         // handle 2 cases "localizationEditor" & "positionListener"
@@ -470,8 +474,8 @@ export class MapWrapperComponent implements OnInit, OnChanges {
   createAngleLabel(degrees: number): Observable<any> {
     const { x, y } = this.centerOfWaypoint.getAttrs();
     this.angleLabel.setAttrs({
-      x,
-      y,
+      x: x - 20,
+      y: y + 15,
       text: `${degrees}°`,
       fontSize: 30,
       fontFamily:
@@ -505,7 +509,7 @@ export class MapWrapperComponent implements OnInit, OnChanges {
         this.waypoint.setAttrs({
           x: x,
           y: y,
-          radius: 80 / this.scale,
+          radius: 100 / this.scale,
           stroke: 'black',
           strokeWidth: 4,
           name: 'waypoint',
