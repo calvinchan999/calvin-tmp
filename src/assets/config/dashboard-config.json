@@ -11,5 +11,14 @@
   "battery": {
     "upperLimit": "0.9",
     "duration": "28800000"
+  },
+  "function": {
+    "waypoint": true,
+    "docking": true,
+    "sos": true,
+    "map": true,
+    "localization": true,
+    "mode": true,
+    "logs": true
   }
 }

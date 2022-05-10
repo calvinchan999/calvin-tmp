@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { map, mergeMap, tap } from 'rxjs/operators';
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
+import { Config } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 // import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
@@ -15,12 +17,16 @@ export class HomeComponent implements OnInit {
   mode: string;
   role: string;
   user: string;
+  functions: any;
   constructor(
     public router: Router,
     private sharedService: SharedService,
     private authService: AuthService,
-    private indexedDbService: IndexedDbService
+    private indexedDbService: IndexedDbService,
+    private appConfigService: AppConfigService
   ) {
+    this.functions = this.appConfigService.getConfig().function;
+
     // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
     this.sharedService.currentMode$.subscribe((mode: string) => {
       this.mode = mode;

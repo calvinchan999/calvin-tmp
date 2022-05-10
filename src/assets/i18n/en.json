@@ -23,7 +23,9 @@
   "cancel": "Cancel",
   "confirm": "Confirm",
   "resume": "Resume",
+  "resumeMessage": "Restart to the destination",
   "pause": "Pause",
+  "pauseMessage":"Pause to the destination",
   "sosDialog": {
     "tips1": "Are you sure to execute the SOS signal?",
     "tips2": "SOS signal has been issued"

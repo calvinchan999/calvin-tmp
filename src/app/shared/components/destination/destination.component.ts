@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
@@ -17,12 +18,14 @@ export class DestinationComponent implements OnInit {
   mapImage: string;
   metaData: Metadata;
   currentRobotPose: any;
+
   sub = new Subscription();
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
     private mapService: MapService,
-    private mqttService: MqttService
+    private mqttService: MqttService,
+    private translateService: TranslateService
   ) {
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
       console.log('currentMap: ', currentMap);
@@ -51,6 +54,28 @@ export class DestinationComponent implements OnInit {
           tap((pose) => (this.currentRobotPose = pose))
         )
         .subscribe()
+    );
+
+    this.sub.add(
+      this.mqttService.$pauseResume
+        .pipe(
+          map((pauseResume) => {
+            let data = JSON.parse(pauseResume);
+            const { pauseResumeState } = data;
+            if (pauseResumeState === 'RESUME') {
+              data = { ...data, ...{ tranlateMessageKey: 'resumeMessage' } };
+            } else if (pauseResumeState === 'PAUSE') {
+              data = { ...data, ...{ tranlateMessageKey: 'pauseMessage' } };
+            }
+            return data;
+          })
+        )
+        .subscribe((data) => {
+          const { tranlateMessageKey } = data;
+          this.translateService.get(tranlateMessageKey).subscribe((message) => {
+            this.sharedService.response$.next({ type: 'normal', message });
+          });
+        })
     );
   }
 

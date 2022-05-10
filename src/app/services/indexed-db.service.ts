@@ -4,7 +4,7 @@ import { EMPTY, from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import * as pdfMake from 'pdfmake/build/pdfMake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-import * as moment from "moment";
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +50,7 @@ export class IndexedDbService {
   }) {
     const db = this.db;
 
-    db.logs.count(async (count: number) => {
+    db.logs.count().then(async (count: any) => {
       const createRow = () => {
         try {
           db.logs.add({
@@ -65,8 +65,8 @@ export class IndexedDbService {
         }
       };
 
-      // it will drop all logs when the logs is more then 10000
-      if ((await count) <= 10000) {
+      // it will drop all logs when the logs is more then 1000
+      if ((await count) <= 1000) {
         createRow();
       } else {
         db.delete();
@@ -175,7 +175,7 @@ export class IndexedDbService {
           },
           pdfFonts.pdfMake.vfs
         )
-        .download(`${moment(new Date()).format("YYYYMMDDHHmmss")}_logs.pdf`)
+        .download(`${moment(new Date()).format('YYYYMMDDHHmmss')}_logs.pdf`)
     );
   }
 }

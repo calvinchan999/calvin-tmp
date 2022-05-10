@@ -23,7 +23,9 @@
   "cancel": "取消",
   "confirm": "確認",
   "resume": "重新開始",
+  "resumeMessage": "重新開始前往目的地",
   "pause": "暫停",
+  "pauseMessage":"暫停前往目的地",
   "sosDialog": {
     "tips1": "你確定要執行SOS信號嗎？",
     "tips2": "已經發出SOS信號"
