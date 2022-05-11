@@ -3,7 +3,7 @@
     <div class="row" style="margin: auto">
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="functions.waypoint"
+        *ngIf="features.waypoint"
       >
         <app-card
           title="waypoint"
@@ -12,7 +12,7 @@
           (eventTrigger)="onSubmitWaypont()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && functions.docking">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && features.docking">
         <app-card
           title="docking"
           icon="battery-charging"
@@ -21,7 +21,7 @@
       </div>
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="functions.sos"
+        *ngIf="features.sos"
       >
         <app-card
           title="sos"
@@ -29,14 +29,14 @@
           (eventTrigger)="onSubmitSOS()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && functions.map">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && features.map">
         <app-card
           title="map"
           icon="map"
           (eventTrigger)="onChangeMap()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && functions.localization">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && features.localization">
         <app-card
           title="localization"
           icon="map-marker-radius-outline"
@@ -44,14 +44,14 @@
           (eventTrigger)="onSubmitLocalization()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && functions.mode">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && features.mode">
         <app-card
           title="mode"
           icon="map-marker-path"
           (eventTrigger)="onChangeMode()"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && functions.logs">
+      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="user?.length > 0 && features.logs">
         <app-card
           title="downloadLogs"
           icon="math-log"

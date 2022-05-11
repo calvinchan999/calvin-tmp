@@ -5,8 +5,8 @@
 
 .navbar {
   background-color: #052344;
-  max-height: 100px;
-  height: 100%;
+  // max-height: 100px;
+  // height: 100%;
   position: sticky;
 }
 
@@ -33,7 +33,7 @@
 
 .map-title {
   overflow: hidden;
-  max-width: 300px;
+  max-width: 500px;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;

@@ -1,4 +1,12 @@
-<footer>
-  <p>Copyright ©2021 RV Automation Technology Company. All Rights Reserved</p>
+<footer *ngIf="currentUrl === '/hong-chi'">
+  <!-- <p>Copyright ©2021 RV Automation Technology Company. All Rights Reserved</p> -->
+  <div class="container">
+    <div
+      class="d-flex flex-sm-grow-1 justify-content-center align-self-center map"
+    >
+      <label class="map-title"
+        >{{ "currentMap" | translate }}: {{ map | async }}</label
+      >
+    </div>
+  </div>
 </footer>
-

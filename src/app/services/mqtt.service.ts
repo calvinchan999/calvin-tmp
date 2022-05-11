@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService as NgxMqttService } from 'ngx-mqtt';
 import { Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
+import { IndexedDbService } from './indexed-db.service';
+import * as moment from 'moment-timezone';
 
 export interface Mqtt {
   ip_address: string;
@@ -27,7 +29,10 @@ export class MqttService {
   public $pose = new Subject<any>();
   public $pauseResume = new Subject<any>();
   public clientId: string = '';
-  constructor(private _mqttService: NgxMqttService) {}
+  constructor(
+    private _mqttService: NgxMqttService,
+    private indexedDbService: IndexedDbService
+  ) {}
 
   connectMqtt(config: Config) {
     if (config) {
@@ -37,7 +42,7 @@ export class MqttService {
       if (this.client) {
         this.client.unsubscribe();
       }
-      
+
       this.client = this._mqttService.connect({
         hostname: config.mqtt.ip_address,
         port: Number(config.mqtt.port_no),
@@ -49,6 +54,19 @@ export class MqttService {
       this._mqttService.onConnect.subscribe((connack) => {
         console.log('CONNECTED');
         console.log(connack);
+      });
+
+      this._mqttService.onError.subscribe((err) => {
+        console.log(`onError`);
+        console.log(err);
+
+        this.indexedDbService.addlogs({
+          type: 'mqtt',
+          description: JSON.stringify({ ...err, ...{ event: 'onError' } }),
+          created_at: moment(new Date())
+            .tz('Asia/Hong_Kong')
+            .format('YYYY-MM-DD HH:mm:ss'),
+        });
       });
 
       this._mqttService

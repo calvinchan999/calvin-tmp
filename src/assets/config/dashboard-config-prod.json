@@ -12,7 +12,7 @@
     "upperLimit": "0.9",
     "duration": "28800000"
   },
-  "function": {
+  "feature": {
     "waypoint": true,
     "docking": true,
     "sos": true,

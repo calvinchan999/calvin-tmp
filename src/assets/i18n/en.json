@@ -12,7 +12,7 @@
   "chargingMqtt": "Charge",
   "waypointList": "Destination",
   "destination": "Destination",
-  "downloadLogs": "Download Error Logs",
+  "downloadLogs": "Error Logs",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",

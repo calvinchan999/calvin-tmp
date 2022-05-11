@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
   mode: string;
   role: string;
   user: string;
-  functions: any;
+  features: any;
   constructor(
     public router: Router,
     private sharedService: SharedService,
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
     private indexedDbService: IndexedDbService,
     private appConfigService: AppConfigService
   ) {
-    this.functions = this.appConfigService.getConfig().function;
+    this.features = this.appConfigService.getConfig().feature;
 
     // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
     this.sharedService.currentMode$.subscribe((mode: string) => {

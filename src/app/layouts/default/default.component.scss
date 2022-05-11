@@ -5,7 +5,7 @@
   width: 100%;
 }
 
-.content {
+.default-wrapper {
   background-position: center center;
   background-repeat: repeat;
   background-size: cover cover;
@@ -18,6 +18,9 @@
   // height: 100%;
 }
 
+.content {
+  overflow-y: scroll;
+}
 
 
 

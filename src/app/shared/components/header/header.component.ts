@@ -27,9 +27,9 @@ export class HeaderComponent implements OnInit {
   percentage: number = 0;
   robotId: string = '';
   mode: string = '';
-  map: string = '';
   modeTranslation: string = '';
-  mapTranslation: string = '';
+  // map: string = '';
+  // mapTranslation: string = '';
 
   currentUrl: string = '';
   currentPageTitle: string = '';
@@ -97,27 +97,25 @@ export class HeaderComponent implements OnInit {
     this.sub.add(
       combineLatest(
         this.sharedService.currentMode$,
-        this.sharedService.currentMap$
+        // this.sharedService.currentMap$
       )
         .pipe(
           tap((response: any) => {
             this.mode = response[0];
-            this.map = response[1];
+            // this.map = response[1];
             return response;
           }),
-          mergeMap(() =>
-            this.translateService
-              .get('mapNotFound')
-              .pipe(
-                tap((mapTranslation) => (this.mapTranslation = mapTranslation))
-              )
-          ),
+          // mergeMap(() =>
+          //   this.translateService
+          //     .get('mapNotFound')
+          //     .pipe(
+          //       tap((mapTranslation) => (this.mapTranslation = mapTranslation))
+          //     )
+          // ),
           mergeMap(() => this.getTranlateModeMessage$())
         )
         .subscribe(() => {
-          // if (this.mode.length > 0 && this.map.length > 0) {
-          //   this.sharedService.loading$.next(false);
-          // }
+    
         })
     );
   }
@@ -186,7 +184,6 @@ export class HeaderComponent implements OnInit {
   }
 
   goToLogout() {
-    console.log(`go to logout`);
     this.sharedService.isOpenModal$.next({
       modal: 'signout',
       modalHeader: 'signout',
@@ -195,7 +192,6 @@ export class HeaderComponent implements OnInit {
   }
 
   getLanguage() {
-    console.log('getLanguage');
     this.languageService.language$
       .pipe(
         mergeMap((data) =>

@@ -139,6 +139,25 @@ export class MapWrapperComponent implements OnInit, OnChanges {
         }),
         tap(() => {
           if (this.type === 'localizationEditor') {
+
+            // this.stage.on('touchmove', (event)=>{
+            //   const touch1 = event.evt.touches[0];
+            //   const touch2 = event.evt.touches[1];
+            //   console.log(event.evt.touches);
+            //   if (this.stage.isDragging()) {
+            //     this.stage.stopDrag();
+            //   }
+
+            //   const p1 = {
+            //     x: touch1.clientX,
+            //     y: touch1.clientY,
+            //   };
+            //   const p2 = {
+            //     x: touch2.clientX,
+            //     y: touch2.clientY,
+            //   };
+            // })
+
             this.backgroundLayer.on(
               'mousedown touchstart',
               async (event: any) => {

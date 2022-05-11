@@ -1,18 +1,23 @@
-<nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
-  <div class="container-fluid" *ngIf="currentUrl === '/hong-chi' || currentUrl === '/hong-chi/login'">
+<nav class="navbar navbar-expand flex-wrap">
+  <div
+    class="container-fluid"
+    *ngIf="currentUrl === '/hong-chi' || currentUrl === '/hong-chi/login'"
+  >
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
     >
       <label class="mode-title"> {{ modeTranslation }}</label>
     </div>
-    <div
+    <!-- <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
     >
-      <label class="map-title">{{ map ? map : mapTranslation }}</label>
-    </div>
+      <label class="map-title"
+        >{{ map ? map : mapTranslation }}testtesttesttest</label
+      >
+    </div> -->
 
     <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-center"
+      class="navbar-collapse collapse flex-sm-grow-1  flex-shrink-1 justify-content-end align-self-center"
       style="flex: 1"
     >
       <ul class="navbar-nav ms-auto" style="display: flex; gap: 5px">
@@ -58,17 +63,29 @@
           ></i>
         </li>
         <!-- login -->
-        <li class="nav-item admin-container" (click)="goToLogin()" *ngIf="currentUrl === '/hong-chi' && user?.length <= 0">
+        <li
+          class="nav-item admin-container"
+          (click)="goToLogin()"
+          *ngIf="currentUrl === '/hong-chi' && user?.length <= 0"
+        >
           <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
 
         <!-- logout -->
-        <li class="nav-item admin-container" (click)="goToLogout()" *ngIf="currentUrl === '/hong-chi' && user?.length > 0">
+        <li
+          class="nav-item admin-container"
+          (click)="goToLogout()"
+          *ngIf="currentUrl === '/hong-chi' && user?.length > 0"
+        >
           <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
-        <li class="nav-item admin-container" (click)="goToDashboard()"  *ngIf="currentUrl === '/hong-chi/login'">
+        <li
+          class="nav-item admin-container"
+          (click)="goToDashboard()"
+          *ngIf="currentUrl === '/hong-chi/login'"
+        >
           <i class="mdi mdi-home icon"></i>
         </li>
         <li class="nav-item language-container" (click)="useLanguage()">
@@ -77,9 +94,21 @@
         </li>
       </ul>
     </div>
+   
   </div>
-
-  <div class="container-fluid" *ngIf="currentUrl !== '/hong-chi' && currentUrl !== '/hong-chi/login'">
+  <!-- <div class="container-fluid">
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
+    >
+      <label class="map-title"
+        >{{ map ? map : mapTranslation }}</label
+      >
+    </div>
+  </div> -->
+  <div
+    class="container-fluid"
+    *ngIf="currentUrl !== '/hong-chi' && currentUrl !== '/hong-chi/login'"
+  >
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center"
       style="flex: 1"
@@ -107,7 +136,19 @@
           width: 100%;
           white-space: nowrap;
         "
-        >{{ currentPageTitle | translate }}</label>
+        >{{ currentPageTitle | translate }}</label
+      >
     </div>
   </div>
 </nav>
+<!-- <nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
+  <div class="container">
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
+    >
+      <label class="map-title"
+        >{{ map ? map : mapTranslation }}testtesttesttest</label
+      >
+    </div>
+  </div>
+</nav> -->
