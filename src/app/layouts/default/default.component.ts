@@ -1,13 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { of, Subject, Subscription } from 'rxjs';
+import { Observable, of, Subject, Subscription, timer } from 'rxjs';
 import {
   delay,
   filter,
   map,
   mergeMap,
   retry,
+  startWith,
+  switchMap,
   takeUntil,
   tap,
 } from 'rxjs/operators';
@@ -37,6 +39,7 @@ export class DefaultComponent implements OnInit {
   modalTitle: string = '';
   isDisableClose: boolean;
   parentPayload: any = null;
+
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -48,6 +51,16 @@ export class DefaultComponent implements OnInit {
     private toastrService: ToastrService,
     private authService: AuthService
   ) {
+    // @todo check connection
+    // this.sharedService.timer$.subscribe((i) => {
+    //   if (i > 0) {
+    //     console.log(i);
+    //     this.sharedService.loading$.next(true);
+    //   } else {
+    //     this.sharedService.loading$.next(false);
+    //   }
+    // });
+
     this.mqttService.$completion
       .pipe(
         map((feedback) => JSON.parse(feedback)),
@@ -99,9 +112,7 @@ export class DefaultComponent implements OnInit {
             .get('dockingDialog.tips2')
             .pipe(
               tap((tips2: string) => this.toastrService.removeByMessage(tips2)),
-              tap(() =>
-                this.router.navigate(['/hong-chi/charging/charging-mqtt'])
-              )
+              tap(() => this.router.navigate(['/charging/charging-mqtt']))
             )
             .subscribe();
         } else if (chargingStatus === 'NOT_CHARGING') {
@@ -278,7 +289,10 @@ export class DefaultComponent implements OnInit {
         if (errors.inFlight) {
           const message =
             'Status : ' + errors.errorCode + ' - ' + errors.errorMsg;
-          this.sharedService.response$.next({ type: 'warning', message });
+
+          if (errors.errorCode !== 403) {
+            this.sharedService.response$.next({ type: 'warning', message });
+          }
         }
       });
   }

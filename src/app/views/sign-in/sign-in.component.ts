@@ -39,7 +39,7 @@ export class SignInComponent implements OnInit {
   onSubmit() {
     const form = this.form.getRawValue();
     if (this.form.valid) {
-      //todo, post the user payload to login api, then save the token & refresh token in to session storage
+      // post the user payload to login api, then save the token & refresh token in to session storage
       const { account, password } = form;
       this.authService.login(account, password).pipe(
         tap(() => {

@@ -6,15 +6,14 @@ import { HomeComponent } from './views/home/home.component';
 import { SignInComponent } from './views/sign-in/sign-in.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'hong-chi', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
-    path: 'hong-chi',
+    path: '',
     component: DefaultComponent,
-
     children: [
       {
-        path: '',
-        data: { title: 'home' },
+        path: 'dashboard',
+        data: { title: 'dashboard' },
         component: HomeComponent,
       },
       {

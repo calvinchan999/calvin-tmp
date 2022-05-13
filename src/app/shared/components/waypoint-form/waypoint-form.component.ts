@@ -77,7 +77,7 @@ export class WaypointFormComponent implements OnInit {
             targetY: this.selectedWaypoint?.y,
             targetAngle: this.selectedWaypoint?.angle,
           });
-          this.router.navigate(['/hong-chi/waypoint/destination'], {
+          this.router.navigate(['/waypoint/destination'], {
             queryParams: {
               payload,
             },

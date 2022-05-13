@@ -74,10 +74,10 @@ export class HeaderComponent implements OnInit {
           this.currentUrl = event.urlAfterRedirects;
           const backToPreviousButtonBackLists = [
             {
-              backlist: '/hong-chi/charging/charging-mqtt',
+              backlist: '/charging/charging-mqtt',
             },
             {
-              backlist: '/hong-chi/charging/charging-dialog',
+              backlist: '/charging/charging-dialog',
             },
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [
@@ -152,7 +152,8 @@ export class HeaderComponent implements OnInit {
   // }
 
   getBattery() {
-    this.mqttService.$battery.subscribe((battery) => {
+    // @todo check connection
+    this.mqttService.$battery.pipe(tap(() => this.sharedService.reset$.next(0))).subscribe((battery) => {
       if (battery) {
         const { powerSupplyStatus, percentage } = JSON.parse(battery);
         this.powerSupplyStatus = powerSupplyStatus;
@@ -180,7 +181,7 @@ export class HeaderComponent implements OnInit {
   // }
 
   goToLogin() {
-    this.router.navigate(['/hong-chi/login']);
+    this.router.navigate(['/login']);
   }
 
   goToLogout() {

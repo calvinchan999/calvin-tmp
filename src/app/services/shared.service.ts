@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, timer } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 export interface ModalAction {
   topic: string;
@@ -36,11 +37,18 @@ export class SharedService {
   public refresh$ = new Subject<boolean>();
   public loading$ = new Subject<boolean>();
   public response$ = new Subject<Response>();
-  // public isGoingDestination$ = new Subject<boolean>();
-  // public isDynamicAction$ = new Subject<Type>();
   public isOpenModal$ = new Subject<Modal>();
-  // public userRole$ = new BehaviorSubject<string>('');
-  constructor() {}
+
+  public reset$ = new Subject<number>();
+  public timer$: Observable<any>;
+
+  constructor() {
+  // @todo check connection
+    // this.timer$ = this.reset$.pipe(
+    //   startWith(0),
+    //   switchMap(() => timer(0, 10000)) // Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.    
+    // );
+  }
 
   // _userRole(): Observable<any> {
   //   if (typeof localStorage.getItem('role') !== 'string' ||　!localStorage.getItem('role')) {

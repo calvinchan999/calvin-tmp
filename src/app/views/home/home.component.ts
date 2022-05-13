@@ -67,7 +67,7 @@ export class HomeComponent implements OnInit {
     //   isDisableClose: false
     // });
     if (this.mode === 'NAVIGATION') {
-      this.router.navigate(['/hong-chi/waypoint']);
+      this.router.navigate(['/waypoint']);
     }
   }
 
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
     //   modalHeader: 'docking',
     //   isDisableClose: false,
     // });
-    this.router.navigate(['/hong-chi/charging']);
+    this.router.navigate(['/charging']);
   }
 
   onSubmitSOS() {
@@ -94,7 +94,7 @@ export class HomeComponent implements OnInit {
     //   modalHeader: 'map',
     //   isDisableClose: false
     // });
-    this.router.navigate(['/hong-chi/map']);
+    this.router.navigate(['/map']);
   }
 
   onSubmitLocalization() {
@@ -104,7 +104,7 @@ export class HomeComponent implements OnInit {
       //   modalHeader: 'localization',
       //   isDisableClose: false,
       // });
-      this.router.navigate(['/hong-chi/localization']);
+      this.router.navigate(['/localization']);
     }
   }
 
@@ -114,7 +114,7 @@ export class HomeComponent implements OnInit {
     //   modalHeader: 'mode',
     //   isDisableClose: false
     // });
-    this.router.navigate(['/hong-chi/mode']);
+    this.router.navigate(['/mode']);
   }
 
   onDownloadLogs() {

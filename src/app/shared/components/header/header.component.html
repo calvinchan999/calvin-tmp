@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand flex-wrap">
   <div
     class="container-fluid"
-    *ngIf="currentUrl === '/hong-chi' || currentUrl === '/hong-chi/login'"
+    *ngIf="currentUrl === '/dashboard' || currentUrl === '/login'"
   >
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
@@ -66,7 +66,7 @@
         <li
           class="nav-item admin-container"
           (click)="goToLogin()"
-          *ngIf="currentUrl === '/hong-chi' && user?.length <= 0"
+          *ngIf="currentUrl === '/dashboard' && user?.length <= 0"
         >
           <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
@@ -76,7 +76,7 @@
         <li
           class="nav-item admin-container"
           (click)="goToLogout()"
-          *ngIf="currentUrl === '/hong-chi' && user?.length > 0"
+          *ngIf="currentUrl === '/dashboard' && user?.length > 0"
         >
           <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
@@ -84,7 +84,7 @@
         <li
           class="nav-item admin-container"
           (click)="goToDashboard()"
-          *ngIf="currentUrl === '/hong-chi/login'"
+          *ngIf="currentUrl === '/login'"
         >
           <i class="mdi mdi-home icon"></i>
         </li>
@@ -107,7 +107,7 @@
   </div> -->
   <div
     class="container-fluid"
-    *ngIf="currentUrl !== '/hong-chi' && currentUrl !== '/hong-chi/login'"
+    *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
   >
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center"

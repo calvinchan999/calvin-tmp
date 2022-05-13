@@ -37,8 +37,9 @@ export class MqttService {
   connectMqtt(config: Config) {
     if (config) {
       // clientId generate randam id
-      this.clientId = UUID.UUID();
-
+      if (this.clientId.length <= 0) {
+        this.clientId = UUID.UUID();
+      }
       if (this.client) {
         this.client.unsubscribe();
       }
