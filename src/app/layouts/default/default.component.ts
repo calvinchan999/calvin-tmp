@@ -81,7 +81,7 @@ export class DefaultComponent implements OnInit {
         if (data) {
           const { completed, cancelled, arrivedAtDestination, cancelledTask } =
             data;
-          let message: string = '';
+          let message = '';
           if (completed) {
             if (!cancelled) {
               message = arrivedAtDestination;
@@ -309,6 +309,6 @@ export class DefaultComponent implements OnInit {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    if (this.sub) this.sub.unsubscribe();
+    if (this.sub) { this.sub.unsubscribe(); }
   }
 }

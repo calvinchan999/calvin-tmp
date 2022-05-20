@@ -26,9 +26,9 @@ export class SosFormComponent implements OnInit {
 
   onSubmitModel() {
 
-    //todo, mock payload for testing
-    const topic: string = 'rvautotech/fobo/sos';
-    const payload: string = "{ sos: true }";
+    // todo, mock payload for testing
+    const topic = 'rvautotech/fobo/sos';
+    const payload = '{ sos: true }';
     this.mqttService.unsafePublish(topic, payload).pipe(mergeMap(() => this.translateService.get('sosDialog.tips2'))).subscribe((tip2) => {
       this.modalComponent.closeTrigger$.next();
       this.sharedService.response$.next({

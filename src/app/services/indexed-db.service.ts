@@ -53,7 +53,7 @@ export class IndexedDbService {
     db.logs.count().then(async (count: any) => {
       const createRow = () => {
         try {
-          let row = {
+          const row = {
             type,
             description,
             error_code: errorCode,
@@ -92,7 +92,7 @@ export class IndexedDbService {
       });
     });
 
-    let docDefinition = {
+    const docDefinition = {
       content: [
         {
           columns: [

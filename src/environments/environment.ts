@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   remoteConfig: true,
   remoteConfigUrl: 'assets/config/dashboard-config.json',
-  api_token: "f05914ea33124ba7a6cab301627c8adf",
+  api_token: 'f05914ea33124ba7a6cab301627c8adf',
   api: {
     auth: '/api/authentication/v1/login',
     refreshAuth: '/api/authentication/v1/refresh',

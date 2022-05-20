@@ -21,7 +21,7 @@ export class SignOutFormComponent implements OnInit {
     this.authService.logout().subscribe(() => {
       this.router.navigate(['/']).then(() => location.reload());
     });
-    
+
   }
 
   onCancel() {

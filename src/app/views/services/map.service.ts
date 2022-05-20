@@ -15,26 +15,26 @@ export interface MapResponse {
 }
 
 export interface LocalizationPose {
-  robotId: string,
-  mapName: string,
-  x: number,
-  y: number,
-  angle: number
+  robotId: string;
+  mapName: string;
+  x: number;
+  y: number;
+  angle: number;
 }
 
 export interface Lidar {
-  robotId: string,
-  mapName: string,
-  pointList: []
+  robotId: string;
+  mapName: string;
+  pointList: [];
 }
 
 export interface MapMetaData {
-  resolution: number,
-  width: number,
-  height: number,
-  x: number,
-  y: number,
-  angle: number
+  resolution: number;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  angle: number;
 
 }
 
@@ -77,7 +77,7 @@ export class MapService {
     return this.http.get<MapMetaData>(url);
   }
 
-  getLidar():Observable<Lidar> {
+  getLidar(): Observable<Lidar> {
     const url = `${this.baseUrl}${environment.api.lidar}`;
     return this.http.get<Lidar>(url);
   }

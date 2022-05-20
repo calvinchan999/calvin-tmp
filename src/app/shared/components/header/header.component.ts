@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
-  ActivationEnd,
   NavigationEnd,
   Router,
 } from '@angular/router';
@@ -114,9 +113,7 @@ export class HeaderComponent implements OnInit {
           // ),
           mergeMap(() => this.getTranlateModeMessage$())
         )
-        .subscribe(() => {
-    
-        })
+        .subscribe()
     );
   }
 

@@ -18,7 +18,7 @@ export class ToastrService {
     );
   }
 
-  
+
   removeByMessage(message: string) {
     if (message.length > 0) {
       const data: any = _.find(this.currentToastlists, ['message', message]);

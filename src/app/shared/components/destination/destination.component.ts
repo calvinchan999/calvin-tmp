@@ -34,7 +34,7 @@ export class DestinationComponent implements OnInit {
           .getMapImage(currentMap)
           .pipe(
             mergeMap(async (data) => {
-              let img: string = URL.createObjectURL(data);
+              const img: string = URL.createObjectURL(data);
               return (this.mapImage = await img);
             }),
             mergeMap(() =>
@@ -100,6 +100,6 @@ export class DestinationComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.sub) this.sub.unsubscribe();
+    if (this.sub) { this.sub.unsubscribe(); }
   }
 }

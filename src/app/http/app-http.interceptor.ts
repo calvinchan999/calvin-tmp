@@ -19,7 +19,7 @@ export class AppHttpInterceptor implements HttpInterceptor {
     this.authService.isAuthenticatedSubject.subscribe((payload) => {
       if (payload) {
         const { accessToken } = JSON.parse(payload);
-        this.userAccessToken = accessToken ? accessToken : "";
+        this.userAccessToken = accessToken ? accessToken : '';
       }
     });
   }

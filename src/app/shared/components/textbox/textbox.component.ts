@@ -9,13 +9,13 @@ export class TextboxComponent implements OnInit {
   @Input() name: string;
   @Input() type: string;
   @Output() childEvents = new EventEmitter<string>();
-  inputType: string; 
+  inputType: string;
   constructor() {}
 
   ngOnInit(): void {
-    if(this.type === 'password'){
+    if (this.type === 'password') {
       this.inputType = 'password';
-    }else {
+    } else {
       this.inputType = 'text';
     }
   }

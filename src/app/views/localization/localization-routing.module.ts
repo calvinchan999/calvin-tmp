@@ -12,7 +12,7 @@ const routes: Routes = [
         data: { title: 'localization' },
         component: LocalizationComponent,
       }
-    
+
     ],
   },
 ];
