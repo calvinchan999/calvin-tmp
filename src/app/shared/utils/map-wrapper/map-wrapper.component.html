@@ -23,7 +23,7 @@
     </button>
   </div>
   <div class="preview-wrapper">
-    <div class="parent-canvas" id="canvas"></div>
+    <div class="parent-canvas" id="canvas"  #canvas (pinchin)="onPinchin($event)" (pinchout)="onPinchout($event)"></div>
     <div
     class="localization-btn-container d-flex justify-content-around"
     *ngIf="type === 'localizationEditor'"

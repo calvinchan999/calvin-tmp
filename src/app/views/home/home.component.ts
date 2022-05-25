@@ -4,7 +4,6 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
-import { Config } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 // import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 

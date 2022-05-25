@@ -109,7 +109,7 @@ export class IndexedDbService {
         {
           style: 'table',
           table: {
-            widths: ['auto', 'auto', 'auto', 'auto', 'auto'],
+            widths: ['auto', 'auto', 'auto', 250, 'auto'],
             body: [
               ['Id', 'Type', 'Code', 'Description', 'CreatedAt'],
               ...items.map((item: any) => [

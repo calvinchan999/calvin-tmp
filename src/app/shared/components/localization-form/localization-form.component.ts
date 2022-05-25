@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs/internal/Subscription';
+import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
@@ -35,11 +35,12 @@ export class LocalizationFormComponent implements OnInit {
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
       // console.log('currentMap');
       if (currentMap) {
+        let currentMap = '5W';
         this.mapService
           .getMapImage(currentMap)
           .pipe(
             mergeMap(async (data) => {
-              let img: string = URL.createObjectURL(data);
+              const img: string = URL.createObjectURL(data);
               return (this.mapImage = await img);
             }),
             mergeMap(() =>

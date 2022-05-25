@@ -12,17 +12,15 @@
   -webkit-background-size: cover cover;
   -moz-background-size: cover cover;
   background-image: url('../../../assets/images/bg-black.png');
-  overflow-y: scroll;
+  overflow-y: auto;
   animation: gradient 360s ease infinite;
-	
+
   // height: 100%;
 }
 
 .content {
-  overflow-y: scroll;
+  overflow-y: auto;
 }
-
-
 
 .modal-title {
   max-width: 50vw;
@@ -42,13 +40,13 @@
 }
 
 @keyframes gradient {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

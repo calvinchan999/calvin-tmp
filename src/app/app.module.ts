@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
@@ -28,6 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ToastrModule } from 'ngx-toastr';
 
 import { SignInComponent } from './views/sign-in/sign-in.component';
+
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -77,6 +78,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       preventDuplicates: true,
       disableTimeOut: true,
     }),
+    HammerModule
   ],
   providers: [
     HttpClientModule,
@@ -96,7 +98,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       useClass: HttpStatusInterceptor,
       multi: true,
     },
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [AppComponent],
 })
