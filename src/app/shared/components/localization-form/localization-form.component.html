@@ -1,8 +1,9 @@
-<div class="localization-map-wrapper" *ngIf="mapImage">
+<div class="localization-map-wrapper" *ngIf="rosMapImage">
   <div class="localization-map-container">
     <app-map-wrapper
       type="localizationEditor"
-      [mapImage]="mapImage"
+      [floorPlan]="floorPlanImg"
+      [mapImage]="rosMapImage"
       [metaData]="metaData"
       (isUpdatedWaypoint)="isLocalizedLocation($event)"
     ></app-map-wrapper>
