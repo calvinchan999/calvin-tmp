@@ -48,8 +48,7 @@ export class AuthService {
     const loginUrl = `${this.appConfigService.getConfig().server.endpoint}${
       environment.api.auth
     }`;
-    console.log(this.appConfigService.getConfig());
-    console.log(loginUrl);
+
     return this.http
       .post<Auth>(
         loginUrl,
@@ -104,6 +103,7 @@ export class AuthService {
     if (!this.payload()) {
       throw new Error('payload not found');
     }
+
     const { refreshToken, userId } = JSON.parse(this.payload());
     return this.http
       .put<{ accessToken: string; refreshToken: string; userId: string }>(

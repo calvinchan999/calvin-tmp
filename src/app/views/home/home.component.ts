@@ -31,51 +31,36 @@ export class HomeComponent implements OnInit {
       this.mode = mode;
       console.log(`mode: ${mode}`);
     });
+  }
 
-    this.authService
-      .payload$()
+  ngOnInit() {
+    this.isAuthenticated();
+  }
+
+  isAuthenticated() {
+    this.authService.isAuthenticatedSubject
       .pipe(
         map((payload) => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
-          try {
-            const { userId } = payload;
-            this.user = userId;
-          } catch (e) {
-            console.log(e);
+          if (payload?.userId) {
+            this.user = payload.userId;
+          } else {
+            this.user = null;
           }
         })
       )
       .subscribe();
-
-    // this.sharedService.userRole$.subscribe((role: string) => {
-    //   console.log(role);
-    //   this.role = role;
-    // });
-  }
-
-  ngOnInit() {
-    // console.log('this.role : ', this.role);
   }
 
   onSubmitWaypont() {
-    // this.sharedService.isOpenModal$.next({
-    //   modal: 'waypoint',
-    //   modalHeader: 'waypoint',
-    //   isDisableClose: false
-    // });
     if (this.mode === 'NAVIGATION') {
       this.router.navigate(['/waypoint']);
     }
   }
 
   onDockToStation() {
-    // this.sharedService.isOpenModal$.next({
-    //   modal: 'docking',
-    //   modalHeader: 'docking',
-    //   isDisableClose: false,
-    // });
     this.router.navigate(['/charging']);
   }
 
@@ -88,31 +73,16 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    // this.sharedService.isOpenModal$.next({
-    //   modal: 'map',
-    //   modalHeader: 'map',
-    //   isDisableClose: false
-    // });
     this.router.navigate(['/map']);
   }
 
   onSubmitLocalization() {
     if (this.mode === 'NAVIGATION') {
-      // this.sharedService.isOpenModal$.next({
-      //   modal: 'localization',
-      //   modalHeader: 'localization',
-      //   isDisableClose: false,
-      // });
       this.router.navigate(['/localization']);
     }
   }
 
   onChangeMode() {
-    // this.sharedService.isOpenModal$.next({
-    //   modal: 'mode',
-    //   modalHeader: 'mode',
-    //   isDisableClose: false
-    // });
     this.router.navigate(['/mode']);
   }
 

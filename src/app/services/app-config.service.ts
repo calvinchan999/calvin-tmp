@@ -39,7 +39,6 @@ export class AppConfigService {
   }
 
   getConfig() {
-    console.log('AppConfigService getConfig ', this.appConfig);
     return this.appConfig;
   }
 }

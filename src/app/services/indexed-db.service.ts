@@ -66,8 +66,8 @@ export class IndexedDbService {
         }
       };
 
-      // it will drop all logs when the logs is more then 1000
-      if ((await count) <= 1000) {
+      // it will drop all logs when the logs is more then 500
+      if ((await count) <= 500) {
         createRow();
       } else {
         db.delete();

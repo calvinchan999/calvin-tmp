@@ -21,7 +21,6 @@ export class TextboxComponent implements OnInit {
   }
 
   onChangeValue(event: any) {
-    console.log(event.target.value);
     this.childEvents.emit(event.target.value);
   }
 }

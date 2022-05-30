@@ -22,7 +22,7 @@ const routes: Routes = [
         path: 'destination',
         data: { title: 'destination' },
         component: WaypointDestinationComponent,
-      },
+      }
     ],
   },
 ];

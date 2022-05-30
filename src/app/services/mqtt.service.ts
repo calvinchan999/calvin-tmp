@@ -54,7 +54,7 @@ export class MqttService {
 
       this._mqttService.onConnect.subscribe((connack) => {
         console.log('CONNECTED');
-        console.log(connack);
+        // console.log(connack);
       });
 
       this._mqttService.onError.subscribe((err) => {
@@ -119,15 +119,15 @@ export class MqttService {
       this._mqttService
         .observe('rvautotech/fobo/pose')
         .subscribe((message: IMqttMessage) => {
-          console.log('rvautotech/fobo/pose');
-          console.log(new TextDecoder('utf-8').decode(message.payload));
+          // console.log('rvautotech/fobo/pose');
+          // console.log(new TextDecoder('utf-8').decode(message.payload));
           this.$pose.next(new TextDecoder('utf-8').decode(message.payload));
         });
 
       this._mqttService
         .observe('rvautotech/fobo/baseController/pauseResume')
         .subscribe((message: IMqttMessage) => {
-          console.log('rvautotech/fobo/pose');
+          console.log('rvautotech/fobo/baseController/pauseResume');
           console.log(new TextDecoder('utf-8').decode(message.payload));
           this.$pauseResume.next(
             new TextDecoder('utf-8').decode(message.payload)

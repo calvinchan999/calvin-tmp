@@ -35,7 +35,6 @@ export interface MapMetaData {
   x: number;
   y: number;
   angle: number;
-
 }
 
 @Injectable({
@@ -69,7 +68,6 @@ export class MapService {
     const url = `${this.baseUrl}${environment.api.mapImage(name)}`;
     // @ts-ignore
     return this.http.get<any>(url, { responseType: 'blob' });
-    // .pipe(map((res: Response) => res.blob()));
   }
 
   getMapMetaData(name: string): Observable<MapMetaData> {

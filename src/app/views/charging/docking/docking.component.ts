@@ -21,7 +21,6 @@ export class DockingComponent implements OnInit {
   ngOnInit(): void {}
 
   updatePageStage(event: Event) {
-    console.log(event);
     if (event) {
       this.pageStage = 'sub';
 

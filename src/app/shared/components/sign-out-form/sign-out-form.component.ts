@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
 
@@ -18,10 +19,19 @@ export class SignOutFormComponent implements OnInit {
   ngOnInit(): void {}
 
   onConfirm() {
-    this.authService.logout().subscribe(() => {
-      this.router.navigate(['/']).then(() => location.reload());
-    });
-
+    this.authService
+      .logout()
+      .pipe(
+        tap(() => {
+          this.sharedService.isOpenModal$.next({
+            modal: null,
+            modalHeader: null,
+          });
+          this.authService.isAuthenticatedSubject.next(null);
+          this.router.navigate(['/']);
+        })
+      )
+      .subscribe();
   }
 
   onCancel() {

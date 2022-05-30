@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { iif, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import {
+  catchError,
   delay,
   filter,
   map,
@@ -151,34 +152,33 @@ export class DefaultComponent implements OnInit {
       }
     });
 
-    this.sharedService.refresh$.subscribe((refresh: boolean) => {
-      if (refresh) {
-        this.authService.refreshToken().subscribe(
-          () => {
-            console.log('refresh token success');
-            this.sharedService.refresh$.next(false);
-            this.reloadCurrentRoute();
-          },
-          (err) => {
-            console.log('refresh toke fail');
-            this.sharedService.refresh$.next(false);
-            of(
-              this.sharedService.response$.next({
-                type: 'normal',
-                message: 'refreshTokenFail',
+    this.sharedService.refresh$
+      .pipe(
+        mergeMap((refresh: boolean) => {
+          if (refresh) {
+            return this.authService.refreshToken().pipe(
+              tap(() => {
+                this.sharedService.refresh$.next(false);
+                this.reloadCurrentRoute();
+              }),
+              catchError((error) => {
+                this.sharedService.refresh$.next(false);
+                return of(
+                  this.sharedService.response$.next({
+                    type: 'normal',
+                    message: 'refreshTokenFail',
+                  })
+                ).pipe(
+                  tap(() => setTimeout(() => this.redirectToHome(), 5000))
+                );
               })
-            )
-              .pipe(tap(() => setTimeout(() => this.redirectToHome(), 1000)))
-              .subscribe();
-
-            // this.sharedService.modalAction.next({
-            //   entry: this.entry,
-            //   title: 'refreshAuthFail',
-            // });
+            );
+          } else {
+            return of(null);
           }
-        );
-      }
-    });
+        })
+      )
+      .subscribe();
 
     this.mqttService.$mapActive
       .pipe(
@@ -230,7 +230,7 @@ export class DefaultComponent implements OnInit {
       this.router.events
         .pipe(filter((event) => event instanceof NavigationEnd))
         .subscribe(() => {
-          console.log('router events changed=>');
+          console.log('router events changed: ');
           setTimeout(() => {
             this.getCurrentMode();
             this.getCurrentMap();
@@ -259,25 +259,19 @@ export class DefaultComponent implements OnInit {
 
   getCurrentMap() {
     console.log('getCurrentMap');
-    this.mapService
-      .getActiveMap()
-      // .pipe(retry(3), delay(1000))
-      .subscribe((response: MapResponse) => {
-        console.log(response);
-        const { name } = response;
-        this.sharedService.currentMap$.next(name);
-      });
+    this.mapService.getActiveMap().subscribe((response: MapResponse) => {
+      console.log(response);
+      const { name } = response;
+      this.sharedService.currentMap$.next(name);
+    });
   }
 
   getCurrentMode() {
-    this.modeService
-      .getMode()
-      // .pipe(retry(3), delay(1000))
-      .subscribe((response: ModeResponse) => {
-        console.log('mode: ', response);
-        const { state } = response;
-        this.sharedService.currentMode$.next(state);
-      });
+    this.modeService.getMode().subscribe((response: ModeResponse) => {
+      console.log('mode: ', response);
+      const { state } = response;
+      this.sharedService.currentMode$.next(state);
+    });
   }
 
   initializeErrors() {
@@ -299,16 +293,41 @@ export class DefaultComponent implements OnInit {
 
   reloadCurrentRoute() {
     const currentUrl = this.router.url;
-    this.router.navigate([currentUrl]).then(() => location.reload());
+
+    if (currentUrl.indexOf('?') >= 0) {
+      const path = currentUrl.substring(
+        currentUrl.indexOf('/'),
+        currentUrl.lastIndexOf('?')
+      );
+      const payload = decodeURI(currentUrl).substring(
+        currentUrl.lastIndexOf('=') + 1
+      );
+
+      this.router.navigate([path], {
+        queryParams: {
+          payload,
+        },
+      });
+    } else {
+      this.router
+        .navigate([currentUrl])
+        .then(() =>
+          this.authService.isAuthenticatedSubject.next(sessionStorage.getItem('payload'))
+        );
+    }
   }
 
   redirectToHome() {
-    this.router.navigate(['/']).then(() => location.reload());
+    this.router
+      .navigate(['/'])
+      .then(() => this.authService.isAuthenticatedSubject.next(null));
   }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-    if (this.sub) { this.sub.unsubscribe(); }
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }

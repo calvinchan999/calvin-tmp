@@ -95,7 +95,7 @@ export class HeaderComponent implements OnInit {
 
     this.sub.add(
       combineLatest(
-        this.sharedService.currentMode$,
+        this.sharedService.currentMode$
         // this.sharedService.currentMap$
       )
         .pipe(
@@ -125,17 +125,16 @@ export class HeaderComponent implements OnInit {
 
   getUserAuth() {
     this.authService
-      .payload$()
+      .isAuthenticatedSubject
       .pipe(
         map((payload) => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
-          try {
-            const { userId } = payload;
-            this.user = userId;
-          } catch (e) {
-            console.log(e);
+          if (payload?.userId) {
+            this.user = payload.userId;
+          } else {
+            this.user = null;
           }
         })
       )
@@ -150,14 +149,16 @@ export class HeaderComponent implements OnInit {
 
   getBattery() {
     // @todo check connection
-    this.mqttService.$battery.pipe(tap(() => this.sharedService.reset$.next(0))).subscribe((battery) => {
-      if (battery) {
-        const { powerSupplyStatus, percentage } = JSON.parse(battery);
-        this.powerSupplyStatus = powerSupplyStatus;
-        this.percentage = Math.round(percentage * 100);
-        console.log(this.percentage);
-      }
-    });
+    this.mqttService.$battery
+      .pipe(tap(() => this.sharedService.reset$.next(0)))
+      .subscribe((battery) => {
+        if (battery) {
+          const { powerSupplyStatus, percentage } = JSON.parse(battery);
+          this.powerSupplyStatus = powerSupplyStatus;
+          this.percentage = Math.round(percentage * 100);
+          console.log(this.percentage);
+        }
+      });
   }
 
   useLanguage() {
