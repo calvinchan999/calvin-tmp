@@ -70,12 +70,18 @@ export class HeaderComponent implements OnInit {
         if (event instanceof NavigationEnd) {
           // event is an instance of NavigationEnd, get url!
           this.currentUrl = event.urlAfterRedirects;
+          if (this.currentUrl.indexOf('/waypoint/destination?payload') === 0) {
+            this.currentUrl = '/waypoint/destination?payload';
+          }
           const backToPreviousButtonBackLists = [
             {
               backlist: '/charging/charging-mqtt',
             },
             {
               backlist: '/charging/charging-dialog',
+            },
+            {
+              backlist: '/waypoint/destination?payload',
             },
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [
@@ -123,8 +129,7 @@ export class HeaderComponent implements OnInit {
   }
 
   getUserAuth() {
-    this.authService
-      .isAuthenticatedSubject
+    this.authService.isAuthenticatedSubject
       .pipe(
         map((payload) => {
           return JSON.parse(payload);

@@ -125,22 +125,23 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       rosImage.src = this.mapImage;
     });
 
-    const floorPlanImg$ = new Observable<HTMLImageElement>((observer) => {
-      const floorPlanImage = new Image();
+    // const floorPlanImg$ = new Observable<HTMLImageElement>((observer) => {
+    //   const floorPlanImage = new Image();
 
-      floorPlanImage.onload = () => {
-        observer.next(floorPlanImage);
-        observer.complete();
-      };
-      floorPlanImage.onerror = (err) => {
-        observer.error(err);
-      };
-      floorPlanImage.src = this.floorPlan;
-    });
+    //   floorPlanImage.onload = () => {
+    //     observer.next(floorPlanImage);
+    //     observer.complete();
+    //   };
+    //   floorPlanImage.onerror = (err) => {
+    //     observer.error(err);
+    //   };
+    //   floorPlanImage.src = this.floorPlan;
+    // });
 
-    forkJoin([rosImg$, floorPlanImg$])
+    forkJoin([rosImg$]) // floorPlanImg$
       .pipe(
         tap((img) => {
+        
           this.stage = new Stage({
             container: 'canvas',
             width: window.innerWidth,
@@ -155,14 +156,14 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             draggable: false,
             opacity: 0.7,
           });
-          this.floorPlanLayer.add(
-            new KonvaImage({
-              image: img[1],
-              width: img[1].width,
-              height: img[1].height,
-              draggable: false,
-            })
-          );
+          // this.floorPlanLayer.add(
+          //   new KonvaImage({
+          //     image: img[1],
+          //     width: img[1].width,
+          //     height: img[1].height,
+          //     draggable: false,
+          //   })
+          // );
 
           this.rosMapLayer.add(this.rosMap);
           this.rosMapLayer.add(this.localizationToolsGroup);
@@ -212,10 +213,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             this.rosMapLayer.on('mousedown touchstart', async (event: any) => {
               if (this.isReset) {
                 if (this.rosMapLayer.find('.waypoint').length <= 0) {
+          
                   this.getRosMapXYPointer(event)
                     .pipe(
-                      tap((position) => console.log(position)),
-                      mergeMap((position) => this.drawnWaypoint$(position))
+                      mergeMap((position) => this.drawnWaypoint$(position)),
+                      tap(() => this.robotCurrentPositionPointer.destroy()),
+                      tap(() => this.lidarPointsGroup.removeChildren()),
                     )
                     .subscribe();
                 } else {
@@ -308,7 +311,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                             }),
                             mergeMap(() => {
                               return of(null).pipe(
-                                delay(1000),
+                                delay(2000),
                                 mergeMap(() => {
                                   return this.getLidarData$().pipe(
                                     mergeMap(() => this.createLidarRedpoints())
@@ -363,7 +366,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   init() {
-    if (!this.isReset) {
+    // if (!this.isReset) {
       // handle 2 cases "localizationEditor" & "positionListener"
       // localizationEditor
       // user can monitior the robot currnet position in positionListener mode
@@ -383,7 +386,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         );
       }
       // this.createOriginPoint(); // For testing - show the origin point of the robot scanning map
-    }
+    // }
   }
 
   lidarData$(): Observable<any> {
@@ -481,13 +484,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return of(null).pipe(
       tap(() => {
         const { x, y, height, resolution }: any = this.metaData;
-        if (this.currentRobotPose) {
           this.robotCurrentPositionPointer.setAttrs({
             name: 'currentPosition',
             fill: 'blue',
             x: Math.abs(
               (x -
-                (this.currentRobotPose.x ??
+                (this.currentRobotPose?.x ??
                   this.robotCurrentPosition?.x ??
                   0)) /
                 resolution
@@ -496,14 +498,13 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               height -
               Math.abs(
                 (y -
-                  (this.currentRobotPose.y ?? this.robotCurrentPosition?.y) ??
+                  (this.currentRobotPose?.y ?? this.robotCurrentPosition?.y) ??
                   0) / resolution
               ),
             radius: 10,
             zIndex: 1,
           });
           this.rosMapLayer.add(this.robotCurrentPositionPointer);
-        }
       }),
       tap(() => {
         this.stage.offset({
@@ -513,23 +514,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       })
     );
 
-    // const { x, y, height, resolution }: any = this.metaData;
-    // const currentPosition = new Circle({
-    //   name: 'currentPosition',
-    //   fill: 'blue',
-    //   x: Math.abs(
-    //     (x - (this.robotCurrentPosition?.x )) /
-    //       resolution
-    //   ),
-    //   y:
-    //     height -
-    //     Math.abs(
-    //       (y - (this.robotCurrentPosition?.y) ??
-    //         0) / resolution
-    //     ),
-    //   radius: 10,
-    // });
-    // this.rosMapLayer.add(currentPosition);
+   
   }
 
   createAngleLabel(degrees: number): Observable<any> {
@@ -552,7 +537,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   // createOriginPoint(){
   //    //For testing - show the origin point of the robot scanning map
-  //    const { x, y }: Metadata = this.metaData;
+  //    const { x, y }: any = this.metaData;
   //    const { xPointer, yPointer} :any = this.transformToCanvasXY({ x, y });
   //    this.rosMapLayer.add(new Circle({
   //      x: xPointer ,
