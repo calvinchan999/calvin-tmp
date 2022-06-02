@@ -65,5 +65,6 @@
   "signout": "Sign out",
   "signoutDialog":{
     "tips1": "Are you sure you want to logout?"
-  }
+  },
+  "refreshTokenFail": "The login session have expired, please login again or use guest mode"
 }

@@ -65,5 +65,6 @@
   "signout": "登出",
   "signoutDialog":{
     "tips1": "你確定你要登出嗎？"
-  }
+  },
+  "refreshTokenFail":"登錄的證書已過期, 請重新登入或使用訪客模式"
 }

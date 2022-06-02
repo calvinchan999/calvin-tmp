@@ -26,14 +26,10 @@ export class FooterComponent implements OnInit {
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        // event is an instance of NavigationEnd, get url!
         this.currentUrl = event.urlAfterRedirects;
-        console.log(this.currentUrl);
       }
     });
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 }

@@ -258,8 +258,8 @@ export class DefaultComponent implements OnInit {
   // }
 
   getCurrentMap() {
-    console.log('getCurrentMap');
     this.mapService.getActiveMap().subscribe((response: MapResponse) => {
+      console.log('Get Active Map:');
       console.log(response);
       const { name } = response;
       this.sharedService.currentMap$.next(name);
@@ -268,7 +268,7 @@ export class DefaultComponent implements OnInit {
 
   getCurrentMode() {
     this.modeService.getMode().subscribe((response: ModeResponse) => {
-      console.log('mode: ', response);
+      console.log('Get Mode: ', response);
       const { state } = response;
       this.sharedService.currentMode$.next(state);
     });
@@ -279,11 +279,9 @@ export class DefaultComponent implements OnInit {
       .getHttpStatus()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((errors: any) => {
-        console.log(errors);
-        if (errors.inFlight) {
+        if (errors?.inFlight) {
           const message =
             'Status : ' + errors.errorCode + ' - ' + errors.errorMsg;
-
           if (errors.errorCode !== 403) {
             this.sharedService.response$.next({ type: 'warning', message });
           }
@@ -293,7 +291,6 @@ export class DefaultComponent implements OnInit {
 
   reloadCurrentRoute() {
     const currentUrl = this.router.url;
-
     if (currentUrl.indexOf('?') >= 0) {
       const path = currentUrl.substring(
         currentUrl.indexOf('/'),
@@ -303,24 +300,21 @@ export class DefaultComponent implements OnInit {
         currentUrl.lastIndexOf('=') + 1
       );
 
-      this.router.navigate([path], {
-        queryParams: {
-          payload,
-        },
-      });
-    } else {
       this.router
-        .navigate([currentUrl])
-        .then(() =>
-          this.authService.isAuthenticatedSubject.next(sessionStorage.getItem('payload'))
-        );
+        .navigate([path], {
+          queryParams: {
+            payload,
+          },
+        })
+        .then(() => location.reload());
+    } else {
+      this.router.navigate([currentUrl]).then(() => location.reload());
     }
   }
 
   redirectToHome() {
-    this.router
-      .navigate(['/'])
-      .then(() => this.authService.isAuthenticatedSubject.next(null));
+    this.authService.isAuthenticatedSubject.next(null);
+    this.router.navigate(['/']).then(() => location.reload());
   }
 
   ngOnDestroy() {

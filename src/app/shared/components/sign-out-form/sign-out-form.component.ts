@@ -22,14 +22,14 @@ export class SignOutFormComponent implements OnInit {
     this.authService
       .logout()
       .pipe(
-        tap(() => {
+        tap(() =>
           this.sharedService.isOpenModal$.next({
             modal: null,
             modalHeader: null,
-          });
-          this.authService.isAuthenticatedSubject.next(null);
-          this.router.navigate(['/']);
-        })
+          })
+        ),
+        tap(() => this.authService.isAuthenticatedSubject.next(null)),
+        tap(() => this.router.navigate(['/']).then(() => location.reload())),
       )
       .subscribe();
   }

@@ -60,7 +60,6 @@ export class HeaderComponent implements OnInit {
           })
         )
         .subscribe((route: ActivatedRouteSnapshot) => {
-          console.log(route.data);
           const { title } = route.data;
           this.currentPageTitle = title;
         })
@@ -156,7 +155,6 @@ export class HeaderComponent implements OnInit {
           const { powerSupplyStatus, percentage } = JSON.parse(battery);
           this.powerSupplyStatus = powerSupplyStatus;
           this.percentage = Math.round(percentage * 100);
-          console.log(this.percentage);
         }
       });
   }

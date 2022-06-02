@@ -33,7 +33,6 @@ export class ModeFormComponent implements OnInit {
   }
 
   onSelectedMode(mode: Mode) {
-    console.log(mode);
     this.selectedMode = mode;
   }
 
