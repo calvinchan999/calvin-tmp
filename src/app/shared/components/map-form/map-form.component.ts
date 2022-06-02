@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
-import { MapService, Map } from 'src/app/views/services/map.service';
+import { MapService, FloorPlanLists } from 'src/app/views/services/map.service';
 
 @Component({
   selector: 'app-map-form',
@@ -12,19 +11,19 @@ import { MapService, Map } from 'src/app/views/services/map.service';
   styleUrls: ['./map-form.component.scss'],
 })
 export class MapFormComponent implements OnInit {
-  mapLists$: Observable<any> = this.mapService.getMap();
-  selectedMap: Map;
+  mapLists$: Observable<FloorPlanLists> = this.mapService
+    .getMap()
+    .pipe(map((mapLists: any) => mapLists.list));
+  selectedMap: FloorPlanLists;
   constructor(
     private modalComponent: ModalComponent,
     private mapService: MapService,
-    private sharedService: SharedService,
-    private translateService: TranslateService
+    private sharedService: SharedService
   ) {}
 
   ngOnInit(): void {}
 
-
-  onSelectedMap(map: Map) {
+  onSelectedMap(map: FloorPlanLists) {
     this.selectedMap = map;
   }
 
@@ -32,21 +31,19 @@ export class MapFormComponent implements OnInit {
     this.modalComponent.closeTrigger$.next();
   }
 
-  onSubmitModel(selectedMap: Map) {
-    if (selectedMap) {
-      const data: any = {
-        mapName: selectedMap,
+  onSubmitModel(selectedMap: FloorPlanLists) {
+    const { code }: any = selectedMap?.map;
+    if (code) {
+      const data = {
+        mapName: code,
       };
-      this.mapService
-        .changeMap(data)
-        // .pipe(mergeMap(() => this.translateService.get('mapDialog.tips1')))
-        .subscribe(() => {
-          this.modalComponent.closeTrigger$.next();
-          this.sharedService.response$.next({
-            type: 'normal',
-            message: 'mapDialog.tips1',
-          });
+      this.mapService.changeMap(data).subscribe(() => {
+        this.modalComponent.closeTrigger$.next();
+        this.sharedService.response$.next({
+          type: 'normal',
+          message: 'mapDialog.tips1',
         });
+      });
     }
   }
 }

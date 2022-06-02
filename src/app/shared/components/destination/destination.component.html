@@ -4,10 +4,10 @@
       <div class="card h-100">
         <app-map-wrapper
           class="map"
-          *ngIf="rosMapImage && metaData"
+          *ngIf="floorPlanData && rosMapData && metaData"
           type="positionListener"
-          [floorPlan]="floorPlanImg"
-          [mapImage]="rosMapImage"
+          [floorPlanData]="floorPlanData"
+          [rosMapData]="rosMapData"
           [currentRobotPose]="currentRobotPose"
           [metaData]="metaData"
           [targetWaypoints]="payload"

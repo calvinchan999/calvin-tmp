@@ -26,10 +26,8 @@ export class HomeComponent implements OnInit {
   ) {
     this.features = this.appConfigService.getConfig().feature;
 
-    // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
     this.sharedService.currentMode$.subscribe((mode: string) => {
       this.mode = mode;
-      console.log(`mode: ${mode}`);
     });
   }
 

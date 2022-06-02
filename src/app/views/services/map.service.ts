@@ -2,10 +2,42 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
+
 export interface Map {
   map: string;
+}
+
+export interface FloorPlanPayload {
+  robotId: string;
+  id: string;
+  name: string;
+}
+
+export interface FloorPlanLists {
+  id: number;
+  code: string;
+  name: string;
+  map: FloorPlanPayload;
+}
+
+export interface FloorPlanResponse {
+  total?: number;
+  list: FloorPlanLists;
+  pageNum?: number;
+  pageSize?: number;
+  size?: number;
+  startRow?: number;
+  endRow?: number;
+  pages?: number;
+  prePage?: number;
+  nextPage?: number;
+  isFirstPage?: boolean;
+  isLastPage?: boolean;
+  hasPreviousPage?: boolean;
+  hasNextPage?: boolean;
+  navigatePages?: number;
 }
 
 export interface MapResponse {
@@ -38,7 +70,7 @@ export interface MapMetaData {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MapService {
   public baseUrl;
@@ -54,9 +86,10 @@ export class MapService {
     return this.http.get<MapResponse>(url);
   }
 
-  getMap(): Observable<MapResponse> {
-    const url = `${this.baseUrl}${environment.api.map}`;
-    return this.http.get<MapResponse>(url);
+  getMap(): Observable<FloorPlanResponse> {
+    // const url = `${this.baseUrl}${environment.api.map}`;
+    const url = `${this.baseUrl}${environment.api.floorPlans}`;
+    return this.http.get<FloorPlanResponse>(url);
   }
 
   changeMap(data: { mapName: string }): Observable<any> {
@@ -68,6 +101,29 @@ export class MapService {
     const url = `${this.baseUrl}${environment.api.mapImage(name)}`;
     // @ts-ignore
     return this.http.get<any>(url, { responseType: 'blob' });
+  }
+
+  getFloorPlanData({
+    code,
+    floorPlanIncluded = false,
+    mapIncluded = false
+  }: {
+    code: string;
+    floorPlanIncluded?: boolean;
+    mapIncluded?: boolean;
+  }): Observable<any> {
+    const params: any = {
+      floorPlanIncluded: JSON.stringify(floorPlanIncluded),
+      mapIncluded: JSON.stringify(mapIncluded)
+    };
+    const queries = {
+      params
+    };
+    const url = generateQueryUrl(
+      `${this.baseUrl}${environment.api.floorPlanByMapCode(code)}`,
+      queries
+    );
+    return this.http.get<any>(url);
   }
 
   getMapMetaData(name: string): Observable<MapMetaData> {

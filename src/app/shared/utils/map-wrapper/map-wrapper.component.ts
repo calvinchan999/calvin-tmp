@@ -7,7 +7,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { Stage } from 'konva/lib/Stage';
 import { Layer } from 'konva/lib/Layer';
@@ -22,6 +22,7 @@ import { delay, finalize, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import * as Hammer from 'hammerjs';
+import { DomSanitizer } from '@angular/platform-browser';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 // export function loadImage(src: string): Observable<any> {
@@ -43,7 +44,7 @@ export interface Pointer {
 
 export enum TypeEnum {
   POSITIONLISTENER = 'positionListener',
-  LOCALIZATIONEDITOR = 'localizationEditor',
+  LOCALIZATIONEDITOR = 'localizationEditor'
 }
 
 export interface ToolsType {
@@ -53,15 +54,15 @@ export interface ToolsType {
 @Component({
   selector: 'app-map-wrapper',
   templateUrl: './map-wrapper.component.html',
-  styleUrls: ['./map-wrapper.component.scss'],
+  styleUrls: ['./map-wrapper.component.scss']
 })
 export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('canvas') canvas: ElementRef;
   @Input() type: ToolsType; // todo
   @Input() currentRobotPose: any; // todo
   @Input() targetWaypoints: any; // todo
-  @Input() floorPlan: string;
-  @Input() mapImage: string;
+  @Input() floorPlanData: any;
+  @Input() rosMapData: any;
   @Input() metaData: any;
   @Output() isUpdatedWaypoint = new EventEmitter<any>(false);
   sub = new Subscription();
@@ -71,17 +72,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     x: 0,
     y: 0,
     draggable: false,
-    name: 'localizationToolsGroup',
+    name: 'localizationToolsGroup'
   });
   lidarPointsGroup: Group = new Group({
     x: 0,
     y: 0,
     draggable: false,
-    name: 'lidarPointsGroup',
+    name: 'lidarPointsGroup'
   });
 
   rosMapLayer: Layer = new Layer({
-    draggable: true,
+    draggable: true
   });
   floorPlanLayer: Layer = new Layer({});
 
@@ -109,87 +110,109 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private waypointService: WaypointService,
-    private mapService: MapService // private indexedDbService: IndexedDbService
+    private mapService: MapService // private indexedDbService: IndexedDbService,
   ) {}
 
-  ngOnInit(): void {
-    const rosImg$ = new Observable<HTMLImageElement>((observer) => {
+  ngOnInit() {
+    const rosImg$ = new Observable<HTMLImageElement>(observer => {
       const rosImage = new Image();
       rosImage.onload = () => {
         observer.next(rosImage);
         observer.complete();
       };
-      rosImage.onerror = (err) => {
+      rosImage.onerror = err => {
         observer.error(err);
       };
-      rosImage.src = this.mapImage;
+
+      rosImage.src = 'data:image/jpeg;base64,' + this.rosMapData?.map?.imageData;
     });
 
-    const floorPlanImg$ = new Observable<HTMLImageElement>((observer) => {
+    const floorPlanImg$ = new Observable<HTMLImageElement>(observer => {
       const floorPlanImage = new Image();
 
       floorPlanImage.onload = () => {
         observer.next(floorPlanImage);
         observer.complete();
       };
-      floorPlanImage.onerror = (err) => {
+      floorPlanImage.onerror = err => {
         observer.error(err);
       };
-      floorPlanImage.src = this.floorPlan;
+      floorPlanImage.src =
+        'data:image/jpeg;base64,' + this.floorPlanData?.imageData;
     });
 
     forkJoin([rosImg$, floorPlanImg$])
       .pipe(
-        tap((img) => {
+        tap(img => {
           this.stage = new Stage({
             container: 'canvas',
             width: window.innerWidth,
             height: window.innerHeight,
-            draggable: true,
+            draggable: true
           });
-
-          this.rosMap = new KonvaImage({
-            image: img[0],
-            width: img[0].width,
-            height: img[0].height,
-            draggable: false,
-            opacity: 0.7,
-          });
-          this.floorPlanLayer.add(
-            new KonvaImage({
-              image: img[1],
-              width: img[1].width,
-              height: img[1].height,
+          if (this.type === 'localizationEditor') {
+            this.rosMap = new KonvaImage({
+              image: img[0],
+              width: img[0].width,
+              height: img[0].height,
               draggable: false,
-            })
-          );
+              opacity: 0.7
+            });
 
-          this.rosMapLayer.add(this.rosMap);
-          this.rosMapLayer.add(this.localizationToolsGroup);
-          this.rosMapLayer.add(this.lidarPointsGroup);
-          this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
-          // this.rosMapLayer.position({ x: 0, y: img[1].height });
-          // this.floorPlanLayer.scale({
-          //   x: this.floorPlanScale,
-          //   y: this.floorPlanScale,
-          // });
-          // this.stage.rotate(90)
-          // this.rosMapLayer.rotate(270.28);
+            // this.floorPlanLayer.add(
+            //   new KonvaImage({
+            //     image: img[1],
+            //     width: img[1].width,
+            //     height: img[1].height,
+            //     draggable: false,
+            //   })
+            // );
 
-          // this.stage.add(this.floorPlanLayer);
-          this.stage.add(this.rosMapLayer);
-          this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
+            this.rosMapLayer.add(this.rosMap);
+            this.rosMapLayer.add(this.localizationToolsGroup);
+            this.rosMapLayer.add(this.lidarPointsGroup);
+            this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
+            // this.rosMapLayer.position({ x: 0, y: img[1].height });
+            // this.floorPlanLayer.scale({
+            //   x: this.floorPlanScale,
+            //   y: this.floorPlanScale,
+            // });
+            // this.rosMapLayer.rotate(270.28);
+
+            // this.stage.add(this.floorPlanLayer);
+            this.stage.add(this.rosMapLayer);
+            this.stage.scale({ x: this.scale, y: this.scale });
+          } else {
+            console.log(this.floorPlanData);
+            console.log(this.rosMapData);
+            this.floorPlanLayer.add(
+              new KonvaImage({
+                image: img[1],
+                width: img[1].width,
+                height: img[1].height,
+                draggable: false
+              })
+            );
+            // this.rosMap = new KonvaImage({
+            //   image: img[0],
+            //   width: img[0].width,
+            //   height: img[0].height,
+            //   draggable: false,
+            //   opacity: 0.7
+            // });
+            // this.rosMapLayer.add(this.rosMap);
+            // this.rosMapLayer.height(this.rosMapData.map.height);
+            // this.rosMapLayer.width(this.rosMapData.map.width);
+            // this.rosMapLayer.scale({ x: this.rosMapData.map.scale, y: this.rosMapData.map.scale });
+            // this.rosMapLayer.rotation(this.rosMapData.map.rotation);
+            this.stage.add(this.floorPlanLayer);
+            // this.stage.add(this.rosMapLayer);
+            // this.rosMapLayer.offset({x: this.rosMapData.map.x,y: this.rosMapData.map.y});
+            this.stage.scale({ x: this.scale, y: this.scale });
+          }
         }),
         tap(() => {
           const hammer = new Hammer(this.canvas.nativeElement);
-          // this.rosMapLayer.on('dragstart', () => {
-          //   console.log('dragstart');
-          //   console.log(this.rosMapLayer.getAttrs());
-          // });
-          // this.rosMapLayer.on('dragend', () => {
-          //   console.log('dragend');
-          //   console.log(this.rosMapLayer.getAttrs());
-          // });
 
           this.stage.on('touchstart', () => {
             hammer.get('pinch').set({ enable: true });
@@ -199,7 +222,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             hammer.get('pinch').set({ enable: false });
           });
 
-          this.stage.on('wheel', (event) => {
+          this.stage.on('wheel', event => {
             event.evt.preventDefault();
             let direction = event.evt.deltaY > 0 ? 1 : -1;
             if (direction < 0) {
@@ -213,10 +236,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               if (this.isReset) {
                 if (this.rosMapLayer.find('.waypoint').length <= 0) {
                   this.getRosMapXYPointer(event)
-                    .pipe(
-                      tap((position) => console.log(position)),
-                      mergeMap((position) => this.drawnWaypoint$(position))
-                    )
+                    .pipe(mergeMap(position => this.drawnWaypoint$(position)))
                     .subscribe();
                 } else {
                   this.stage.draggable(true);
@@ -226,13 +246,13 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
             this.waypoint.on('mousedown touchstart', async (event: any) => {
               if (this.isReset && !this.lineLocked) {
-                this.rosMapLayer.getChildren().forEach((child) => {
+                this.rosMapLayer.getChildren().forEach(child => {
                   if (child.className === 'Arrow') {
                     child.destroy();
                   }
                 });
 
-                this.getRosMapXYPointer(event).subscribe((position) => {
+                this.getRosMapXYPointer(event).subscribe(position => {
                   this.isLineUpdated = true;
                   this.line.setAttrs({
                     fill: 'black',
@@ -245,8 +265,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                       this.waypoint.x(),
                       this.waypoint.y(),
                       position.x,
-                      position.y,
-                    ],
+                      position.y
+                    ]
                   });
                   this.localizationToolsGroup.add(this.line);
                 });
@@ -266,7 +286,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                   this.rosMapLayer.draggable(false);
                 }
                 if (this.isLineUpdated) {
-                  this.getRosMapXYPointer(event).subscribe((position) => {
+                  this.getRosMapXYPointer(event).subscribe(position => {
                     const points = this.line.points().slice();
                     points[2] = position.x;
                     points[3] = position.y;
@@ -300,7 +320,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                                 .initialPose({
                                   x,
                                   y,
-                                  angle,
+                                  angle
                                 })
                                 .pipe(
                                   mergeMap(() => this.createAngleLabel(degrees))
@@ -320,14 +340,14 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                           .subscribe(
                             () => {
                               this.isUpdatedWaypoint.emit({
-                                status: 'success',
+                                status: 'success'
                               });
                               this.lineLocked = false;
                             },
-                            (error) => {
+                            error => {
                               this.isUpdatedWaypoint.emit({
                                 status: 'failed',
-                                error,
+                                error
                               });
                               this.lineLocked = false;
                             }
@@ -357,7 +377,13 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
-    if (this.currentRobotPose && this.metaData && this.type && this.mapImage) {
+    if (
+      this.currentRobotPose &&
+      this.metaData &&
+      this.type &&
+      this.rosMapData &&
+      this.floorPlanData
+    ) {
       this.init();
     }
   }
@@ -371,14 +397,15 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         this.sub.add(
           forkJoin([
             this.createRobotCurrentPosition(),
-            this.createLidarRedpoints(),
+            this.createLidarRedpoints()
           ]).subscribe()
         );
       } else if (this.type === 'positionListener') {
+         // this.createRobotCurrentPosition(),
+            // this.createTargetPosition()
         this.sub.add(
           forkJoin([
-            this.createRobotCurrentPosition(),
-            this.createTargetPosition(),
+            this.createFloorPlanWaypoint()
           ]).subscribe()
         );
       }
@@ -394,7 +421,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return of(this.lidarPointsGroup.removeChildren()).pipe(
       mergeMap(() =>
         of(this.lidarData).pipe(
-          tap((data) => {
+          tap(data => {
             const { pointList } = data;
             const { x, y, height, resolution }: any = this.metaData;
             for (const i in pointList) {
@@ -403,11 +430,10 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                 y: height - Math.abs((y - pointList[i]['y']) / resolution),
                 radius: 2,
                 fill: 'red',
-                name: 'redpoint',
+                name: 'redpoint'
               });
 
               this.lidarPointsGroup.add(redpoint);
-              // }
             }
           })
         )
@@ -419,58 +445,52 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return this.mapService.getLocalizationPose();
   }
 
+
+  createFloorPlanWaypoint(): Observable<any> {
+    const img = new Image();
+    img.src = '/assets/images/location.png';
+    const ob = new Observable(observer => {
+      img.onload = function() {
+        observer.next({
+          img
+        });
+        observer.complete();
+      };
+    });
+    return ob.pipe(
+      tap(data => {
+        console.log(this.floorPlanData);
+        // let locationImg = new KonvaImage({
+        //   x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
+        //   y: height - Math.abs((y - targetY) / resolution) - data.img.height,
+        //   image: data.img
+        // });
+        // this.rosMapLayer.add(locationImg);
+      })
+    );
+  }
+
   createTargetPosition(): Observable<any> {
     const { targetX, targetY, targetAngle } = this.targetWaypoints;
     const { x, y, height, resolution }: any = this.metaData;
 
     const img = new Image();
     img.src = '/assets/images/location.png';
-    const ob = new Observable((observer) => {
-      img.onload = function () {
+    const ob = new Observable(observer => {
+      img.onload = function() {
         observer.next({
-          img,
+          img
         });
         observer.complete();
       };
     });
 
-    // const targetPointer = new Circle({
-    //   name: 'targetPointer',
-    //   x: Math.abs((x - targetX) / resolution),
-    //   y: height - Math.abs((y - targetY) / resolution),
-    //   radius: 10,
-    //   stroke: 'red',
-    //   strokeWidth: 4,
-    //   zIndex: 0,
-    // });
-
-    //  const targetPointer = new Shape({
-    //   name: 'targetPointer',
-    //   x: Math.abs((x - targetX) / resolution),
-    //   y: height - Math.abs((y - targetY) / resolution),
-    //   zIndex: -1,
-    //   fill: '#00D2FF',
-    //   stroke: 'red',
-    //   strokeWidth: 7,
-    //   sceneFunc: function (context, shape) {
-    //     context.beginPath();
-    //     context.moveTo(0, -30);
-    //     context.lineTo(0, 30);
-    //     context.moveTo(-30, 0);
-    //     context.lineTo(30, 0);
-    //     context.stroke();
-    //     context.closePath();
-    //     context.fillStrokeShape(shape);
-    //   },
-    // });
-    // this.rosMapLayer.add(targetPointer);
-
     return ob.pipe(
-      tap((data) => {
+      tap(data => {
         let locationImg = new KonvaImage({
           x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
           y: height - Math.abs((y - targetY) / resolution) - data.img.height,
-          image: data.img,
+          image: data.img
         });
         this.rosMapLayer.add(locationImg);
       })
@@ -500,7 +520,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                   0) / resolution
               ),
             radius: 10,
-            zIndex: 1,
+            zIndex: 1
           });
           this.rosMapLayer.add(this.robotCurrentPositionPointer);
         }
@@ -508,7 +528,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       tap(() => {
         this.stage.offset({
           x: this.robotCurrentPositionPointer.getAttrs().x,
-          y: this.robotCurrentPositionPointer.getAttrs().y,
+          y: this.robotCurrentPositionPointer.getAttrs().y
         });
       })
     );
@@ -542,7 +562,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       fontFamily:
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
       fill: 'blue',
-      name: 'angleLabel',
+      name: 'angleLabel'
     });
 
     return of(this.angleLabel.destroy()).pipe(
@@ -573,7 +593,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           radius: 100 / this.rosScale,
           stroke: 'black',
           strokeWidth: 4,
-          name: 'waypoint',
+          name: 'waypoint'
         });
 
         this.centerOfWaypoint = new Circle({
@@ -581,7 +601,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           fill: 'red',
           x: x,
           y: y,
-          radius: 10 / this.rosScale,
+          radius: 10 / this.rosScale
         });
 
         this.localizationToolsGroup.add(this.centerOfWaypoint);
@@ -594,7 +614,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     const { resolution, height }: any = this.metaData;
     return {
       xPointer: Math.abs(x / resolution),
-      yPointer: height - Math.abs(y / resolution),
+      yPointer: height - Math.abs(y / resolution)
     };
   }
 
@@ -644,7 +664,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   getRosMapXYPointer(event: any): Observable<{ x: number; y: number }> {
     const mousePointTo = {
       x: this.rosMapLayer.getRelativePointerPosition().x,
-      y: this.rosMapLayer.getRelativePointerPosition().y,
+      y: this.rosMapLayer.getRelativePointerPosition().y
     };
     return of(mousePointTo);
   }
@@ -659,7 +679,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       y:
         ((event.target as any).getStage().getPointerPosition().y / oldScale -
           this.stage.y() / oldScale) /
-        this.scale,
+        this.scale
     };
     return of(mousePointTo);
   }
@@ -729,12 +749,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   getRobotCurrentPosition$(): Observable<any> {
     return this.robotCurrentPosition$().pipe(
-      tap((res) => (this.robotCurrentPosition = res))
+      tap(res => (this.robotCurrentPosition = res))
     );
   }
 
   getLidarData$(): Observable<any> {
-    return this.lidarData$().pipe(tap((res) => (this.lidarData = res)));
+    return this.lidarData$().pipe(tap(res => (this.lidarData = res)));
   }
 
   ngOnDestroy() {

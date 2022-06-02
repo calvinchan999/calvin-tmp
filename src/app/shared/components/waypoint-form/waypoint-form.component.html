@@ -17,7 +17,7 @@
   <button
     *ngIf="selectedWaypoint"
     class="btn waypoint-confirm-button"
-    (click)="onSubmitModel(selectedWaypoint?.name)"
+    (click)="onSubmitModel(selectedWaypoint?.code)"
   >
   <i class="mdi mdi-chevron-right waypoint-confirm-button-icon"></i>
   <label class="waypoint-confirm-button-title">{{

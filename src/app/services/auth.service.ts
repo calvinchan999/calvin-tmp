@@ -96,7 +96,6 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    console.log('refreshToken');
     const refreshTokenUrl = `${
       this.appConfigService.getConfig().server.endpoint
     }${environment.api.refreshAuth}`;

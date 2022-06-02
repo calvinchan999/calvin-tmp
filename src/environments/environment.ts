@@ -26,7 +26,9 @@ export const environment = {
     docking: '/api/docking/v1/charging',
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
     mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
-    lidar: '/api/lidar/v1'
+    lidar: '/api/lidar/v1',
+    floorPlans: '/api/floorPlan/v1',
+    floorPlanByMapCode: (code: string) => `/api/floorPlan/v1/mapCode/${code}`,
   },
 };
 

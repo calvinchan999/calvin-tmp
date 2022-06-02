@@ -2,8 +2,8 @@
   height: 120px;
   width: 100%;
   border-radius: 30px;
-  border: 5px solid #00B8D4;
-  color: #00B8D4;
+  border: 5px solid #00b8d4;
+  color: #00b8d4;
   cursor: pointer;
   transition: 0.4s;
   text-align: center;
@@ -39,26 +39,25 @@
   display: flex;
   align-items: center;
   .icon-container {
-    flex:1;
+    flex: 1;
     .icon {
-      // color: #00B8D4;
       font-size: 4em;
     }
   }
 
-  h2 {
+  .card-title {
     margin-left: 15px;
-    flex:auto;
+    flex: auto;
     align-items: center;
-    font-size: 32px;
+    font-size: 26px;
     text-transform: uppercase;
-    // color: #00B8D4;
     font-weight: bold;
     width: 100%;
     z-index: 1;
     text-align: left;
     // text-shadow: 0 0 1px white, 0 0 1px white, 0 0 1px white, 0 0 1px white,
     //   0 0 1px white, 0 0 1px white, 0 0 1px white, 0 0 1px white;
+    line-break: anywhere;
   }
 }
 

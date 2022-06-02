@@ -8,7 +8,8 @@ export interface Waypoint {
   name: string;
   x: number;
   y: number;
-  angle: number;
+  // angle: number;
+  code: string;
 }
 
 export interface TaskConfig {
