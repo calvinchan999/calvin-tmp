@@ -2,7 +2,7 @@ import { Inject, Injectable, LOCALE_ID } from '@angular/core';
 import Dexie from '@dpogue/dexie';
 import { EMPTY, from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import * as pdfMake from 'pdfmake/build/pdfMake';
+import * as pdfMake from 'pdfmake/build/pdfmake.min';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import * as moment from 'moment';
 
