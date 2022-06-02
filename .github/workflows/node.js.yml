@@ -25,8 +25,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install
-    - run: npm run build --if-present
+    - run: npm ci
+    - run: npm run build
     - name: Upload the build output
       uses: actions/upload-artifact@v3
       with:
