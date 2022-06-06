@@ -28,6 +28,7 @@ export class MqttService {
   public $state = new Subject<any>();
   public $pose = new Subject<any>();
   public $pauseResume = new Subject<any>();
+  public $obstacleDetction = new Subject<any>();
   public clientId: string = '';
   constructor(
     private _mqttService: NgxMqttService,
@@ -130,6 +131,16 @@ export class MqttService {
           console.log('rvautotech/fobo/baseController/pauseResume');
           console.log(new TextDecoder('utf-8').decode(message.payload));
           this.$pauseResume.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
+        });
+
+        this._mqttService
+        .observe('rvautotech/fobo/obstacle/detection')
+        .subscribe((message: IMqttMessage) => {
+          console.log('rvautotech/fobo/obstacle/detection');
+          console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.$obstacleDetction.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });

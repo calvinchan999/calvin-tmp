@@ -1,16 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { iif, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
-  delay,
   filter,
   map,
   mergeMap,
-  retry,
-  startWith,
-  switchMap,
   takeUntil,
   tap,
 } from 'rxjs/operators';
@@ -40,6 +36,8 @@ export class DefaultComponent implements OnInit {
   modalTitle: string = '';
   isDisableClose: boolean;
   parentPayload: any = null;
+
+  alertBgmLocation: string = `/assets/music/AUDIO.mp3`;
 
   constructor(
     private router: Router,
@@ -225,6 +223,22 @@ export class DefaultComponent implements OnInit {
         this.dialog.onCloseWithoutRefresh();
         this.sharedService.response$.next({ type: 'normal', message });
       });
+
+    this.mqttService.$obstacleDetction
+      .pipe(
+        map((detection) => JSON.parse(detection)),
+        tap((detection) => {
+          const { detected } = detection;
+          let audio = new Audio();
+          audio.src = this.alertBgmLocation;
+          if (detected) {
+            audio.play();
+          } else {
+            audio.pause();
+          }
+        })
+      )
+      .subscribe();
 
     this.sub.add(
       this.router.events
