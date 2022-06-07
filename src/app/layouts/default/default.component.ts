@@ -37,8 +37,6 @@ export class DefaultComponent implements OnInit {
   isDisableClose: boolean;
   parentPayload: any = null;
 
-  alertBgmLocation: string = `/assets/music/AUDIO.mp3`;
-
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -224,21 +222,21 @@ export class DefaultComponent implements OnInit {
         this.sharedService.response$.next({ type: 'normal', message });
       });
 
-    this.mqttService.$obstacleDetction
-      .pipe(
-        map((detection) => JSON.parse(detection)),
-        tap((detection) => {
-          const { detected } = detection;
-          let audio = new Audio();
-          audio.src = this.alertBgmLocation;
-          if (detected) {
-            audio.play();
-          } else {
-            audio.pause();
-          }
-        })
-      )
-      .subscribe();
+    // this.mqttService.$obstacleDetction
+    //   .pipe(
+    //     map((detection) => JSON.parse(detection)),
+    //     tap((detection) => {
+    //       const { detected } = detection;
+    //       let audio = new Audio();
+    //       audio.src = this.alertBgmLocation;
+    //       if (detected) {
+    //         audio.play();
+    //       } else {
+    //         audio.pause();
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
 
     this.sub.add(
       this.router.events
