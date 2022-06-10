@@ -8,8 +8,11 @@ export interface Waypoint {
   name: string;
   x: number;
   y: number;
-  // angle: number;
   code: string;
+  floorPlanX?: number;
+  floorPlanY?: number;
+  floorPlanName?: string;
+  floorPlanCode?: string;
 }
 
 export interface TaskConfig {
@@ -42,7 +45,7 @@ export interface InitialPose {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class WaypointService {
   public baseUrl: string;

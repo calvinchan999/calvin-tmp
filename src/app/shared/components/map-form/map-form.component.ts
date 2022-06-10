@@ -32,7 +32,7 @@ export class MapFormComponent implements OnInit {
   }
 
   onSubmitModel(selectedMap: FloorPlanLists) {
-    const { code }: any = selectedMap?.map;
+    const { code = null}: any = selectedMap?.map || {};
     if (code) {
       const data = {
         mapName: code,
@@ -44,6 +44,8 @@ export class MapFormComponent implements OnInit {
           message: 'mapDialog.tips1',
         });
       });
+    }else {
+      console.log(`code not found`);
     }
   }
 }

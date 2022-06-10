@@ -6,6 +6,7 @@ import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
+import { Category } from '../../utils/map-wrapper/interface/map-wrapper';
 import { Metadata } from '../localization-form/localization-form.component';
 
 @Component({
@@ -15,6 +16,7 @@ import { Metadata } from '../localization-form/localization-form.component';
 })
 export class DestinationComponent implements OnInit {
   @Input() payload: any;
+  type = Category.POSITIONLISTNER;
   floorPlanData: any = null;
   rosMapData: any = null;
   metaData: Metadata;
@@ -29,12 +31,11 @@ export class DestinationComponent implements OnInit {
     private translateService: TranslateService
   ) {
     this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
-      console.log('currentMap: ', currentMap);
       if (currentMap) {
         const data = {
           code: currentMap,
-          floorPlanIncluded: true,
-          mapIncluded: false
+          floorPlanIncluded: false,
+          mapIncluded: true
         };
         this.mapService
           .getFloorPlanData(data)
@@ -46,7 +47,8 @@ export class DestinationComponent implements OnInit {
                 id: data.id,
                 imageData: data?.imageData,
                 name: data.name,
-                pointList: data?.pointList
+                floorPlanPointList: data?.floorPlanPointList,
+                rosMapPointList: data?.rosMapPointList
               };
               let rosMap = {
                 map: data?.map
@@ -98,7 +100,7 @@ export class DestinationComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 
   onPause() {
     setTimeout(() => {

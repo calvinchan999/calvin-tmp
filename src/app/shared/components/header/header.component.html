@@ -94,7 +94,6 @@
         </li>
       </ul>
     </div>
-   
   </div>
   <!-- <div class="container-fluid">
     <div
@@ -110,8 +109,8 @@
     *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
   >
     <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center"
-      style="flex: 1"
+      class="navbar-collapse collapse flex-sm-grow-0 justify-content-start align-self-center"
+      style="flex-basis:0"
     >
       <!-- <label
         style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
@@ -126,29 +125,41 @@
       <!-- <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon> -->
     </div>
     <div
-      class="navbar-collapse collapse flex-sm-grow-auto justify-content-start align-self-center path"
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center path"
     >
       <label
         style="
           overflow: hidden;
           text-overflow: ellipsis;
-          text-align: start;
           width: 100%;
           white-space: nowrap;
+          
+        "
+        [ngStyle]="
+          currentUrl !== '/waypoint/waypoint-list'
+            ? { 'text-align': 'start' }
+            : { 'text-align': 'center' }
         "
         >{{ currentPageTitle | translate }}</label
       >
     </div>
-  </div>
-</nav>
-<!-- <nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
-  <div class="container">
+
     <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
+      class="navbar-collapse collapse flex-sm-grow-0 justify-content-end align-self-center"
+      style="flex-basis:0"
+      *ngIf="currentUrl === '/waypoint/waypoint-list'"
     >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}testtesttesttest</label
-      >
+      <i
+        class="mdi mdi-map-legend icon"
+        (click)="useMap()"
+        *ngIf="waypointListPageType === 'list'"
+      ></i>
+
+      <i
+        class="mdi mdi-format-list-bulleted icon"
+        (click)="useList()"
+        *ngIf="waypointListPageType === 'map'"
+      ></i>
     </div>
   </div>
-</nav> -->
+</nav>

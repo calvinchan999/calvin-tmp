@@ -54,7 +54,7 @@
 }
 
 .map {
-  height: 60vh;
+  height: 80vh;
 }
 
 @media only screen and (max-width: 900px) {
@@ -68,9 +68,5 @@
 
   .map-confirm-button {
     font-size: 35px;
-  }
-
-  .map {
-    height: 400px;
   }
 }

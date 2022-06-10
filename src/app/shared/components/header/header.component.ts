@@ -3,14 +3,17 @@ import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
   NavigationEnd,
-  Router,
+  Router
 } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
-import { SharedService } from 'src/app/services/shared.service';
+import {
+  SharedService,
+  WaypointPageCategory
+} from 'src/app/services/shared.service';
 import { Location } from '@angular/common';
 import * as _ from 'lodash';
 import { Auth, AuthService } from 'src/app/services/auth.service';
@@ -18,7 +21,7 @@ import { Auth, AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
   currentLang: string = '';
@@ -27,8 +30,7 @@ export class HeaderComponent implements OnInit {
   robotId: string = '';
   mode: string = '';
   modeTranslation: string = '';
-  // map: string = '';
-  // mapTranslation: string = '';
+ 
 
   currentUrl: string = '';
   currentPageTitle: string = '';
@@ -37,6 +39,8 @@ export class HeaderComponent implements OnInit {
 
   sub = new Subscription();
   user: string;
+
+  waypointListPageType: WaypointPageCategory;
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
@@ -50,9 +54,9 @@ export class HeaderComponent implements OnInit {
     this.sub.add(
       this.router.events
         .pipe(
-          filter((event) => event instanceof NavigationEnd),
+          filter(event => event instanceof NavigationEnd),
           map(() => this.route.snapshot),
-          map((route) => {
+          map(route => {
             while (route.firstChild) {
               route = route.firstChild;
             }
@@ -66,21 +70,21 @@ export class HeaderComponent implements OnInit {
     );
 
     this.sub.add(
-      this.router.events.subscribe((event) => {
+      this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
           // event is an instance of NavigationEnd, get url!
           this.currentUrl = event.urlAfterRedirects;
           const backToPreviousButtonBackLists = [
             {
-              backlist: '/charging/charging-mqtt',
+              backlist: '/charging/charging-mqtt'
             },
             {
-              backlist: '/charging/charging-dialog',
-            },
+              backlist: '/charging/charging-dialog'
+            }
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [
             'backlist',
-            this.currentUrl,
+            this.currentUrl
           ]);
 
           if (data) {
@@ -93,24 +97,23 @@ export class HeaderComponent implements OnInit {
     );
 
     this.sub.add(
-      combineLatest(
-        this.sharedService.currentMode$
-        // this.sharedService.currentMap$
-      )
+      this.sharedService.currentMode$
         .pipe(
           tap((response: any) => {
-            this.mode = response[0];
-            // this.map = response[1];
+            this.mode = response;
             return response;
           }),
-          // mergeMap(() =>
-          //   this.translateService
-          //     .get('mapNotFound')
-          //     .pipe(
-          //       tap((mapTranslation) => (this.mapTranslation = mapTranslation))
-          //     )
-          // ),
           mergeMap(() => this.getTranlateModeMessage$())
+        )
+        .subscribe()
+    );
+
+    this.sub.add(
+      this.sharedService.waypointListPageMode$
+        .pipe(
+          tap(type => {
+            this.waypointListPageType = type;
+          })
         )
         .subscribe()
     );
@@ -123,10 +126,9 @@ export class HeaderComponent implements OnInit {
   }
 
   getUserAuth() {
-    this.authService
-      .isAuthenticatedSubject
+    this.authService.isAuthenticatedSubject
       .pipe(
-        map((payload) => {
+        map(payload => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
@@ -140,17 +142,11 @@ export class HeaderComponent implements OnInit {
       .subscribe();
   }
 
-  // ngDoCheck() {
-  //   if (this.mode.length <= 0 && this.map.length <= 0) {
-  //     this.sharedService.loading$.next(true);
-  //   }
-  // }
-
   getBattery() {
     // @todo check connection
     this.mqttService.$battery
       .pipe(tap(() => this.sharedService.reset$.next(0)))
-      .subscribe((battery) => {
+      .subscribe(battery => {
         if (battery) {
           const { powerSupplyStatus, percentage } = JSON.parse(battery);
           this.powerSupplyStatus = powerSupplyStatus;
@@ -172,10 +168,6 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  // useAdminMode() {
-  //   this.sharedService._userRole().subscribe();
-  // }
-
   goToLogin() {
     this.router.navigate(['/login']);
   }
@@ -184,19 +176,19 @@ export class HeaderComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'signout',
       modalHeader: 'signout',
-      isDisableClose: true,
+      isDisableClose: true
     });
   }
 
   getLanguage() {
     this.languageService.language$
       .pipe(
-        mergeMap((data) =>
+        mergeMap(data =>
           this.getTranlateModeMessage$().pipe(
-            map((tranlateModeMessage) => ({ ...data, tranlateModeMessage }))
+            map(tranlateModeMessage => ({ ...data, tranlateModeMessage }))
           )
         ),
-        tap((language) => {
+        tap(language => {
           const { lang } = language;
           this.currentLang = lang;
         })
@@ -233,6 +225,14 @@ export class HeaderComponent implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/']);
     });
+  }
+
+  useMap() {
+    this.sharedService.waypointListPageMode$.next('map');
+  }
+
+  useList() {
+    this.sharedService.waypointListPageMode$.next('list');
   }
 
   ngOnDestroy() {

@@ -4,8 +4,8 @@
       <div class="card h-100">
         <app-map-wrapper
           class="map"
-          *ngIf="floorPlanData && rosMapData && metaData"
-          type="positionListener"
+          *ngIf="floorPlanData && rosMapData && metaData && type"
+          [toolType]="type"
           [floorPlanData]="floorPlanData"
           [rosMapData]="rosMapData"
           [currentRobotPose]="currentRobotPose"

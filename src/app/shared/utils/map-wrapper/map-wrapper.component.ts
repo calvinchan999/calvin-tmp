@@ -9,47 +9,17 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { Stage } from 'konva/lib/Stage';
-import { Layer } from 'konva/lib/Layer';
-import { Circle } from 'konva/lib/shapes/Circle';
-import { Image as KonvaImage } from 'konva/lib/shapes/Image';
-import { Arrow } from 'konva/lib/shapes/Arrow';
-import { Text } from 'konva/lib/shapes/Text';
-import { Shape } from 'konva/lib/Shape';
-import { Group } from 'konva/lib/Group';
+
 import { EMPTY, forkJoin, Observable, of, Subscription } from 'rxjs';
-import { delay, finalize, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, delay, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import * as Hammer from 'hammerjs';
-import { DomSanitizer } from '@angular/platform-browser';
-// import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
-// export function loadImage(src: string): Observable<any> {
-//   const image = new Image();
-//   image.src = src;
-//   const ob$ = Observable.create((observer: any) => {
-//     image.onload = (ev) => {
-//       observer.next(image);
-//       observer.complete();
-//     };
-//   });
-//   return ob$;
-// }
-
-export interface Pointer {
-  x: number;
-  y: number;
-}
-
-export enum TypeEnum {
-  POSITIONLISTENER = 'positionListener',
-  LOCALIZATIONEDITOR = 'localizationEditor'
-}
-
-export interface ToolsType {
-  type?: TypeEnum;
-}
+import { MapWrapperService } from './map-wrapper.service';
+import { Stage } from 'konva/lib/Stage';
+import { Category } from './interface/map-wrapper';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-map-wrapper',
@@ -58,329 +28,471 @@ export interface ToolsType {
 })
 export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('canvas') canvas: ElementRef;
-  @Input() type: ToolsType; // todo
+  @Input() toolType; // todo
   @Input() currentRobotPose: any; // todo
   @Input() targetWaypoints: any; // todo
   @Input() floorPlanData: any;
   @Input() rosMapData: any;
   @Input() metaData: any;
+  @Input() pointLists: any;
   @Output() isUpdatedWaypoint = new EventEmitter<any>(false);
+  @Output() selectedWaypoint = new EventEmitter<string>();
+  category = Category;
   sub = new Subscription();
-  stage: Stage;
-
-  localizationToolsGroup: Group = new Group({
-    x: 0,
-    y: 0,
-    draggable: false,
-    name: 'localizationToolsGroup'
-  });
-  lidarPointsGroup: Group = new Group({
-    x: 0,
-    y: 0,
-    draggable: false,
-    name: 'lidarPointsGroup'
-  });
-
-  rosMapLayer: Layer = new Layer({
-    draggable: true
-  });
-  floorPlanLayer: Layer = new Layer({});
 
   degrees: number = 0;
   scale: number = 0.75; // 0.35
-  rosScale: number = 1.35; // 0.66
+  rosScale: number = 0;
   floorPlanScale: number = 1;
   scaleMultiplier: number = 0.99; // 0.99
-  rosMap: any;
+  rosMap;
+  floorPlanMap;
 
   isReset: boolean = false;
 
-  robotCurrentPosition: any;
-  lidarData: any;
-
-  waypoint = new Circle();
-  centerOfWaypoint = new Circle();
-  line = new Arrow();
-  angleLabel = new Text();
-
-  robotCurrentPositionPointer = new Circle();
+  robotCurrentPosition;
+  lidarData;
 
   lineLocked: boolean = false;
   isLineUpdated: boolean = false;
 
   constructor(
     private waypointService: WaypointService,
-    private mapService: MapService // private indexedDbService: IndexedDbService,
-  ) {}
+    private mapService: MapService,
+    private mapWrapperService: MapWrapperService
+  ) {
+    // this.mapWrapperService.updateStagePosition({x:0, y:0});
+  }
 
   ngOnInit() {
-    const rosImg$ = new Observable<HTMLImageElement>(observer => {
-      const rosImage = new Image();
-      rosImage.onload = () => {
-        observer.next(rosImage);
-        observer.complete();
-      };
-      rosImage.onerror = err => {
-        observer.error(err);
-      };
+    if (this.rosMapData?.map) {
+      const { scale } = this.rosMapData?.map;
+      this.rosScale = scale;
+    }
+    if (this.toolType) {
+      const rosImg$ = new Observable<HTMLImageElement>(observer => {
+        const rosImage = new Image();
+        rosImage.onload = () => {
+          observer.next(rosImage);
+          observer.complete();
+        };
+        rosImage.onerror = err => {
+          observer.error(err);
+        };
 
-      rosImage.src = 'data:image/jpeg;base64,' + this.rosMapData?.map?.imageData;
-    });
+        rosImage.src = this.rosMapData?.map?.imageData
+          ? 'data:image/jpeg;base64,' + this.rosMapData?.map?.imageData
+          : '';
+      });
 
-    const floorPlanImg$ = new Observable<HTMLImageElement>(observer => {
-      const floorPlanImage = new Image();
+      const floorPlanImg$ = new Observable<HTMLImageElement>(observer => {
+        const floorPlanImage = new Image();
 
-      floorPlanImage.onload = () => {
-        observer.next(floorPlanImage);
-        observer.complete();
-      };
-      floorPlanImage.onerror = err => {
-        observer.error(err);
-      };
-      floorPlanImage.src =
-        'data:image/jpeg;base64,' + this.floorPlanData?.imageData;
-    });
+        floorPlanImage.onload = () => {
+          observer.next(floorPlanImage);
+          observer.complete();
+        };
+        floorPlanImage.onerror = err => {
+          observer.error(err);
+        };
+        floorPlanImage.src = this.floorPlanData?.imageData
+          ? 'data:image/jpeg;base64,' + this.floorPlanData?.imageData
+          : '';
+      });
 
-    forkJoin([rosImg$, floorPlanImg$])
-      .pipe(
-        tap(img => {
-          this.stage = new Stage({
-            container: 'canvas',
-            width: window.innerWidth,
-            height: window.innerHeight,
-            draggable: true
-          });
-          if (this.type === 'localizationEditor') {
-            this.rosMap = new KonvaImage({
-              image: img[0],
-              width: img[0].width,
-              height: img[0].height,
-              draggable: false,
-              opacity: 0.7
-            });
+      const stage = new Stage({
+        container: 'canvas',
+        width: window.innerWidth,
+        height: window.innerHeight,
+        draggable: true,
+        x: 0,
+        y: 0
+      });
 
-            // this.floorPlanLayer.add(
-            //   new KonvaImage({
-            //     image: img[1],
-            //     width: img[1].width,
-            //     height: img[1].height,
-            //     draggable: false,
-            //   })
-            // );
+      this.mapWrapperService.initStage(stage);
 
-            this.rosMapLayer.add(this.rosMap);
-            this.rosMapLayer.add(this.localizationToolsGroup);
-            this.rosMapLayer.add(this.lidarPointsGroup);
-            this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
-            // this.rosMapLayer.position({ x: 0, y: img[1].height });
-            // this.floorPlanLayer.scale({
-            //   x: this.floorPlanScale,
-            //   y: this.floorPlanScale,
-            // });
-            // this.rosMapLayer.rotate(270.28);
+      this.sub.add(
+        forkJoin([
+          rosImg$.pipe(catchError(() => of(null))),
+          floorPlanImg$.pipe(catchError(() => of(null)))
+        ])
+          .pipe(
+            tap(img => {
+              const stagaScale = this.scale;
+              const rosScale = this.rosScale;
+              const rosLayer = this.mapWrapperService.getRosMapLayer();
+              const floorPlanLayer = this.mapWrapperService.getFloorPlanLayer();
 
-            // this.stage.add(this.floorPlanLayer);
-            this.stage.add(this.rosMapLayer);
-            this.stage.scale({ x: this.scale, y: this.scale });
-          } else {
-            console.log(this.floorPlanData);
-            console.log(this.rosMapData);
-            this.floorPlanLayer.add(
-              new KonvaImage({
-                image: img[1],
-                width: img[1].width,
-                height: img[1].height,
-                draggable: false
-              })
-            );
-            // this.rosMap = new KonvaImage({
-            //   image: img[0],
-            //   width: img[0].width,
-            //   height: img[0].height,
-            //   draggable: false,
-            //   opacity: 0.7
-            // });
-            // this.rosMapLayer.add(this.rosMap);
-            // this.rosMapLayer.height(this.rosMapData.map.height);
-            // this.rosMapLayer.width(this.rosMapData.map.width);
-            // this.rosMapLayer.scale({ x: this.rosMapData.map.scale, y: this.rosMapData.map.scale });
-            // this.rosMapLayer.rotation(this.rosMapData.map.rotation);
-            this.stage.add(this.floorPlanLayer);
-            // this.stage.add(this.rosMapLayer);
-            // this.rosMapLayer.offset({x: this.rosMapData.map.x,y: this.rosMapData.map.y});
-            this.stage.scale({ x: this.scale, y: this.scale });
-          }
-        }),
-        tap(() => {
-          const hammer = new Hammer(this.canvas.nativeElement);
-
-          this.stage.on('touchstart', () => {
-            hammer.get('pinch').set({ enable: true });
-          });
-
-          this.stage.on('touchend', () => {
-            hammer.get('pinch').set({ enable: false });
-          });
-
-          this.stage.on('wheel', event => {
-            event.evt.preventDefault();
-            let direction = event.evt.deltaY > 0 ? 1 : -1;
-            if (direction < 0) {
-              this.zoomIn();
-            } else {
-              this.zoomOut();
-            }
-          });
-          if (this.type === 'localizationEditor') {
-            this.rosMapLayer.on('mousedown touchstart', async (event: any) => {
-              if (this.isReset) {
-                if (this.rosMapLayer.find('.waypoint').length <= 0) {
-                  this.getRosMapXYPointer(event)
-                    .pipe(mergeMap(position => this.drawnWaypoint$(position)))
+              if (this.toolType === Category.LOCALIZATIONEDITER) {
+                if (img[0]) {
+                  const rosMap = img[0];
+                  this.mapWrapperService
+                    .createRosMapImg$(rosMap)
+                    .pipe(
+                      mergeMap(rosMap =>
+                        this.mapWrapperService.pushToRosLayer$(rosMap)
+                      ),
+                      mergeMap(() =>
+                        this.mapWrapperService.pushToRosLayer$(
+                          this.mapWrapperService.getLocalizationToolsGroup()
+                        )
+                      ),
+                      mergeMap(() =>
+                        this.mapWrapperService.pushToRosLayer$(
+                          this.mapWrapperService.getLidarPointsGroup()
+                        )
+                      ),
+                      mergeMap(() =>
+                        this.mapWrapperService.updateRosMapScale$(rosScale)
+                      ),
+                      mergeMap(() =>
+                        this.mapWrapperService.pushToStage$(rosLayer)
+                      ),
+                      mergeMap(() =>
+                        this.mapWrapperService.updateStageScale$(stagaScale)
+                      )
+                    )
                     .subscribe();
+                }
+              } else if (this.toolType === Category.POSITIONLISTNER) {
+                const floorPlanPromise = floorPlan =>
+                  new Promise((resolve, reject) => {
+                    if (floorPlan) {
+                      console.log(`floorPlanPromise`);
+                      this.mapWrapperService
+                        .createFloorPlanImg$(floorPlan)
+                        .pipe(
+                          mergeMap(floorPlanImg =>
+                            this.mapWrapperService.pushToFloorPlanLayer$(
+                              floorPlanImg
+                            )
+                          ),
+                          mergeMap(() =>
+                            this.mapWrapperService.pushToStage$(floorPlanLayer)
+                          ),
+                          tap(() => resolve(true))
+                        )
+                        .subscribe();
+                    } else {
+                      resolve(true);
+                    }
+                  });
+
+                const rosMapPromise = rosMap =>
+                  new Promise((resolve, reject) => {
+                    if (rosMap) {
+                      this.mapWrapperService
+                        .createRosMapImg$(rosMap)
+                        .pipe(
+                          mergeMap(rosMap =>
+                            this.mapWrapperService.pushToRosLayer$(rosMap)
+                          ),
+
+                          mergeMap(() =>
+                            this.mapWrapperService.pushToRosLayer$(
+                              this.mapWrapperService.getLocalizationToolsGroup()
+                            )
+                          ),
+
+                          mergeMap(() =>
+                            this.mapWrapperService.pushToRosLayer$(
+                              this.mapWrapperService.getLidarPointsGroup()
+                            )
+                          ),
+
+                          mergeMap(() =>
+                            this.mapWrapperService.updateRosMapScale$(rosScale)
+                          ),
+
+                          mergeMap(() =>
+                            this.mapWrapperService.pushToStage$(rosLayer)
+                          ),
+                          tap(() => resolve(true))
+                        )
+                        .subscribe();
+                    } else {
+                      resolve(true);
+                    }
+                  });
+
+                Promise.all([
+                  floorPlanPromise(img[1]),
+                  rosMapPromise(img[0])
+                ]).then(() => {
+                  this.mapWrapperService.updateStageScale$(this.scale);
+                });
+              } else if (this.toolType === Category.WAYPOINTSELECTOR) {
+                const floorPlanImage = img[1];
+                const multiOb$ = [];
+                for (let item of this.pointLists) {
+                  multiOb$.push(
+                    forkJoin([
+                      this.mapWrapperService.createWaypoint$({
+                        name: `waypoint-${item.floorPlanName}`,
+                        x: item.floorPlanX,
+                        y: item.floorPlanY,
+                        fill: 'blue',
+                        radius: 10
+                      }),
+                      this.mapWrapperService.createWaypointName$({
+                        name: `waypoint-name-${item.floorPlanName}`,
+                        text: item.floorPlanName,
+                        x: item.floorPlanX - 15,
+                        y: item.floorPlanY + 15,
+                        fill: 'blue',
+                        fontSize: 25,
+                        fontFamily: 'Sans-serif',
+                        fontStyle: 'bold',
+                        align: 'center',
+                        verticalAlign: 'middle'
+                      })
+                    ]).pipe(
+                      mergeMap(data =>
+                        forkJoin([
+                          this.mapWrapperService.pushToWaypointsGroup$(data[0]),
+                          this.mapWrapperService.pushToWaypointsGroup$(data[1])
+                        ])
+                      )
+                    )
+                  );
+                }
+                this.mapWrapperService
+                  .createFloorPlanImg$(floorPlanImage)
+                  .pipe(
+                    mergeMap(floorPlan =>
+                      this.mapWrapperService.pushToFloorPlanLayer$(floorPlan)
+                    ),
+                    mergeMap(() => multiOb$),
+                    mergeMap(
+                      mergeMap(() =>
+                        this.mapWrapperService.pushToFloorPlanLayer$(
+                          this.mapWrapperService.getWaypointsGroup()
+                        )
+                      )
+                    ),
+                    mergeMap(() =>
+                      this.mapWrapperService.pushToStage$(floorPlanLayer)
+                    ),
+
+                    mergeMap(() =>
+                      this.mapWrapperService.updateStageScale$(stagaScale)
+                    )
+                  )
+                  .subscribe(() => {});
+              }
+            }),
+            tap(() => {
+              const hammer = new Hammer(this.canvas.nativeElement);
+              const stage = this.mapWrapperService.stage;
+              const rosMapLayer = this.mapWrapperService.getRosMapLayer();
+              const localizationPoint = this.mapWrapperService.getLocalizationPoint();
+              const waypointsGroup = this.mapWrapperService.getWaypointsGroup();
+              stage.on('touchstart', () => {
+                hammer.get('pinch').set({ enable: true });
+              });
+
+              stage.on('touchend', () => {
+                hammer.get('pinch').set({ enable: false });
+              });
+
+              stage.on('wheel', event => {
+                event.evt.preventDefault();
+                let direction = event.evt.deltaY > 0 ? 1 : -1;
+                if (direction < 0) {
+                  this.zoomIn();
                 } else {
-                  this.stage.draggable(true);
+                  this.zoomOut();
                 }
-              }
-            });
-
-            this.waypoint.on('mousedown touchstart', async (event: any) => {
-              if (this.isReset && !this.lineLocked) {
-                this.rosMapLayer.getChildren().forEach(child => {
-                  if (child.className === 'Arrow') {
-                    child.destroy();
+              });
+              if (this.toolType === Category.LOCALIZATIONEDITER) {
+                rosMapLayer.on('mousedown touchstart', async (event: any) => {
+                  if (this.isReset) {
+                    if (rosMapLayer.find('.waypoint').length <= 0) {
+                      this.getRosMapXYPointer(event)
+                        .pipe(
+                          mergeMap(position => this.drawnWaypoint$(position))
+                        )
+                        .subscribe();
+                    } else {
+                      stage.draggable(true);
+                    }
                   }
                 });
 
-                this.getRosMapXYPointer(event).subscribe(position => {
-                  this.isLineUpdated = true;
-                  this.line.setAttrs({
-                    fill: 'black',
-                    stroke: 'black',
-                    strokeWidth: 4,
-                    // remove line from hit graph, so we can check intersections
-                    listening: false,
-                    name: 'angleLine',
-                    points: [
-                      this.waypoint.x(),
-                      this.waypoint.y(),
-                      position.x,
-                      position.y
-                    ]
-                  });
-                  this.localizationToolsGroup.add(this.line);
-                });
-              }
-            });
+                localizationPoint.on(
+                  'mousedown touchstart',
+                  async (event: any) => {
+                    if (this.isReset && !this.lineLocked) {
+                      rosMapLayer.getChildren().forEach(child => {
+                        if (child.className === 'Arrow') {
+                          child.destroy();
+                        }
+                      });
 
-            this.waypoint.on('mousemove touchmove ', async (event: any) => {
-              if (this.isReset) {
-                if (this.lineLocked) {
-                  return;
-                }
-                if (!this.line) {
-                  return;
-                }
-                if (this.rosMapLayer.find('.angleLine').length > 0) {
-                  this.stage.draggable(false);
-                  this.rosMapLayer.draggable(false);
-                }
-                if (this.isLineUpdated) {
-                  this.getRosMapXYPointer(event).subscribe(position => {
-                    const points = this.line.points().slice();
-                    points[2] = position.x;
-                    points[3] = position.y;
-                    this.line.points(points);
-                    this.rosMapLayer.batchDraw();
-                  });
-                }
-              }
-            });
+                      this.getRosMapXYPointer(event).subscribe(position => {
+                        this.isLineUpdated = true;
+                        const line = this.mapWrapperService.line.setAttrs({
+                          fill: 'black',
+                          stroke: 'black',
+                          strokeWidth: 4,
+                          // remove line from hit graph, so we can check intersections
+                          listening: false,
+                          name: 'angleLine',
+                          points: [
+                            localizationPoint.x(),
+                            localizationPoint.y(),
+                            position.x,
+                            position.y
+                          ]
+                        });
 
-            this.waypoint.on(
-              'mouseup mouseout touchend touchout ',
-              async (event: any) => {
-                if (this.isReset) {
-                  if (!this.line) {
-                    return;
+                        this.mapWrapperService.pushToLocalizationGroup$(line);
+                      });
+                    }
                   }
-                  if (!event.target.hasName('target')) {
-                    if (
-                      this.rosMapLayer.find('.angleLine').length > 0 &&
-                      this.isLineUpdated
-                    ) {
-                      const { draggable } = this.stage.getAttrs();
-                      if (!draggable) {
-                        this.lineLocked = true;
-                        this.getXYAngle()
-                          .pipe(
-                            mergeMap((data: any) => {
-                              const { x, y, angle, degrees } = data;
-                              return this.waypointService
-                                .initialPose({
-                                  x,
-                                  y,
-                                  angle
-                                })
-                                .pipe(
-                                  mergeMap(() => this.createAngleLabel(degrees))
-                                );
-                            }),
-                            mergeMap(() => {
-                              return of(null).pipe(
-                                delay(1000),
-                                mergeMap(() => {
-                                  return this.getLidarData$().pipe(
-                                    mergeMap(() => this.createLidarRedpoints())
-                                  );
-                                })
-                              );
-                            })
-                          )
-                          .subscribe(
-                            () => {
-                              this.isUpdatedWaypoint.emit({
-                                status: 'success'
-                              });
-                              this.lineLocked = false;
-                            },
-                            error => {
-                              this.isUpdatedWaypoint.emit({
-                                status: 'failed',
-                                error
-                              });
-                              this.lineLocked = false;
-                            }
-                          );
+                );
+
+                localizationPoint.on(
+                  'mousemove touchmove ',
+                  async (event: any) => {
+                    const line = this.mapWrapperService.getLine();
+                    if (this.isReset) {
+                      if (this.lineLocked) {
+                        return;
+                      }
+                      if (!line) {
+                        return;
+                      }
+                      if (rosMapLayer.find('.angleLine').length > 0) {
+                        forkJoin([
+                          this.mapWrapperService.updateStageDraggable$(false),
+                          this.mapWrapperService.updateRosLayerDraggable$(false)
+                        ]).subscribe();
+                      }
+                      if (this.isLineUpdated) {
+                        this.getRosMapXYPointer(event).subscribe(position => {
+                          const points = line.points().slice();
+                          points[2] = position.x;
+                          points[3] = position.y;
+                          line.points(points);
+                          this.mapWrapperService.rosMapLayer.batchDraw();
+                        });
                       }
                     }
                   }
-                  this.isLineUpdated = false;
-                }
+                );
+
+                localizationPoint.on(
+                  'mouseup mouseout touchend touchout ',
+                  async (event: any) => {
+                    const line = this.mapWrapperService.getLine();
+                    if (this.isReset) {
+                      if (!line) {
+                        return;
+                      }
+                      if (!event.target.hasName('target')) {
+                        if (
+                          rosMapLayer.find('.angleLine').length > 0 &&
+                          this.isLineUpdated
+                        ) {
+                          const {
+                            draggable
+                          } = this.mapWrapperService.stage.getAttrs();
+                          if (!draggable) {
+                            this.lineLocked = true;
+                            this.getXYAngle()
+                              .pipe(
+                                mergeMap((data: any) => {
+                                  const { x, y, angle, degrees } = data;
+                                  return this.waypointService
+                                    .initialPose({
+                                      x,
+                                      y,
+                                      angle
+                                    })
+                                    .pipe(
+                                      mergeMap(() =>
+                                        this.createAngleLabel(degrees)
+                                      )
+                                    );
+                                }),
+                                mergeMap(() => {
+                                  return of(null).pipe(
+                                    delay(2000),
+                                    mergeMap(() => {
+                                      return this.getLidarData$().pipe(
+                                        mergeMap(() =>
+                                          this.createLidarRedpoints()
+                                        )
+                                      );
+                                    })
+                                  );
+                                })
+                              )
+                              .subscribe(
+                                () => {
+                                  this.isUpdatedWaypoint.emit({
+                                    status: 'success'
+                                  });
+                                  this.lineLocked = false;
+                                },
+                                error => {
+                                  this.isUpdatedWaypoint.emit({
+                                    status: 'failed',
+                                    error
+                                  });
+                                  this.lineLocked = false;
+                                }
+                              );
+                          }
+                        }
+                      }
+                      this.isLineUpdated = false;
+                    }
+                  }
+                );
+              } else if (this.toolType === Category.WAYPOINTSELECTOR) {
+                stage.on('mousedown touchstart', async (event: any) => {
+                  const { name } = event.target.getAttrs();
+                  const filteredName =
+                    name?.substring(name.lastIndexOf('-') + 1) ?? undefined;
+                  if (!filteredName) return;
+
+                  const waypoint = _.find(this.pointLists, {
+                    name: filteredName
+                  });
+
+                  this.selectedWaypoint.emit(waypoint);
+                });
               }
-            );
-          }
-        }),
-        // handle 2 cases "localizationEditor" & "positionListener"
-        mergeMap(() =>
-          this.type === 'localizationEditor'
-            ? this.getRobotCurrentPosition$()
-            : of(null)
-        ),
-        mergeMap(() =>
-          this.type === 'localizationEditor' ? this.getLidarData$() : of(null)
-        )
-      )
-      .subscribe(() => {
-        this.init();
-      });
+            }),
+            mergeMap(() => {
+              if (this.toolType === Category.LOCALIZATIONEDITER) {
+                return this.getRobotCurrentPosition$();
+              } else {
+                return of(null);
+              }
+            }),
+            mergeMap(() => {
+              if (this.toolType === Category.LOCALIZATIONEDITER) {
+                return this.getLidarData$();
+              } else {
+                return of(null);
+              }
+            })
+          )
+          .subscribe(() => {
+            this.init();
+          })
+      );
+    }
   }
 
   ngOnChanges() {
     if (
       this.currentRobotPose &&
       this.metaData &&
-      this.type &&
+      this.toolType &&
       this.rosMapData &&
       this.floorPlanData
     ) {
@@ -393,23 +505,22 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       // handle 2 cases "localizationEditor" & "positionListener"
       // localizationEditor
       // user can monitior the robot currnet position in positionListener mode
-      if (this.type === 'localizationEditor') {
+      if (this.toolType === Category.LOCALIZATIONEDITER) {
         this.sub.add(
           forkJoin([
             this.createRobotCurrentPosition(),
             this.createLidarRedpoints()
           ]).subscribe()
         );
-      } else if (this.type === 'positionListener') {
-         // this.createRobotCurrentPosition(),
-            // this.createTargetPosition()
+      } else if (this.toolType === Category.POSITIONLISTNER) {
         this.sub.add(
           forkJoin([
-            this.createFloorPlanWaypoint()
+            this.createTargetPoint(),
+            this.createRobotCurrentPosition()
           ]).subscribe()
         );
       }
-      // this.createOriginPoint(); // For testing - show the origin point of the robot scanning map
+      // this.createOriginPoint(); // for testing - show the origin point of the robot scanning map
     }
   }
 
@@ -418,22 +529,27 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createLidarRedpoints(): Observable<any> {
-    return of(this.lidarPointsGroup.removeChildren()).pipe(
+    return this.mapWrapperService.removeLidarPointsGroup$().pipe(
       mergeMap(() =>
         of(this.lidarData).pipe(
           tap(data => {
             const { pointList } = data;
             const { x, y, height, resolution }: any = this.metaData;
             for (const i in pointList) {
-              const redpoint = new Circle({
-                x: Math.abs((x - pointList[i]['x']) / resolution),
-                y: height - Math.abs((y - pointList[i]['y']) / resolution),
-                radius: 2,
-                fill: 'red',
-                name: 'redpoint'
-              });
-
-              this.lidarPointsGroup.add(redpoint);
+              this.mapWrapperService
+                .createLidarRedpoint$({
+                  x: Math.abs((x - pointList[i]['x']) / resolution),
+                  y: height - Math.abs((y - pointList[i]['y']) / resolution),
+                  radius: 2,
+                  fill: 'red',
+                  name: 'redpoint'
+                })
+                .pipe(
+                  mergeMap(point =>
+                    this.mapWrapperService.pushToLidarPointsGroup$(point)
+                  )
+                )
+                .subscribe();
             }
           })
         )
@@ -445,8 +561,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return this.mapService.getLocalizationPose();
   }
 
-
   createFloorPlanWaypoint(): Observable<any> {
+    // testing
     const img = new Image();
     img.src = '/assets/images/location.png';
     const ob = new Observable(observer => {
@@ -458,24 +574,18 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       };
     });
     return ob.pipe(
-      tap(data => {
+      tap(() => {
         console.log(this.floorPlanData);
-        // let locationImg = new KonvaImage({
-        //   x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
-        //   y: height - Math.abs((y - targetY) / resolution) - data.img.height,
-        //   image: data.img
-        // });
-        // this.rosMapLayer.add(locationImg);
       })
     );
   }
 
-  createTargetPosition(): Observable<any> {
-    const { targetX, targetY, targetAngle } = this.targetWaypoints;
-    const { x, y, height, resolution }: any = this.metaData;
+  createTargetPoint(): Observable<any> {
+    const { targetX, targetY } = this.targetWaypoints;
+    // const { x, y, height, resolution }: any = this.metaData;
 
     const img = new Image();
-    img.src = '/assets/images/location.png';
+    img.src = 'assets/images/location.png';
     const ob = new Observable(observer => {
       img.onload = function() {
         observer.next({
@@ -484,15 +594,16 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         observer.complete();
       };
     });
-
     return ob.pipe(
-      tap(data => {
-        let locationImg = new KonvaImage({
-          x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
-          y: height - Math.abs((y - targetY) / resolution) - data.img.height,
-          image: data.img
+      mergeMap((data: any) => {
+        return this.mapWrapperService.updateRosTargetPosition$({
+          x: (targetX - data.img.width / 2).toFixed(2), // x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
+          y: (targetY - data.img.height).toFixed(2), // y: height - Math.abs((y - targetY) / resolution) - data.img.height,
+          image: data.img,
+          name: 'targetWaypoint',
+          opacity: 1,
+          zIndex: 1
         });
-        this.rosMapLayer.add(locationImg);
       })
     );
   }
@@ -501,13 +612,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return of(null).pipe(
       tap(() => {
         const { x, y, height, resolution }: any = this.metaData;
-        if (this.currentRobotPose) {
-          this.robotCurrentPositionPointer.setAttrs({
+        // currentRobotPose mqtt
+        // robotCurrentPosition restapi
+        if (this.currentRobotPose || this.robotCurrentPosition) {
+          console.log(`this.currentRobotPose ${this.currentRobotPose}`);
+          console.log(this.currentRobotPose);
+          this.mapWrapperService.updateRobotCurrentPosition({
             name: 'currentPosition',
             fill: 'blue',
             x: Math.abs(
               (x -
-                (this.currentRobotPose.x ??
+                (this.currentRobotPose?.x ??
                   this.robotCurrentPosition?.x ??
                   0)) /
                 resolution
@@ -516,45 +631,47 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               height -
               Math.abs(
                 (y -
-                  (this.currentRobotPose.y ?? this.robotCurrentPosition?.y) ??
+                  (this.currentRobotPose?.y ?? this.robotCurrentPosition?.y) ??
                   0) / resolution
               ),
             radius: 10,
             zIndex: 1
           });
-          this.rosMapLayer.add(this.robotCurrentPositionPointer);
         }
       }),
       tap(() => {
-        this.stage.offset({
-          x: this.robotCurrentPositionPointer.getAttrs().x,
-          y: this.robotCurrentPositionPointer.getAttrs().y
-        });
+        const currentPosition = this.mapWrapperService
+          .getRobotCurrentPositionPointer()
+          .getAttrs();
+
+        const pointTo = {
+          x:
+            (this.mapWrapperService.getRosMapLayer().x() -
+              currentPosition.x / this.mapWrapperService.getStage().scaleX()) /
+            2.5,
+          y:
+            (this.mapWrapperService.getRosMapLayer().y() -
+              currentPosition.y / this.mapWrapperService.getStage().scaleX()) /
+            2.5
+        };
+        if (
+          this.mapWrapperService.getRosMapLayer().find('.currentPosition')
+            .length > 0
+        ) {
+          this.mapWrapperService.updateRosMapLayerPosition({
+            x: pointTo.x,
+            y: pointTo.y
+          });
+        }
       })
     );
-
-    // const { x, y, height, resolution }: any = this.metaData;
-    // const currentPosition = new Circle({
-    //   name: 'currentPosition',
-    //   fill: 'blue',
-    //   x: Math.abs(
-    //     (x - (this.robotCurrentPosition?.x )) /
-    //       resolution
-    //   ),
-    //   y:
-    //     height -
-    //     Math.abs(
-    //       (y - (this.robotCurrentPosition?.y) ??
-    //         0) / resolution
-    //     ),
-    //   radius: 10,
-    // });
-    // this.rosMapLayer.add(currentPosition);
   }
 
   createAngleLabel(degrees: number): Observable<any> {
-    const { x, y } = this.centerOfWaypoint.getAttrs();
-    this.angleLabel.setAttrs({
+    const centerOfWaypoint = this.mapWrapperService.getCenterOfWaypoint();
+    const angleLabel = this.mapWrapperService.getAngleLabel();
+    const { x, y } = centerOfWaypoint.getAttrs();
+    angleLabel.setAttrs({
       x: x - 20,
       y: y - 100 / this.rosScale - 30,
       text: `${degrees}°`,
@@ -565,8 +682,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       name: 'angleLabel'
     });
 
-    return of(this.angleLabel.destroy()).pipe(
-      tap(() => this.localizationToolsGroup.add(this.angleLabel))
+    return of(angleLabel.destroy()).pipe(
+      tap(() => this.mapWrapperService.pushToLocalizationGroup$(angleLabel))
     );
   }
 
@@ -584,10 +701,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   // }
 
   drawnWaypoint$(position: { x: number; y: number }): Observable<any> {
+    const localizationPoint = this.mapWrapperService.getLocalizationPoint();
+    const centerOfWaypoint = this.mapWrapperService.getCenterOfWaypoint();
     return of(EMPTY).pipe(
       tap(() => {
         const { x, y } = position;
-        this.waypoint.setAttrs({
+        localizationPoint.setAttrs({
           x: x,
           y: y,
           radius: 100 / this.rosScale,
@@ -596,7 +715,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           name: 'waypoint'
         });
 
-        this.centerOfWaypoint = new Circle({
+        centerOfWaypoint.setAttrs({
           name: 'centerOfWaypoint',
           fill: 'red',
           x: x,
@@ -604,49 +723,26 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           radius: 10 / this.rosScale
         });
 
-        this.localizationToolsGroup.add(this.centerOfWaypoint);
-        this.localizationToolsGroup.add(this.waypoint);
+        this.mapWrapperService.pushToLocalizationGroup$(centerOfWaypoint);
+        this.mapWrapperService.pushToLocalizationGroup$(localizationPoint);
       })
     );
-  }
-
-  transformToCanvasXY({ x, y }: any) {
-    const { resolution, height }: any = this.metaData;
-    return {
-      xPointer: Math.abs(x / resolution),
-      yPointer: height - Math.abs(y / resolution)
-    };
-  }
-
-  updateKonvasScale(scale: number): Observable<any> {
-    return of(this.stage.scale({ x: scale, y: scale }))
-      .pipe
-      // mergeMap(() => of(this.backgroundLayer.scale({ x: scale, y: scale }))),
-      // mergeMap(() => of(this.rosMapLayer.scale({ x: scale, y: scale })))
-      // mergeMap(() => of(this.laserLayer.scale({ x: scale, y: scale })))
-      ();
   }
 
   zoomIn() {
     let scale: number = this.scale;
     scale /= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(100));
-    // if (scale < 1.5) {
     this.scale = scale;
-    this.updateKonvasScale(scale).subscribe();
-    // this.onReset().subscribe();
-    // }
+    this.mapWrapperService.updateStageScale$(scale).subscribe();
   }
 
   zoomOut() {
     let scale: any = this.scale;
     scale *= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(100));
-    // if (scale >= 0.5) {
     this.scale = scale;
-    this.updateKonvasScale(scale).subscribe();
-    // this.onReset().subscribe();
-    // }
+    this.mapWrapperService.updateStageScale$(scale).subscribe();
   }
 
   onPinchin(event: Event) {
@@ -662,31 +758,33 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getRosMapXYPointer(event: any): Observable<{ x: number; y: number }> {
+    const rosMapLayer = this.mapWrapperService.getRosMapLayer();
     const mousePointTo = {
-      x: this.rosMapLayer.getRelativePointerPosition().x,
-      y: this.rosMapLayer.getRelativePointerPosition().y
+      x: rosMapLayer.getRelativePointerPosition().x,
+      y: rosMapLayer.getRelativePointerPosition().y
     };
     return of(mousePointTo);
   }
 
-  getXYPointer(event: Event): Observable<{ x: number; y: number }> {
-    const oldScale = this.stage.scaleX();
-    const mousePointTo = {
-      x:
-        ((event.target as any).getStage().getPointerPosition().x / oldScale -
-          this.stage.x() / oldScale) /
-        this.scale,
-      y:
-        ((event.target as any).getStage().getPointerPosition().y / oldScale -
-          this.stage.y() / oldScale) /
-        this.scale
-    };
-    return of(mousePointTo);
-  }
+  // getXYPointer(event: Event): Observable<{ x: number; y: number }> {
+  //   const oldScale = this.mapWrapperService.stage.scaleX();
+  //   const mousePointTo = {
+  //     x:
+  //       ((event.target as any).getStage().getPointerPosition().x / oldScale -
+  //         this.stage.x() / oldScale) /
+  //       this.scale,
+  //     y:
+  //       ((event.target as any).getStage().getPointerPosition().y / oldScale -
+  //         this.stage.y() / oldScale) /
+  //       this.scale
+  //   };
+  //   return of(mousePointTo);
+  // }
 
   getXYAngle(): Observable<any> {
-    const waypoint = this.rosMapLayer.find('.waypoint')[0].getAttrs();
-    const lineLastPosition = this.rosMapLayer.find('.angleLine')[0].getAttrs();
+    const rosMapLayer = this.mapWrapperService.getRosMapLayer();
+    const waypoint = rosMapLayer.find('.waypoint')[0].getAttrs();
+    const lineLastPosition = rosMapLayer.find('.angleLine')[0].getAttrs();
     const lineLastPositionX = lineLastPosition['points'][2];
     const lineLastPositionY = lineLastPosition['points'][3];
 
@@ -719,17 +817,13 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onClearWaypoint() {
-    this.robotCurrentPositionPointer.destroy();
-    this.localizationToolsGroup.removeChildren();
-    this.lidarPointsGroup.removeChildren();
+    this.mapWrapperService.destroyWaypoint$().subscribe();
   }
 
   onReset(): Observable<any> {
-    return of(null).pipe(
-      tap(() => this.robotCurrentPositionPointer.destroy()),
-      tap(() => this.localizationToolsGroup.removeChildren()),
-      tap(() => this.lidarPointsGroup.removeChildren()),
-      finalize(() => this.init())
+    return this.mapWrapperService.destroyWaypoint$().pipe(
+      mergeMap(() => this.mapWrapperService.removeLidarPointsGroup$()),
+      tap(() => this.init())
     );
   }
 
@@ -740,7 +834,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   onPreviewMode() {
     this.isReset = false;
-    this.stage.draggable(true);
+    this.mapWrapperService.stage.draggable(true);
     this.isUpdatedWaypoint.emit(false);
     forkJoin([this.getRobotCurrentPosition$(), this.getLidarData$()])
       .pipe(mergeMap(() => this.onReset()))
@@ -761,5 +855,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+    this.mapWrapperService.destroyStage();
   }
 }

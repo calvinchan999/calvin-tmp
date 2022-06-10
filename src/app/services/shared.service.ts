@@ -27,9 +27,10 @@ export interface Modal {
   isDisableClose?: boolean;
   payload?: any;
 }
+export type WaypointPageCategory = 'list' | 'map';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class SharedService {
   public currentMode$ = new BehaviorSubject<string>('');
@@ -42,8 +43,10 @@ export class SharedService {
   public reset$ = new Subject<number>();
   public timer$: Observable<any>;
 
+  public waypointListPageMode$ = new BehaviorSubject<WaypointPageCategory>('list');
+
   constructor() {
-  // @todo check connection
+    // @todo check connection
     // this.timer$ = this.reset$.pipe(
     //   startWith(0),
     //   switchMap(() => timer(0, 10000)) // Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
