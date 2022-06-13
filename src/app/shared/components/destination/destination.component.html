@@ -1,48 +1,28 @@
-<div class="container-fluid h-100 destination-container">
-  <div class="row h-100">
-    <div class="col-md-12 px-0">
-      <div class="card h-100">
-        <app-map-wrapper
-          class="map"
-          *ngIf="rosMapImage && metaData"
-          type="positionListener"
-          [floorPlan]="floorPlanImg"
-          [mapImage]="rosMapImage"
-          [currentRobotPose]="currentRobotPose"
-          [metaData]="metaData"
-          [targetWaypoints]="payload"
-        ></app-map-wrapper>
-      </div>
-    </div>
-    <div class="spuare-group">
-      <div class="col-12 mx-auto m-4 fixed-bottom">
-        <div
-          class="row h-100 justify-content-center"
-          style="text-align: center"
-        >
-          <div
-            class="col-md-6 col-sm-12 square-button cancel"
-            (click)="onCancel()"
-          >
-            <i class="mdi mdi-stop icon"></i>
-            <h3 class="title">{{ "cancel" | translate }}</h3>
-          </div>
-          <div
-            class="col-md-6 col-sm-12 square-button pause"
-            (click)="onPause()"
-          >
-            <i class="mdi mdi-pause icon"></i>
-            <h3 class="title">{{ "pause" | translate }}</h3>
-          </div>
-          <div
-            class="col-md-6 col-sm-12 square-button resume"
-            (click)="onResume()"
-          >
-            <i class="mdi mdi-play icon"></i>
-            <h3 class="title">{{ "resume" | translate }}</h3>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="container-fluid destination-container">
+  <div class="card">
+    <app-map-wrapper
+      class="map"
+      *ngIf="rosMapImage && metaData"
+      type="positionListener"
+      [floorPlan]="floorPlanImg"
+      [mapImage]="rosMapImage"
+      [currentRobotPose]="currentRobotPose"
+      [metaData]="metaData"
+      [targetWaypoints]="payload"
+    ></app-map-wrapper>
+  </div>
+</div>
+<div class="spuare-group">
+  <div class="square-button cancel" (click)="onCancel()">
+    <i class="mdi mdi-stop icon"></i>
+    <h3 class="title">{{ "cancel" | translate }}</h3>
+  </div>
+  <div class="square-button pause" (click)="onPause()">
+    <i class="mdi mdi-pause icon"></i>
+    <h3 class="title">{{ "pause" | translate }}</h3>
+  </div>
+  <div class="square-button resume" (click)="onResume()">
+    <i class="mdi mdi-play icon"></i>
+    <h3 class="title">{{ "resume" | translate }}</h3>
   </div>
 </div>

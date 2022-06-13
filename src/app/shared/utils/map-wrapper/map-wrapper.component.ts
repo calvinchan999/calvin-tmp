@@ -81,7 +81,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   });
 
   rosMapLayer: Layer = new Layer({
-    draggable: true,
+    draggable: false,
+    x: 0,
+    y: 0,
   });
   floorPlanLayer: Layer = new Layer({});
 
@@ -141,7 +143,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     forkJoin([rosImg$]) // floorPlanImg$
       .pipe(
         tap((img) => {
-        
           this.stage = new Stage({
             container: 'canvas',
             width: window.innerWidth,
@@ -213,12 +214,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             this.rosMapLayer.on('mousedown touchstart', async (event: any) => {
               if (this.isReset) {
                 if (this.rosMapLayer.find('.waypoint').length <= 0) {
-          
                   this.getRosMapXYPointer(event)
                     .pipe(
                       mergeMap((position) => this.drawnWaypoint$(position)),
                       tap(() => this.robotCurrentPositionPointer.destroy()),
-                      tap(() => this.lidarPointsGroup.removeChildren()),
+                      tap(() => this.lidarPointsGroup.removeChildren())
                     )
                     .subscribe();
                 } else {
@@ -367,25 +367,25 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   init() {
     // if (!this.isReset) {
-      // handle 2 cases "localizationEditor" & "positionListener"
-      // localizationEditor
-      // user can monitior the robot currnet position in positionListener mode
-      if (this.type === 'localizationEditor') {
-        this.sub.add(
-          forkJoin([
-            this.createRobotCurrentPosition(),
-            this.createLidarRedpoints(),
-          ]).subscribe()
-        );
-      } else if (this.type === 'positionListener') {
-        this.sub.add(
-          forkJoin([
-            this.createRobotCurrentPosition(),
-            this.createTargetPosition(),
-          ]).subscribe()
-        );
-      }
-      // this.createOriginPoint(); // For testing - show the origin point of the robot scanning map
+    // handle 2 cases "localizationEditor" & "positionListener"
+    // localizationEditor
+    // user can monitior the robot currnet position in positionListener mode
+    if (this.type === 'localizationEditor') {
+      this.sub.add(
+        forkJoin([
+          this.createRobotCurrentPosition(),
+          this.createLidarRedpoints(),
+        ]).subscribe()
+      );
+    } else if (this.type === 'positionListener') {
+      this.sub.add(
+        forkJoin([
+          this.createRobotCurrentPosition(),
+          this.createTargetPosition(),
+        ]).subscribe()
+      );
+    }
+    // this.createOriginPoint(); // For testing - show the origin point of the robot scanning map
     // }
   }
 
@@ -484,37 +484,48 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return of(null).pipe(
       tap(() => {
         const { x, y, height, resolution }: any = this.metaData;
-          this.robotCurrentPositionPointer.setAttrs({
-            name: 'currentPosition',
-            fill: 'blue',
-            x: Math.abs(
-              (x -
-                (this.currentRobotPose?.x ??
-                  this.robotCurrentPosition?.x ??
-                  0)) /
-                resolution
+        this.robotCurrentPositionPointer.setAttrs({
+          name: 'currentPosition',
+          fill: 'blue',
+          x: Math.abs(
+            (x -
+              (this.currentRobotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) /
+              resolution
+          ),
+          y:
+            height -
+            Math.abs(
+              (y - (this.currentRobotPose?.y ?? this.robotCurrentPosition?.y) ??
+                0) / resolution
             ),
-            y:
-              height -
-              Math.abs(
-                (y -
-                  (this.currentRobotPose?.y ?? this.robotCurrentPosition?.y) ??
-                  0) / resolution
-              ),
-            radius: 10,
-            zIndex: 1,
-          });
-          this.rosMapLayer.add(this.robotCurrentPositionPointer);
+          radius: 10,
+          zIndex: 1,
+        });
+        this.rosMapLayer.add(this.robotCurrentPositionPointer);
       }),
       tap(() => {
-        this.stage.offset({
-          x: this.robotCurrentPositionPointer.getAttrs().x,
-          y: this.robotCurrentPositionPointer.getAttrs().y,
-        });
+        const currentPosition = this.robotCurrentPositionPointer.getAttrs();
+
+        const pointTo = {
+          x:
+            (this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX()) /
+            2.5,
+          y:
+            (this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY()) /
+            2.5,
+        };
+        if (
+          this.rosMapLayer.find('.currentPosition').length > 0 &&
+          pointTo.x &&
+          pointTo.y
+        ) {
+          this.stage.position({
+            x: pointTo.x,
+            y: pointTo.y,
+          });
+        }
       })
     );
-
-   
   }
 
   createAngleLabel(degrees: number): Observable<any> {

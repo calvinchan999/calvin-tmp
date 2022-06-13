@@ -1,5 +1,5 @@
 <div class="localization-map-wrapper" *ngIf="rosMapImage">
-  <div class="localization-map-container">
+  <div class="container-fluid localization-map-container">
     <app-map-wrapper
       type="localizationEditor"
       [floorPlan]="floorPlanImg"
@@ -8,9 +8,4 @@
       (isUpdatedWaypoint)="isLocalizedLocation($event)"
     ></app-map-wrapper>
   </div>
-  <!-- <div class="localization-btn-container d-flex justify-content-around">
-    <button class="btn localization-cancel-button" (click)="onCloseModel()">
-      {{ "cancel" | translate }}
-    </button>
-  </div> -->
 </div>

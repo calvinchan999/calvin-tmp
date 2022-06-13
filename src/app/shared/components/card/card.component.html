@@ -9,8 +9,8 @@
       <div class="icon-container">
         <i class="mdi mdi-{{ icon }} icon"></i>
       </div>
-      <h2 *ngIf="title; else loading">{{ title | translate }}</h2>
-      <ng-template #loading><h2>Loading..</h2></ng-template>
+      <label *ngIf="title; else loading" class="card-title">{{ title | translate }}</label>
+      <ng-template #loading><label class="card-title">Loading..</label></ng-template>
     </div>
   </div>
 </div>
