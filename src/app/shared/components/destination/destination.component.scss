@@ -1,27 +1,31 @@
 .destination-container {
-  .spuare-group {
-    display: flex;
-    width: 100%;
 
-    .square-button {
-      height: 125px;
-      width: 125px;
-      margin: 0 auto;
-      display: flex;
-      flex: 0 0 25%;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 5px;
-      background-color: transparent;
-    }
+}
 
-    .square-button:active {
-      // box-shadow: -2px -2px 5px rgb(250, 0, 0);
-      filter: drop-shadow(1px 1px white) drop-shadow(-0.1px -0.1px 0 white)
-        drop-shadow(0.1px 0.1px 0 white);
-    }
-  }
+.spuare-group {
+  margin-top: 10px;
+  display: flex;
+  width: 100%;
+}
+
+.square-button {
+  height: 100px;
+  width: 100px;
+  margin: 0 auto;
+  display: flex;
+  flex: 0 0 25%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  background-color: transparent;
+  position: relative;
+}
+
+.square-button:active {
+  // box-shadow: -2px -2px 5px rgb(250, 0, 0);
+  filter: drop-shadow(1px 1px white) drop-shadow(-0.1px -0.1px 0 white)
+    drop-shadow(0.1px 0.1px 0 white);
 }
 
 .pause {
@@ -45,8 +49,9 @@
 .icon {
   position: absolute;
   bottom: 5px;
-  font-size: 6em;
+  font-size: 5em;
 }
+
 .title {
   position: absolute;
   bottom: 0;
@@ -54,7 +59,7 @@
 }
 
 .map {
-  height: 80vh;
+  height: 70vh;
 }
 
 @media only screen and (max-width: 900px) {

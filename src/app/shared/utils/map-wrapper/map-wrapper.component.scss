@@ -12,26 +12,8 @@
   position: relative;
   border: solid black;
   background: whitesmoke;
+  position: relative;
 }
-
-// .preview-wrapper::-webkit-scrollbar {
-//   background: white;
-//   width: 12px;
-// }
-// /* Track */
-// ::-webkit-scrollbar-track {
-//   background: #f1f1f1;
-// }
-
-// /* Handle */
-// ::-webkit-scrollbar-thumb {
-//   background: #888;
-// }
-
-// /* Handle on hover */
-// ::-webkit-scrollbar-thumb:hover {
-//   background: #555;
-// }
 
 .parent-canvas {
   z-index: 999;
@@ -65,39 +47,39 @@
   z-index: 999;
   align-items: start;
   flex: 1;
+}
 
-  .localization-clear-button {
-    background-color: transparent;
-    border: 2px solid #00b8d4;
-    border-radius: 100%;
-    color: #00b8d4;
-    margin: 2px;
-    justify-content: center;
-    display: flex;
-    flex: 1;
-  }
+.localization-clear-button {
+  background-color: transparent;
+  border: 2px solid #00b8d4;
+  border-radius: 100%;
+  color: #00b8d4;
+  margin: 2px;
+  justify-content: center;
+  display: flex;
+  flex: 1;
+}
 
-  .localization-preview-button {
-    background-color: transparent;
-    border: 2px solid #5dab43;
-    border-radius: 100%;
-    color: #5dab43;
-    margin: 2px;
-    justify-content: center;
-    display: flex;
-    flex: 1;
-  }
+.localization-preview-button {
+  background-color: transparent;
+  border: 2px solid #5dab43;
+  border-radius: 100%;
+  color: #5dab43;
+  margin: 2px;
+  justify-content: center;
+  display: flex;
+  flex: 1;
+}
 
-  .localization-edit-button {
-    background-color: transparent;
-    border: 2px solid #00b8d4;
-    border-radius: 100%;
-    color: #00b8d4;
-    margin: 0;
-    justify-content: center;
-    display: flex;
-    flex: 1;
-  }
+.localization-edit-button {
+  background-color: transparent;
+  border: 2px solid #00b8d4;
+  border-radius: 100%;
+  color: #00b8d4;
+  margin: 0;
+  justify-content: center;
+  display: flex;
+  flex: 1;
 }
 
 .icon {

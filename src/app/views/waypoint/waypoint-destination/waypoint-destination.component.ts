@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-waypoint-destination',
   templateUrl: './waypoint-destination.component.html',
-  styleUrls: ['./waypoint-destination.component.scss'],
+  styleUrls: ['./waypoint-destination.component.scss']
 })
 export class WaypointDestinationComponent implements OnInit {
   payload: any;
@@ -14,5 +14,5 @@ export class WaypointDestinationComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 }

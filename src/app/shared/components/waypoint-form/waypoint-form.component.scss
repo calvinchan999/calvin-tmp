@@ -38,17 +38,17 @@
 .waypoint-selected-container {
   display: flex;
   flex-direction: row;
-  position: absolute;
-  bottom: 0;
+  // position: absolute;
+  // bottom: 0;
+  // height: 15%;
   justify-content: space-between;
   align-items: center;
-  height: 15%;
   padding: 0px 5px 0 5px;
 }
 
 .waypoint-selected-title {
-  color: rgb(255, 0, 0);
-  // background-color: #00b8d4;
+  // color: rgb(255, 0, 0);
+  color: #fff;
   font-size: 32px;
   z-index: 999;
 }
