@@ -138,7 +138,7 @@ export class WaypointFormComponent implements OnInit {
         taskItemList: [
           {
             movement: {
-              waypointName: selectedWaypoint.floorPlanCode // todo
+              waypointName: selectedWaypoint.code // todo
             }
           }
         ]
