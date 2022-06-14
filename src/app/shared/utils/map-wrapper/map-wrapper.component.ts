@@ -489,41 +489,22 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         const currentPosition = this.robotCurrentPositionPointer.getAttrs();
 
         const pointTo = {
-          x:
-            (this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX()) ,
-          y:
-            (this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY()) ,
+          x: this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX(),
+          y: this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY(),
         };
         if (
           this.rosMapLayer.find('.currentPosition').length > 0 &&
           pointTo.x &&
           pointTo.y
         ) {
-          // console.log(this.stage.getAttrs());
-          // console.log(this.rosMap.getAttrs());
-          // console.log(this.rosMap.height() * this.scale);
-          // console.log(this.rosMap.height() / this.scale);
-          // console.log(`this.stage.height() ${this.stage.height()}`);
-          // console.log(`this.stage.x() ${this.stage.x()}`);
-          // console.log(`this.rosMap.height() ${this.rosMap.height()}`);
-        
-          // this.stage.position({
-          //   x:
-          //     (this.stage.width() -
-          //     (((this.rosMap.width() -
-          //    this.rosMapLayer.x() - currentPosition.x) / 2) /
-          //       this.stage.scaleX()))    ,
-          //   y:
-          //     (this.stage.height() -
-          //     (((this.rosMap.height() -
-          //    this.rosMapLayer.y() - currentPosition.y) / 2) /
-          //       this.stage.scaleX()))   ,
-          // });
-         
+          // todo
           this.stage.position({
-            x: pointTo.x,
-            y: pointTo.y,
+            x:
+            this.stage.width() /2 - this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX(), // this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX()
+            y:
+            this.stage.height() /2 - this.rosMapLayer.y() - currentPosition.y / this.stage.scaleX(), // this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY()
           });
+
         }
       })
     );
