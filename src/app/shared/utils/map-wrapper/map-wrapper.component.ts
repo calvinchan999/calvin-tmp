@@ -127,20 +127,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       rosImage.src = this.mapImage;
     });
 
-    // const floorPlanImg$ = new Observable<HTMLImageElement>((observer) => {
-    //   const floorPlanImage = new Image();
-
-    //   floorPlanImage.onload = () => {
-    //     observer.next(floorPlanImage);
-    //     observer.complete();
-    //   };
-    //   floorPlanImage.onerror = (err) => {
-    //     observer.error(err);
-    //   };
-    //   floorPlanImage.src = this.floorPlan;
-    // });
-
-    forkJoin([rosImg$]) // floorPlanImg$
+    forkJoin([rosImg$])
       .pipe(
         tap((img) => {
           this.stage = new Stage({
@@ -157,30 +144,19 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             draggable: false,
             opacity: 0.7,
           });
-          // this.floorPlanLayer.add(
-          //   new KonvaImage({
-          //     image: img[1],
-          //     width: img[1].width,
-          //     height: img[1].height,
-          //     draggable: false,
-          //   })
-          // );
 
           this.rosMapLayer.add(this.rosMap);
           this.rosMapLayer.add(this.localizationToolsGroup);
           this.rosMapLayer.add(this.lidarPointsGroup);
           this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
-          // this.rosMapLayer.position({ x: 0, y: img[1].height });
-          // this.floorPlanLayer.scale({
-          //   x: this.floorPlanScale,
-          //   y: this.floorPlanScale,
-          // });
-          // this.stage.rotate(90)
-          // this.rosMapLayer.rotate(270.28);
 
-          // this.stage.add(this.floorPlanLayer);
           this.stage.add(this.rosMapLayer);
           this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
+
+          this.rosMapLayer.position({
+            x: this.rosMap.width() / 2,
+            y: 0,
+          });
         }),
         tap(() => {
           const hammer = new Hammer(this.canvas.nativeElement);
@@ -605,24 +581,56 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   zoomIn() {
     let scale: number = this.scale;
+    const oldScale = this.stage.scaleX();
+
+    const pointer = {
+      x: this.stage.width() / 2,
+      y: this.stage.height() / 2,
+    };
+
+    const origin = {
+      x: (pointer.x - this.stage.x()) / oldScale,
+      y: (pointer.y - this.stage.y()) / oldScale,
+    };
+
     scale /= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(100));
-    // if (scale < 1.5) {
+
     this.scale = scale;
-    this.updateKonvasScale(scale).subscribe();
-    // this.onReset().subscribe();
-    // }
+    this.updateKonvasScale(scale).subscribe(() => {
+      const newPos = {
+        x: pointer.x - origin.x * scale,
+        y: pointer.y - origin.y * scale,
+      };
+      this.stage.position(newPos);
+    });
   }
 
   zoomOut() {
     let scale: any = this.scale;
+    const oldScale = this.stage.scaleX();
+
+    const pointer = {
+      x: this.stage.width() / 2,
+      y: this.stage.height() / 2,
+    };
+
+    const origin = {
+      x: (pointer.x - this.stage.x()) / oldScale,
+      y: (pointer.y - this.stage.y()) / oldScale,
+    };
+
     scale *= this.scaleMultiplier;
     scale = parseFloat(scale.toFixed(100));
-    // if (scale >= 0.5) {
+
     this.scale = scale;
-    this.updateKonvasScale(scale).subscribe();
-    // this.onReset().subscribe();
-    // }
+    this.updateKonvasScale(scale).subscribe(() => {
+      const newPos = {
+        x: pointer.x - origin.x * scale,
+        y: pointer.y - origin.y * scale,
+      };
+      this.stage.position(newPos);
+    });
   }
 
   onPinchin(event: Event) {
