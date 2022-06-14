@@ -135,6 +135,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             width: window.innerWidth,
             height: window.innerHeight,
             draggable: true,
+            x: 0,
+            y: 0,
           });
 
           this.rosMap = new KonvaImage({
@@ -143,6 +145,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             height: img[0].height,
             draggable: false,
             opacity: 0.7,
+            x: 0,
+            y: 0,
           });
 
           this.rosMapLayer.add(this.rosMap);
@@ -153,9 +157,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           this.stage.add(this.rosMapLayer);
           this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
 
-          this.rosMapLayer.position({
-            x: this.rosMap.width() / 2,
-            y: 0,
+          this.stage.position({
+            x: (this.stage.width() - this.rosMap.width()) / 2,
+            y: (this.stage.height() - this.rosMap.height()) / 2,
           });
         }),
         tap(() => {
@@ -374,19 +378,21 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       mergeMap(() =>
         of(this.lidarData).pipe(
           tap((data) => {
-            const { pointList } = data;
-            const { x, y, height, resolution }: any = this.metaData;
-            for (const i in pointList) {
-              const redpoint = new Circle({
-                x: Math.abs((x - pointList[i]['x']) / resolution),
-                y: height - Math.abs((y - pointList[i]['y']) / resolution),
-                radius: 2,
-                fill: 'red',
-                name: 'redpoint',
-              });
+            if (data.pointList) {
+              const { pointList } = data;
+              const { x, y, height, resolution }: any = this.metaData;
+              for (const i in pointList) {
+                const redpoint = new Circle({
+                  x: Math.abs((x - pointList[i]['x']) / resolution),
+                  y: height - Math.abs((y - pointList[i]['y']) / resolution),
+                  radius: 2,
+                  fill: 'red',
+                  name: 'redpoint',
+                });
 
-              this.lidarPointsGroup.add(redpoint);
-              // }
+                this.lidarPointsGroup.add(redpoint);
+                // }
+              }
             }
           })
         )
@@ -484,17 +490,36 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
         const pointTo = {
           x:
-            (this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX()) /
-            2.5,
+            (this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX()) ,
           y:
-            (this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY()) /
-            2.5,
+            (this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY()) ,
         };
         if (
           this.rosMapLayer.find('.currentPosition').length > 0 &&
           pointTo.x &&
           pointTo.y
         ) {
+          // console.log(this.stage.getAttrs());
+          // console.log(this.rosMap.getAttrs());
+          // console.log(this.rosMap.height() * this.scale);
+          // console.log(this.rosMap.height() / this.scale);
+          // console.log(`this.stage.height() ${this.stage.height()}`);
+          // console.log(`this.stage.x() ${this.stage.x()}`);
+          // console.log(`this.rosMap.height() ${this.rosMap.height()}`);
+        
+          // this.stage.position({
+          //   x:
+          //     (this.stage.width() -
+          //     (((this.rosMap.width() -
+          //    this.rosMapLayer.x() - currentPosition.x) / 2) /
+          //       this.stage.scaleX()))    ,
+          //   y:
+          //     (this.stage.height() -
+          //     (((this.rosMap.height() -
+          //    this.rosMapLayer.y() - currentPosition.y) / 2) /
+          //       this.stage.scaleX()))   ,
+          // });
+         
           this.stage.position({
             x: pointTo.x,
             y: pointTo.y,
