@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, timer } from 'rxjs';
-import { startWith, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 export interface ModalAction {
   topic: string;
@@ -11,10 +10,6 @@ export interface ModalAction {
 export interface Mode {
   mode: string;
 }
-
-// export interface Type {
-//   type: "close-modal"
-// }
 
 export interface Response {
   type: 'normal' | 'warning';
@@ -30,7 +25,7 @@ export interface Modal {
 export type WaypointPageCategory = 'list' | 'map';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SharedService {
   public currentMode$ = new BehaviorSubject<string>('');
@@ -43,27 +38,9 @@ export class SharedService {
   public reset$ = new Subject<number>();
   public timer$: Observable<any>;
 
-  public waypointListPageMode$ = new BehaviorSubject<WaypointPageCategory>('list');
+  public waypointListPageMode$ = new BehaviorSubject<WaypointPageCategory>(
+    'list'
+  );
 
-  constructor() {
-    // @todo check connection
-    // this.timer$ = this.reset$.pipe(
-    //   startWith(0),
-    //   switchMap(() => timer(0, 10000)) // Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
-    // );
-  }
-
-  // _userRole(): Observable<any> {
-  //   if (typeof localStorage.getItem('role') !== 'string' ||　!localStorage.getItem('role')) {
-  //     localStorage.setItem('role', 'client');
-  //     this.userRole$.next("client");
-  //   } else if (localStorage.getItem('role') === 'client') {
-  //     localStorage.setItem('role', 'admin');
-  //     this.userRole$.next('admin');
-  //   } else if (localStorage.getItem('role') === 'admin') {
-  //     localStorage.setItem('role', 'client');
-  //     this.userRole$.next('client');
-  //   }
-  //   return of(null);
-  // }
+  constructor() {}
 }

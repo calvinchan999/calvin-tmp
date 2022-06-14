@@ -22,8 +22,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
-              "moment-timezone",
-              "pdfmake/build/pdfMake"
+              "moment-timezone"
             ],
             "outputPath": "dist/hong-chi-smart-wheelchair-frontend",
             "index": "src/index.html",

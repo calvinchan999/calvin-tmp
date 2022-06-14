@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, iif, Observable, of } from 'rxjs';
-import { map, mergeMap, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { BehaviorSubject, iif, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import {
   SharedService,
   WaypointPageCategory
@@ -25,43 +25,7 @@ export class WaypointFormComponent implements OnInit {
   toolType = Category.WAYPOINTSELECTOR;
   floorPlanSubject$: BehaviorSubject<any> = new BehaviorSubject<string>('');
   waypointLists = null;
-  // waypointLists$: Observable<any> = this.mapService.getActiveMap().pipe(
-  //   mergeMap((currentMap: MapResponse) =>
-  //     iif(
-  //       () => !!currentMap.name,
-  //       this.mapService
-  //         .getFloorPlanData({
-  //           code: currentMap.name,
-  //           floorPlanIncluded: true,
-  //           mapIncluded: false
-  //         })
-  //         .pipe(
-  //           map(data => {
-  //             const { floorPlanPointList, rosMapPointList } = data;
 
-  //             if (data?.imageData) {
-  //               this.floorPlanSubject$.next(data);
-  //             }
-  //             return rosMapPointList.map(ros => {
-  //               const floorPlanPointer = floorPlanPointList.filter(
-  //                 s => s.name === ros.name
-  //               )[0];
-  //               return {
-  //                 ...ros,
-  //                 ...{
-  //                   floorPlanX: floorPlanPointer.x,
-  //                   floorPlanY: floorPlanPointer.y,
-  //                   floorPlanName: floorPlanPointer.name,
-  //                   floorPlanCode: floorPlanPointer.code
-  //                 }
-  //               };
-  //             });
-  //           })
-  //         ),
-  //       of(null)
-  //     )
-  //   )
-  // );
   selectedWaypoint: Waypoint;
   constructor(
     private waypointService: WaypointService,

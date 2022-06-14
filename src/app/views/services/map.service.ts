@@ -70,7 +70,7 @@ export interface MapMetaData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MapService {
   public baseUrl;
@@ -86,10 +86,9 @@ export class MapService {
     return this.http.get<MapResponse>(url);
   }
 
-  getMap(): Observable<FloorPlanResponse> {
-    // const url = `${this.baseUrl}${environment.api.map}`;
-    const url = `${this.baseUrl}${environment.api.floorPlans}`;
-    return this.http.get<FloorPlanResponse>(url);
+  getMap(): Observable<MapResponse> {
+    const url = `${this.baseUrl}${environment.api.map}`;
+    return this.http.get<MapResponse>(url);
   }
 
   changeMap(data: { mapName: string }): Observable<any> {

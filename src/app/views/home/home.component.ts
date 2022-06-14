@@ -5,12 +5,11 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
 import { SharedService } from 'src/app/services/shared.service';
-// import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   mode: string;
@@ -38,7 +37,7 @@ export class HomeComponent implements OnInit {
   isAuthenticated() {
     this.authService.isAuthenticatedSubject
       .pipe(
-        map((payload) => {
+        map(payload => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
@@ -66,7 +65,7 @@ export class HomeComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'sos',
       modalHeader: 'sos',
-      isDisableClose: false,
+      isDisableClose: false
     });
   }
 

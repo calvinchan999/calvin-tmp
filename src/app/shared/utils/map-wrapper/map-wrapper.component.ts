@@ -454,6 +454,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               } else if (this.toolType === Category.WAYPOINTSELECTOR) {
                 stage.on('mousedown touchstart', async (event: any) => {
                   const { name } = event.target.getAttrs();
+
                   const filteredName =
                     name?.substring(name.lastIndexOf('-') + 1) ?? undefined;
                   if (!filteredName) return;
@@ -461,8 +462,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                   const waypoint = _.find(this.pointLists, {
                     name: filteredName
                   });
+                  if (waypoint) {
+                    waypointsGroup.getChildren().forEach(child => {
+                      if (child.getAttrs().name.indexOf(filteredName) > -1) {
+                        child.setAttr('fill', 'red');
+                      } else {
+                        child.setAttr('fill', 'blue');
+                      }
+                    });
 
-                  this.selectedWaypoint.emit(waypoint);
+                    this.selectedWaypoint.emit(waypoint);
+                  }
                 });
               }
             }),

@@ -24,6 +24,6 @@ export const environment = {
     mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
     lidar: '/api/lidar/v1',
     floorPlans: '/api/floorPlan/v1',
-    floorPlanByMapCode: (code: string) => `/api/floorPlan/v1/mapCode/${code}`
+    floorPlanByMapCode: (code: string) => `/api/floorPlan/v1/mapCode/${code}`,
   },
 };

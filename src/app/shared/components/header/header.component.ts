@@ -6,7 +6,7 @@ import {
   Router
 } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
@@ -30,7 +30,6 @@ export class HeaderComponent implements OnInit {
   robotId: string = '';
   mode: string = '';
   modeTranslation: string = '';
- 
 
   currentUrl: string = '';
   currentPageTitle: string = '';

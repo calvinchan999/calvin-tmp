@@ -12,7 +12,7 @@ import { Metadata } from '../localization-form/localization-form.component';
 @Component({
   selector: 'app-destination',
   templateUrl: './destination.component.html',
-  styleUrls: ['./destination.component.scss']
+  styleUrls: ['./destination.component.scss'],
 })
 export class DestinationComponent implements OnInit {
   @Input() payload: any;

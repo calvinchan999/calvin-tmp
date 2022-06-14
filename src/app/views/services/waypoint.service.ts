@@ -45,7 +45,7 @@ export interface InitialPose {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WaypointService {
   public baseUrl: string;

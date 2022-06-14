@@ -38,27 +38,29 @@
 .card-body {
   display: flex;
   align-items: center;
-  .icon-container {
-    flex: 1;
-    .icon {
-      font-size: 4em;
-    }
-  }
+}
 
-  .card-title {
-    margin-left: 15px;
-    flex: auto;
-    align-items: center;
-    font-size: 26px;
-    text-transform: uppercase;
-    font-weight: bold;
-    width: 100%;
-    z-index: 1;
-    text-align: left;
-    // text-shadow: 0 0 1px white, 0 0 1px white, 0 0 1px white, 0 0 1px white,
-    //   0 0 1px white, 0 0 1px white, 0 0 1px white, 0 0 1px white;
-    line-break: anywhere;
-  }
+.icon-container {
+  flex: 1;
+}
+
+.icon {
+  font-size: 4em;
+}
+
+.card-title {
+  margin-left: 15px;
+  flex: auto;
+  align-items: center;
+  font-size: 26px;
+  text-transform: uppercase;
+  font-weight: bold;
+  width: 100%;
+  z-index: 1;
+  text-align: left;
+  // text-shadow: 0 0 1px white, 0 0 1px white, 0 0 1px white, 0 0 1px white,
+  //   0 0 1px white, 0 0 1px white, 0 0 1px white, 0 0 1px white;
+  line-break: anywhere;
 }
 
 .card-container {

@@ -8,13 +8,6 @@
     >
       <label class="mode-title"> {{ modeTranslation }}</label>
     </div>
-    <!-- <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}testtesttesttest</label
-      >
-    </div> -->
 
     <div
       class="navbar-collapse collapse flex-sm-grow-1  flex-shrink-1 justify-content-end align-self-center"
@@ -68,7 +61,6 @@
           (click)="goToLogin()"
           *ngIf="currentUrl === '/dashboard' && user?.length <= 0"
         >
-          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
 
@@ -78,7 +70,6 @@
           (click)="goToLogout()"
           *ngIf="currentUrl === '/dashboard' && user?.length > 0"
         >
-          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
         <li
@@ -89,21 +80,12 @@
           <i class="mdi mdi-home icon"></i>
         </li>
         <li class="nav-item language-container" (click)="useLanguage()">
-          <!-- <i class="material-icons nav-link icon">language</i> -->
           <i class="mdi mdi-web icon"></i>
         </li>
       </ul>
     </div>
   </div>
-  <!-- <div class="container-fluid">
-    <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}</label
-      >
-    </div>
-  </div> -->
+
   <div
     class="container-fluid"
     *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
@@ -112,11 +94,6 @@
       class="navbar-collapse collapse flex-sm-grow-0 justify-content-start align-self-center"
       style="flex-basis:0"
     >
-      <!-- <label
-        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
-      >
-        {{ modeTranslation }}</label
-      > -->
       <i
         class="mdi mdi-chevron-left icon"
         (click)="backToPreviousPage()"

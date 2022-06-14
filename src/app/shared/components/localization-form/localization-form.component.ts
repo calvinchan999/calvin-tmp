@@ -15,7 +15,7 @@ export interface Metadata {
 @Component({
   selector: 'app-localization-form',
   templateUrl: './localization-form.component.html',
-  styleUrls: ['./localization-form.component.scss']
+  styleUrls: ['./localization-form.component.scss'],
 })
 export class LocalizationFormComponent implements OnInit {
   type = Category.LOCALIZATIONEDITER;
