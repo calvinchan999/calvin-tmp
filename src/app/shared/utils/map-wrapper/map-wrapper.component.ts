@@ -160,8 +160,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
 
           this.stage.position({
-            x: (this.stage.width() - this.rosMap.width()) / 2,
-            y: (this.stage.height() - this.rosMap.height()) / 2,
+            x: 0,
+            y: 0,
           });
         }),
         tap(() => {
@@ -490,7 +490,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       }),
       tap(() => {
         const currentPosition = this.robotCurrentPositionPointer.getAttrs();
-        console.log(this.robotCurrentPositionPointer.getAttrs());
         const pointTo = {
           x: this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX(),
           y: this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY(),
@@ -500,72 +499,20 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           pointTo.x &&
           pointTo.y
         ) {
-          // const oldX = 0- (this.rosMap.width() * this.rosMapLayer.scaleX()) * this.stage.scaleX();
-          // const oldY = 0;
-          // const oldX =
-          //      (this.stage.width() -
-          //       (this.rosMap.width() -
-          //         (this.rosMap.width() - ( ( (currentPosition.x   / this.rosMapLayer.scaleX())/ this.stage.scaleX()) )))  -
-          //       this.stage.width()) /
-          //     2;
-          // const oldX =    (this.stage.width() / 2 -
-          //       (this.rosMap.width() /2 -
-          //         (this.rosMap.width()  /2 - currentPosition.x)) /
-          //         this.rosMapLayer.scaleX() -
-          //       this.stage.width());
-          //   x:
-          //   ((event.target as any).getStage().getPointerPosition().x / oldScale -
-          //     this.stage.x() / oldScale) /
-          //   this.scale,
-          // y:
-          //   ((event.target as any).getStage().getPointerPosition().y / oldScale -
-          //     this.stage.y() / oldScale) /
+          const absolutePosition =
+            this.robotCurrentPositionPointer.getAbsolutePosition();
 
-          // (this.stage.width() -
-          //       (this.rosMap.width() -
-          //         (this.rosMap.width() - currentPosition.x)) /
-          //         this.rosMapLayer.scaleX() -
-          //       this.stage.width()) /
-          //     1.2,
-
-          const oldX = -(pointTo.x - this.rosMap.width());
-          // const oldX = 0;
-          const oldY = pointTo.y - this.rosMap.height();
-
-          const pointer = {
-            x: this.stage.width() / 2,
-            y: this.stage.height() / 2,
-          };
-
-          // const origin = {
-
-          console.log(this.stage.width());
-          console.log(this.rosMapLayer.width());
-          console.log(this.rosMap.width());
-          console.log(this.stage.scaleX());
           const newPos = {
-            x: 0,
-            y: 0,
+            x:
+              this.stage.x() -
+              absolutePosition.x +
+              (this.rosMap.width() - this.stage.width()) / 2,
+            y:
+              this.stage.y() -
+              absolutePosition.y +
+              (this.rosMap.height() - this.stage.height()) / 2,
           };
           this.stage.position(newPos);
-
-          // todo
-          // this.stage.position({
-          //   x:
-          //     (this.stage.width() -
-          //       (this.rosMap.width() -
-          //         (this.rosMap.width() - currentPosition.x)) /
-          //         this.rosMapLayer.scaleX() -
-          //       this.stage.width()) /
-          //     1.2,
-          //   y:
-          //     (this.stage.height() -
-          //       (this.rosMap.height() -
-          //         (this.rosMap.height() - currentPosition.y)) /
-          //         this.rosMapLayer.scaleY() -
-          //       this.stage.height()) /
-          //     1.2,
-          // });
         }
       })
     );
