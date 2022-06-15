@@ -89,7 +89,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   degrees: number = 0;
   scale: number = 0.75; // 0.35
-  rosScale: number = 1.35; // 0.66
+  rosScale: number = 0.66; // 0.66, 1.35
   floorPlanScale: number = 1;
   scaleMultiplier: number = 0.99; // 0.99
   rosMap: any;
@@ -114,7 +114,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     private mapService: MapService // private indexedDbService: IndexedDbService
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  ngAfterViewInit() {
     const rosImg$ = new Observable<HTMLImageElement>((observer) => {
       const rosImage = new Image();
       rosImage.onload = () => {
@@ -132,8 +134,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         tap((img) => {
           this.stage = new Stage({
             container: 'canvas',
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: this.canvas.nativeElement.offsetWidth,
+            height: this.canvas.nativeElement.offsetHeight,
             draggable: true,
             x: 0,
             y: 0,
@@ -178,6 +180,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           this.stage.on('touchend', () => {
+            console.log(this.stage.getAttrs());
             hammer.get('pinch').set({ enable: false });
           });
 
@@ -487,7 +490,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       }),
       tap(() => {
         const currentPosition = this.robotCurrentPositionPointer.getAttrs();
-
+        console.log(this.robotCurrentPositionPointer.getAttrs());
         const pointTo = {
           x: this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX(),
           y: this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY(),
@@ -497,14 +500,72 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           pointTo.x &&
           pointTo.y
         ) {
-          // todo
-          this.stage.position({
-            x:
-            this.stage.width() /2 - this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX(), // this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX()
-            y:
-            this.stage.height() /2 - this.rosMapLayer.y() - currentPosition.y / this.stage.scaleX(), // this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY()
-          });
+          // const oldX = 0- (this.rosMap.width() * this.rosMapLayer.scaleX()) * this.stage.scaleX();
+          // const oldY = 0;
+          // const oldX =
+          //      (this.stage.width() -
+          //       (this.rosMap.width() -
+          //         (this.rosMap.width() - ( ( (currentPosition.x   / this.rosMapLayer.scaleX())/ this.stage.scaleX()) )))  -
+          //       this.stage.width()) /
+          //     2;
+          // const oldX =    (this.stage.width() / 2 -
+          //       (this.rosMap.width() /2 -
+          //         (this.rosMap.width()  /2 - currentPosition.x)) /
+          //         this.rosMapLayer.scaleX() -
+          //       this.stage.width());
+          //   x:
+          //   ((event.target as any).getStage().getPointerPosition().x / oldScale -
+          //     this.stage.x() / oldScale) /
+          //   this.scale,
+          // y:
+          //   ((event.target as any).getStage().getPointerPosition().y / oldScale -
+          //     this.stage.y() / oldScale) /
 
+          // (this.stage.width() -
+          //       (this.rosMap.width() -
+          //         (this.rosMap.width() - currentPosition.x)) /
+          //         this.rosMapLayer.scaleX() -
+          //       this.stage.width()) /
+          //     1.2,
+
+          const oldX = -(pointTo.x - this.rosMap.width());
+          // const oldX = 0;
+          const oldY = pointTo.y - this.rosMap.height();
+
+          const pointer = {
+            x: this.stage.width() / 2,
+            y: this.stage.height() / 2,
+          };
+
+          // const origin = {
+
+          console.log(this.stage.width());
+          console.log(this.rosMapLayer.width());
+          console.log(this.rosMap.width());
+          console.log(this.stage.scaleX());
+          const newPos = {
+            x: 0,
+            y: 0,
+          };
+          this.stage.position(newPos);
+
+          // todo
+          // this.stage.position({
+          //   x:
+          //     (this.stage.width() -
+          //       (this.rosMap.width() -
+          //         (this.rosMap.width() - currentPosition.x)) /
+          //         this.rosMapLayer.scaleX() -
+          //       this.stage.width()) /
+          //     1.2,
+          //   y:
+          //     (this.stage.height() -
+          //       (this.rosMap.height() -
+          //         (this.rosMap.height() - currentPosition.y)) /
+          //         this.rosMapLayer.scaleY() -
+          //       this.stage.height()) /
+          //     1.2,
+          // });
         }
       })
     );
@@ -604,11 +665,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     this.scale = scale;
     this.updateKonvasScale(scale).subscribe(() => {
-      const newPos = {
-        x: pointer.x - origin.x * scale,
-        y: pointer.y - origin.y * scale,
-      };
-      this.stage.position(newPos);
+      // const newPos = {
+      //   x: pointer.x - origin.x * scale,
+      //   y: pointer.y - origin.y * scale,
+      // };
+      // this.stage.position(newPos);
     });
   }
 
@@ -631,11 +692,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     this.scale = scale;
     this.updateKonvasScale(scale).subscribe(() => {
-      const newPos = {
-        x: pointer.x - origin.x * scale,
-        y: pointer.y - origin.y * scale,
-      };
-      this.stage.position(newPos);
+      // const newPos = {
+      //   x: pointer.x - origin.x * scale,
+      //   y: pointer.y - origin.y * scale,
+      // };
+      // this.stage.position(newPos);
     });
   }
 

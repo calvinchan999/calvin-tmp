@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapResponse, MapService } from 'src/app/views/services/map.service';
@@ -20,7 +20,19 @@ import {
 export class WaypointFormComponent implements OnInit {
   waypointLists$: Observable<any> = this.mapService.getActiveMap().pipe(
     mergeMap((currentMap: MapResponse) => {
-      return this.waypointService.getWaypoint(currentMap.name);
+      return this.waypointService.getWaypoint(currentMap.name).pipe(
+        map((data) => {
+          const dataTransfor = [];
+          for (let i of data) {
+            const splitName = i.name.split('%');
+            dataTransfor.push({
+              ...i,
+              waypointName: splitName[1] !== '' ? splitName[1] : splitName[0],
+            });
+          }
+          return dataTransfor;
+        })
+      );
     })
   );
   selectedWaypoint: Waypoint;
@@ -58,9 +70,9 @@ export class WaypointFormComponent implements OnInit {
       console.log(this.selectedWaypoint);
       this.waypointService
         .sendTask(data)
-        .pipe(
-          // mergeMap(() => this.translateService.get('navigatingtoDestination'))
-        )
+        .pipe
+        // mergeMap(() => this.translateService.get('navigatingtoDestination'))
+        ()
         .subscribe((navigatingtoDestination) => {
           // this.sharedService.isOpenModal$.next({
           //   modal: 'destination',

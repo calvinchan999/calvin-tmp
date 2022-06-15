@@ -36,7 +36,9 @@
 .parent-canvas {
   z-index: 999;
   position: absolute;
-  width: 500px;
+  // width: 500px;
+  width: 100%;
+  height: 100%;
 }
 
 .degrees-label {
