@@ -180,7 +180,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           this.stage.on('touchend', () => {
-            console.log(this.stage.getAttrs());
             hammer.get('pinch').set({ enable: false });
           });
 
@@ -583,16 +582,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateKonvasScale(scale: number): Observable<any> {
-    return of(this.stage.scale({ x: scale, y: scale }))
-      .pipe
-      // mergeMap(() => of(this.backgroundLayer.scale({ x: scale, y: scale }))),
-      // mergeMap(() => of(this.rosMapLayer.scale({ x: scale, y: scale })))
-      // mergeMap(() => of(this.laserLayer.scale({ x: scale, y: scale })))
-      ();
+    return of(this.stage.scale({ x: scale, y: scale }));
+    // return of(this.stage.scale({ x: scale, y: scale }))
+    //   .pipe
+    // mergeMap(() => of(this.backgroundLayer.scale({ x: scale, y: scale }))),
+    // mergeMap(() => of(this.rosMapLayer.scale({ x: scale, y: scale })))
+    // mergeMap(() => of(this.laserLayer.scale({ x: scale, y: scale })))
+    // ();
   }
 
   zoomIn() {
-    let scale: number = this.scale;
+    let scale = this.scale;
     const oldScale = this.stage.scaleX();
 
     const pointer = {
@@ -606,20 +606,25 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     scale /= this.scaleMultiplier;
-    scale = parseFloat(scale.toFixed(100));
-
+    scale = parseFloat(scale.toFixed(3));
+    
     this.scale = scale;
-    this.updateKonvasScale(scale).subscribe(() => {
-      const newPos = {
-        x: pointer.x - origin.x * scale,
-        y: pointer.y - origin.y * scale,
-      };
-      this.stage.position(newPos);
-    });
+
+    this.updateKonvasScale(scale)
+      .pipe(
+        tap(() => {
+          const newPos = {
+            x: pointer.x - origin.x * scale,
+            y: pointer.y - origin.y * scale,
+          };
+          this.stage.position(newPos);
+        })
+      )
+      .subscribe();
   }
 
   zoomOut() {
-    let scale: any = this.scale;
+    let scale = this.scale;
     const oldScale = this.stage.scaleX();
 
     const pointer = {
@@ -633,26 +638,31 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     scale *= this.scaleMultiplier;
-    scale = parseFloat(scale.toFixed(100));
+    scale = parseFloat(scale.toFixed(3));
+
 
     this.scale = scale;
-    this.updateKonvasScale(scale).subscribe(() => {
-      const newPos = {
-        x: pointer.x - origin.x * scale,
-        y: pointer.y - origin.y * scale,
-      };
-      this.stage.position(newPos);
-    });
+    this.updateKonvasScale(scale)
+      .pipe(
+        tap(() => {
+          const newPos = {
+            x: pointer.x - origin.x * scale,
+            y: pointer.y - origin.y * scale,
+          };
+          this.stage.position(newPos);
+        })
+      )
+      .subscribe();
   }
 
   onPinchin(event: Event) {
-    if (event) {
+    if (event && this.rosMap) {
       this.zoomOut();
     }
   }
 
   onPinchout(event: Event) {
-    if (event) {
+    if (event && this.rosMap) {
       this.zoomIn();
     }
   }
