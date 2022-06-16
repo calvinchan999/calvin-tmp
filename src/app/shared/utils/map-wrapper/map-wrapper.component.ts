@@ -503,14 +503,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             this.robotCurrentPositionPointer.getAbsolutePosition();
 
           const newPos = {
-            x:
-              this.stage.x() -
-              absolutePosition.x +
-              (this.rosMap.width() - this.stage.width()) / 2,
-            y:
-              this.stage.y() -
-              absolutePosition.y +
-              (this.rosMap.height() - this.stage.height()) / 2,
+            x: this.stage.x() - absolutePosition.x + this.stage.width() / 2, // this.stage.x() -
+            // absolutePosition.x +
+            // (this.rosMap.width() - this.stage.width()) / 2
+            y: this.stage.y() - absolutePosition.y + this.stage.height() / 2, // this.stage.y() -
+            // absolutePosition.y +
+            // (this.rosMap.height() - this.stage.height()) / 2
           };
           this.stage.position(newPos);
         }
@@ -612,11 +610,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     this.scale = scale;
     this.updateKonvasScale(scale).subscribe(() => {
-      // const newPos = {
-      //   x: pointer.x - origin.x * scale,
-      //   y: pointer.y - origin.y * scale,
-      // };
-      // this.stage.position(newPos);
+      const newPos = {
+        x: pointer.x - origin.x * scale,
+        y: pointer.y - origin.y * scale,
+      };
+      this.stage.position(newPos);
     });
   }
 
@@ -639,11 +637,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     this.scale = scale;
     this.updateKonvasScale(scale).subscribe(() => {
-      // const newPos = {
-      //   x: pointer.x - origin.x * scale,
-      //   y: pointer.y - origin.y * scale,
-      // };
-      // this.stage.position(newPos);
+      const newPos = {
+        x: pointer.x - origin.x * scale,
+        y: pointer.y - origin.y * scale,
+      };
+      this.stage.position(newPos);
     });
   }
 
