@@ -1,8 +1,7 @@
-<div class="container-fluid destination-container">
-  <div class="card">
+<div class="container-fluid destination-container" *ngIf="rosMapImage && metaData">
+  <div class="card ">
     <app-map-wrapper
       class="map"
-      *ngIf="rosMapImage && metaData"
       type="positionListener"
       [floorPlan]="floorPlanImg"
       [mapImage]="rosMapImage"
@@ -10,9 +9,24 @@
       [metaData]="metaData"
       [targetWaypoints]="payload"
     ></app-map-wrapper>
+   
+  </div>
+  <div class="spuare-group">
+    <div class="square-button cancel" (click)="onCancel()">
+      <i class="mdi mdi-stop icon"></i>
+      <h3 class="title">{{ "cancel" | translate }}</h3>
+    </div>
+    <div class="square-button pause" (click)="onPause()">
+      <i class="mdi mdi-pause icon"></i>
+      <h3 class="title">{{ "pause" | translate }}</h3>
+    </div>
+    <div class="square-button resume" (click)="onResume()">
+      <i class="mdi mdi-play icon"></i>
+      <h3 class="title">{{ "resume" | translate }}</h3>
+    </div>
   </div>
 </div>
-<div class="spuare-group">
+<!-- <div class="spuare-group">
   <div class="square-button cancel" (click)="onCancel()">
     <i class="mdi mdi-stop icon"></i>
     <h3 class="title">{{ "cancel" | translate }}</h3>
@@ -25,4 +39,4 @@
     <i class="mdi mdi-play icon"></i>
     <h3 class="title">{{ "resume" | translate }}</h3>
   </div>
-</div>
+</div> -->
