@@ -102,6 +102,11 @@ export class MapService {
     return this.http.get<any>(url, { responseType: 'blob' });
   }
 
+  getFloorPlanList():Observable<any>{
+    const url = `${this.baseUrl}${environment.api.floorPlans}`;
+    return this.http.get<any>(url);    
+  }
+
   getFloorPlanData({
     code,
     floorPlanIncluded = false,

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Stage } from 'konva/lib/Stage';
 import { Layer } from 'konva/lib/Layer';
 import { Circle } from 'konva/lib/shapes/Circle';
-import { Image as KonvaImage } from 'konva/lib/shapes/Image';
+import { Image, Image as KonvaImage } from 'konva/lib/shapes/Image';
 import { Arrow } from 'konva/lib/shapes/Arrow';
 import { Text } from 'konva/lib/shapes/Text';
 import { Group } from 'konva/lib/Group';
@@ -99,15 +99,9 @@ export class MapWrapperService {
     return this.waypoints;
   }
 
-  createRosMapImg$(img): Observable<KonvaImage> {
-    this.rosMap = new KonvaImage({
-      image: img,
-      width: img.width,
-      height: img.height,
-      draggable: false,
-      opacity: 0.7
-    });
-    return of(this.rosMap);
+  createRosMapImg$(data): Observable<KonvaImage> {
+    this.rosMap = new KonvaImage(data);
+    return of( this.rosMap);
   }
 
   updateRosMapLayerPosition(point) {
@@ -120,13 +114,25 @@ export class MapWrapperService {
     return of(this.rosMapLayer.scale({ x: scale, y: scale }));
   }
 
-  createFloorPlanImg$(img): Observable<KonvaImage> {
-    this.floorPlan = new KonvaImage({
-      image: img,
-      width: img.width,
-      height: img.height,
-      draggable: false
-    });
+  // test
+  updateRosMapPosition(data): Observable<any>{
+    // offsetX: 79.03,
+    // offsetY: 224.34,
+    // x: 197.33,
+    // y: 272.95
+    return of(this.rosMap.position({x: 197.33, y:272.95}));
+  }
+
+  // updateRosMapLayerOffset$(offset): Observable<Layer> {
+  //   return of(this.rosMapLayer.offset({ x: offset.x, y: offset.y }));
+  // }
+
+  // updateRosMapLayerRotation$(rotation): Observable<Layer> {
+  //   return of(this.rosMapLayer.rotation(rotation));
+  // }
+
+  createFloorPlanImg$(data): Observable<KonvaImage> {
+    this.floorPlan = new KonvaImage(data);
     return of(this.floorPlan);
   }
 
@@ -154,18 +160,38 @@ export class MapWrapperService {
     return of(this.waypoints.add(point));
   }
 
+  updateStagePosition$(position): Observable<Stage> {
+    return of(this.stage.position(position));
+  }
+
   updateStageScale$(scale): Observable<Stage> {
     return of(this.stage.scale({ x: scale, y: scale }));
   }
 
-  updateRosTargetPosition$(data): Observable<any> {
-    console.log(`target`);
+  // updateRosTargetPosition$(data): Observable<any> {
+  //   const callback = imgData => {
+  //     this.targetWaypoint = new KonvaImage(imgData);
+  //     return of(this.rosMapLayer.add(this.targetWaypoint));
+  //   };
+
+  //   if (this.rosMapLayer.find('.targetWaypoint').length <= 0) {
+  //     return callback(data);
+  //   } else {
+  //     return this.destroyTarget$().pipe(
+  //       tap(() => {
+  //         callback(data);
+  //       })
+  //     );
+  //   }
+  // }
+
+  updateFloorPlanTargetPosition$(data): Observable<any> {
     const callback = imgData => {
       this.targetWaypoint = new KonvaImage(imgData);
-      return of(this.rosMapLayer.add(this.targetWaypoint));
+      return of(this.floorPlanLayer.add(this.targetWaypoint));
     };
 
-    if (this.rosMapLayer.find('.targetWaypoint').length <= 0) {
+    if (this.floorPlanLayer.find('.targetWaypoint').length <= 0) {
       return callback(data);
     } else {
       return this.destroyTarget$().pipe(
@@ -191,6 +217,7 @@ export class MapWrapperService {
   updateRosLayerDraggable$(status: boolean): Observable<Layer> {
     return of(this.rosMapLayer.draggable(status));
   }
+  
 
   createLidarRedpoint$(point): Observable<Circle> {
     const liderPoint = new Circle(point);

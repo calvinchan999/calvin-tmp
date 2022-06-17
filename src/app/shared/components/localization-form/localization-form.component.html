@@ -1,6 +1,5 @@
 <div class="localization-map-wrapper" *ngIf="rosMapData">
   <div class="container-fluid  localization-map-container">
-    <!-- <div class="card"> -->
     <app-map-wrapper
       [toolType]="type"
       [floorPlanData]="floorPlanData"
@@ -8,6 +7,5 @@
       [metaData]="metaData"
       (isUpdatedWaypoint)="isLocalizedLocation($event)"
     ></app-map-wrapper>
-    <!-- </div> -->
   </div>
 </div>

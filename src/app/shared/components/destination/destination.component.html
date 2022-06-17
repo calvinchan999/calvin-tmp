@@ -1,29 +1,30 @@
-<div class="container-fluid destination-container">
-  <div class="card">
-    <app-map-wrapper
-      class="map"
-      *ngIf="floorPlanData && rosMapData && metaData && type"
-      [toolType]="type"
-      [floorPlanData]="floorPlanData"
-      [rosMapData]="rosMapData"
-      [currentRobotPose]="currentRobotPose"
-      [metaData]="metaData"
-      [targetWaypoints]="payload"
-    ></app-map-wrapper>
-  </div>
 
-</div>
-<div class="spuare-group">
-  <div class=" square-button cancel" (click)="onCancel()">
-    <i class="mdi mdi-stop icon"></i>
-    <h3 class="title">{{ "cancel" | translate }}</h3>
+
+<div class="container-fluid destination-container" *ngIf="floorPlanData && rosMapData && metaData && type">
+  <div class="card ">
+    <app-map-wrapper
+    class="map"
+    [toolType]="type"
+    [floorPlanData]="floorPlanData"
+    [rosMapData]="rosMapData"
+    [currentRobotPose]="currentRobotPose"
+    [metaData]="metaData"
+    [targetWaypoints]="payload"
+  ></app-map-wrapper>
+   
   </div>
-  <div class=" square-button pause" (click)="onPause()">
-    <i class="mdi mdi-pause icon"></i>
-    <h3 class="title">{{ "pause" | translate }}</h3>
-  </div>
-  <div class=" square-button resume" (click)="onResume()">
-    <i class="mdi mdi-play icon"></i>
-    <h3 class="title">{{ "resume" | translate }}</h3>
+  <div class="spuare-group">
+    <div class="square-button cancel" (click)="onCancel()">
+      <i class="mdi mdi-stop icon"></i>
+      <h3 class="title">{{ "cancel" | translate }}</h3>
+    </div>
+    <div class="square-button pause" (click)="onPause()">
+      <i class="mdi mdi-pause icon"></i>
+      <h3 class="title">{{ "pause" | translate }}</h3>
+    </div>
+    <div class="square-button resume" (click)="onResume()">
+      <i class="mdi mdi-play icon"></i>
+      <h3 class="title">{{ "resume" | translate }}</h3>
+    </div>
   </div>
 </div>

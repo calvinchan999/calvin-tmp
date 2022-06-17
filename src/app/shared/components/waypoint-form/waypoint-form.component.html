@@ -27,17 +27,15 @@
 </ng-container>
 
 <ng-container *ngIf="type === 'map'">
-  <div class="container-fluid">
-    <div class="card">
-      <app-map-wrapper
-        *ngIf="waypointLists"
-        class="map"
-        [toolType]="toolType"
-        [floorPlanData]="floorPlanSubject$ | async"
-        [pointLists]="waypointLists"
-        (selectedWaypoint)="onSelectedWaypoint($event)"
-      ></app-map-wrapper>
-    </div>
+  <div class="container-fluid" style="height: 100%;">
+    <app-map-wrapper
+      *ngIf="waypointLists"
+      class="map"
+      [toolType]="toolType"
+      [floorPlanData]="floorPlanSubject$ | async"
+      [pointLists]="waypointLists"
+      (selectedWaypoint)="onSelectedWaypoint($event)"
+    ></app-map-wrapper>
   </div>
   <div class="waypoint-selected-container">
     <div class="waypoint-selected-title">

@@ -34,14 +34,13 @@ export class DestinationComponent implements OnInit {
       if (currentMap) {
         const data = {
           code: currentMap,
-          floorPlanIncluded: false,
-          mapIncluded: true
+          floorPlanIncluded: true,
+          mapIncluded: false
         };
         this.mapService
           .getFloorPlanData(data)
           .pipe(
             mergeMap(async data => {
-              // const img: string = URL.createObjectURL(data);
               let floorPlan = {
                 code: data.code,
                 id: data.id,

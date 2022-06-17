@@ -13,7 +13,7 @@ import { MapService, FloorPlanLists } from 'src/app/views/services/map.service';
 })
 export class MapFormComponent implements OnInit {
   mapLists$: Observable<FloorPlanLists> = this.mapService
-  .getMap()
+  .getFloorPlanList()
   .pipe(map((mapLists: any) => mapLists.list));
 selectedMap: FloorPlanLists;
 constructor(

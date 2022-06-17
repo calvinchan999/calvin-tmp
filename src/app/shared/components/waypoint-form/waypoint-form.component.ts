@@ -102,16 +102,16 @@ export class WaypointFormComponent implements OnInit {
         taskItemList: [
           {
             movement: {
-              waypointName: selectedWaypoint.code // todo
+              waypointName: selectedWaypoint.floorPlanCode // todo code
             }
           }
         ]
       };
       this.waypointService.sendTask(data).subscribe(() => {
         const payload = JSON.stringify({
-          targetX: this.selectedWaypoint?.x, // this.selectedWaypoint?.floorPlanX
-          targetY: this.selectedWaypoint?.y, // this.selectedWaypoint?.floorPlanY
-          targetCode: this.selectedWaypoint?.code // this.selectedWaypoint?.floorPlanCode
+          targetX: this.selectedWaypoint?.floorPlanX, // this.selectedWaypoint?.floorPlanX
+          targetY: this.selectedWaypoint?.floorPlanY, // this.selectedWaypoint?.floorPlanY
+          targetCode: this.selectedWaypoint?.floorPlanCode // this.selectedWaypoint?.floorPlanCode
         });
         this.router.navigate(['/waypoint/destination'], {
           queryParams: {

@@ -38,12 +38,15 @@
 .waypoint-selected-container {
   display: flex;
   flex-direction: row;
-  // position: absolute;
-  // bottom: 0;
-  // height: 15%;
   justify-content: space-between;
   align-items: center;
   padding: 0px 5px 0 5px;
+  position: absolute;
+  bottom: 0;
+  z-index: 1000;
+  background: #00b8d4;
+  filter: drop-shadow(1px 1px #052344) drop-shadow(-0.1px -0.1px 0 #052344)
+  drop-shadow(0.1px 0.1px 0 #052344);
 }
 
 .waypoint-selected-title {
