@@ -190,37 +190,37 @@ export class DefaultComponent implements OnInit {
         this.dialog.onCloseWithoutRefresh();
         this.sharedService.response$.next({ type: 'normal', message });
       });
-
-    this.mqttService.$state
-      .pipe(
-        map((state) => JSON.parse(state)),
-        mergeMap((data) =>
-          this.translateService
-            .get('modeChanged')
-            .pipe(map((modeChanged) => ({ ...data, modeChanged })))
-        ),
-        mergeMap((data) => {
-          const { state } = data;
-          let index: any;
-          switch (state) {
-            case 'NAVIGATION':
-              index = 'robotStatus.navigation';
-              break;
-            case 'FOLLOW_ME':
-              index = 'robotStatus.followMe';
-              break;
-          }
-          return this.translateService
-            .get(index)
-            .pipe(map((mode) => ({ ...data, mode })));
-        })
-      )
-      .subscribe((data) => {
-        const { modeChanged, mode } = data;
-        const message: string = [modeChanged, mode].join('');
-        this.dialog.onCloseWithoutRefresh();
-        this.sharedService.response$.next({ type: 'normal', message });
-      });
+      
+    // this.mqttService.$state
+    //   .pipe(
+    //     map((state) => JSON.parse(state)),
+    //     mergeMap((data) =>
+    //       this.translateService
+    //         .get('modeChanged')
+    //         .pipe(map((modeChanged) => ({ ...data, modeChanged })))
+    //     ),
+    //     mergeMap((data) => {
+    //       const { state } = data;
+    //       let index: any;
+    //       switch (state) {
+    //         case 'NAVIGATION':
+    //           index = 'robotStatus.navigation';
+    //           break;
+    //         case 'FOLLOW_ME':
+    //           index = 'robotStatus.followMe';
+    //           break;
+    //       }
+    //       return this.translateService
+    //         .get(index)
+    //         .pipe(map((mode) => ({ ...data, mode })));
+    //     })
+    //   )
+    //   .subscribe((data) => {
+    //     const { modeChanged, mode } = data;
+    //     const message: string = [modeChanged, mode].join('');
+    //     this.dialog.onCloseWithoutRefresh();
+    //     this.sharedService.response$.next({ type: 'normal', message });
+    //   });
 
     // this.mqttService.$obstacleDetction
     //   .pipe(

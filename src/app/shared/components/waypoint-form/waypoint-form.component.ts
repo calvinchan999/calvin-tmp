@@ -27,7 +27,7 @@ export class WaypointFormComponent implements OnInit {
             const splitName = i.name.split('%');
             dataTransfor.push({
               ...i,
-              waypointName: splitName[1] !== '' ? splitName[1] : splitName[0],
+              waypointName: splitName[1] ?? splitName[0],
             });
           }
           return dataTransfor;
@@ -40,8 +40,6 @@ export class WaypointFormComponent implements OnInit {
     private waypointService: WaypointService,
     private mapService: MapService,
     private modalComponent: ModalComponent,
-    private sharedService: SharedService,
-    private translateService: TranslateService,
     private router: Router
   ) {}
 
@@ -66,8 +64,6 @@ export class WaypointFormComponent implements OnInit {
           },
         ],
       };
-      console.log(`selectedWaypoint${selectedWaypoint}`);
-      console.log(this.selectedWaypoint);
       this.waypointService
         .sendTask(data)
         .pipe
