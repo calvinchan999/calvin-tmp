@@ -31,7 +31,7 @@ export class LocalizationFormComponent implements OnInit {
     private mapService: MapService
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.setMessage();
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
       if (currentMap) {
@@ -41,10 +41,7 @@ export class LocalizationFormComponent implements OnInit {
           .pipe(
             mergeMap(async (data) => {
               const img: string = URL.createObjectURL(data);
-              return (
-                (this.floorPlanImg = ""),
-                (this.rosMapImage = img)
-              );
+              return (this.floorPlanImg = ''), (this.rosMapImage = img);
             }),
             mergeMap(() =>
               this.mapService
@@ -112,6 +109,6 @@ export class LocalizationFormComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    if (this.sub) this.sub.unsubscribe();
   }
 }

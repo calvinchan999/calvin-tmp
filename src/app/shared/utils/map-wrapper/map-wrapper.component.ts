@@ -662,14 +662,24 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   onPinchin(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.99;
-      this.zoomOut(scaleMultiplier);
+      of(this.stage.draggable(false))
+        .pipe(
+          tap(() => this.zoomOut()),
+          tap(() => this.stage.draggable(true))
+        )
+        .subscribe();
     }
   }
 
   onPinchout(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.99;
-      this.zoomIn(scaleMultiplier);
+      of(this.stage.draggable(false))
+        .pipe(
+          tap(() => this.zoomIn()),
+          tap(() => this.stage.draggable(true))
+        )
+        .subscribe();
     }
   }
 
