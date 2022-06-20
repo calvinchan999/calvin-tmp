@@ -176,20 +176,20 @@ export class DefaultComponent implements OnInit {
       )
       .subscribe();
 
-    this.mqttService.$mapActive
-      .pipe(
-        mergeMap((data) =>
-          this.translateService
-            .get('mapChanged')
-            .pipe(map((mapChanged) => ({ ...JSON.parse(data), mapChanged })))
-        )
-      )
-      .subscribe((data: any) => {
-        const { name, mapChanged } = data;
-        const message: string = [mapChanged, name].join('');
-        this.dialog.onCloseWithoutRefresh();
-        this.sharedService.response$.next({ type: 'normal', message });
-      });
+    // this.mqttService.$mapActive
+    //   .pipe(
+    //     mergeMap((data) =>
+    //       this.translateService
+    //         .get('mapChanged')
+    //         .pipe(map((mapChanged) => ({ ...JSON.parse(data), mapChanged })))
+    //     )
+    //   )
+    //   .subscribe((data: any) => {
+    //     const { name, mapChanged } = data;
+    //     const message: string = [mapChanged, name].join('');
+    //     this.dialog.onCloseWithoutRefresh();
+    //     this.sharedService.response$.next({ type: 'normal', message });
+    //   });
       
     // this.mqttService.$state
     //   .pipe(
