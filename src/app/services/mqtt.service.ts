@@ -24,8 +24,8 @@ export class MqttService {
   public $battery = new Subject<any>();
   public $dockingChargingFeedback = new Subject<any>();
   public $completion = new Subject<any>();
-  public $mapActive = new Subject<any>();
-  public $state = new Subject<any>();
+  // public $mapActive = new Subject<any>();
+  // public $state = new Subject<any>();
   public $pose = new Subject<any>();
   public $pauseResume = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
@@ -99,23 +99,23 @@ export class MqttService {
           );
         });
 
-      this._mqttService
-        .observe('rvautotech/fobo/map/active')
-        .subscribe((message: IMqttMessage) => {
-          console.log('rvautotech/fobo/map/active');
-          console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$mapActive.next(
-            new TextDecoder('utf-8').decode(message.payload)
-          );
-        });
+      // this._mqttService
+      //   .observe('rvautotech/fobo/map/active')
+      //   .subscribe((message: IMqttMessage) => {
+      //     console.log('rvautotech/fobo/map/active');
+      //     console.log(new TextDecoder('utf-8').decode(message.payload));
+      //     this.$mapActive.next(
+      //       new TextDecoder('utf-8').decode(message.payload)
+      //     );
+      //   });
 
-      this._mqttService
-        .observe('rvautotech/fobo/state')
-        .subscribe((message: IMqttMessage) => {
-          console.log('rvautotech/fobo/state');
-          console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$state.next(new TextDecoder('utf-8').decode(message.payload));
-        });
+      // this._mqttService
+      //   .observe('rvautotech/fobo/state')
+      //   .subscribe((message: IMqttMessage) => {
+      //     console.log('rvautotech/fobo/state');
+      //     console.log(new TextDecoder('utf-8').decode(message.payload));
+      //     this.$state.next(new TextDecoder('utf-8').decode(message.payload));
+      //   });
 
       this._mqttService
         .observe('rvautotech/fobo/pose')
