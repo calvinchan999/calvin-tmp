@@ -17,7 +17,7 @@ import { Arrow } from 'konva/lib/shapes/Arrow';
 import { Text } from 'konva/lib/shapes/Text';
 import { Group } from 'konva/lib/Group';
 import { EMPTY, forkJoin, Observable, of, Subscription } from 'rxjs';
-import { delay, finalize, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { delay, finalize, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 
@@ -52,21 +52,10 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   sub = new Subscription();
   stage: Stage;
 
-  localizationToolsGroup: Group = new Group({
-    x: 0,
-    y: 0,
-    name: 'localizationToolsGroup',
-  });
-  lidarPointsGroup: Group = new Group({
-    x: 0,
-    y: 0,
-    name: 'lidarPointsGroup',
-  });
+  localizationToolsGroup: Group;
+  lidarPointsGroup: Group;
 
-  rosMapLayer: Layer = new Layer({
-    x: 0,
-    y: 0,
-  });
+  rosMapLayer: Layer;
 
   degrees: number = 0;
   scale: number = 0.75; // 0.35
@@ -80,12 +69,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   robotCurrentPosition: any;
   lidarData: any;
 
-  waypoint = new Circle();
-  centerOfWaypoint = new Circle();
-  line = new Arrow();
-  angleLabel = new Text();
+  waypoint: Circle = new Circle();
+  centerOfWaypoint: Circle = new Circle();
+  line: Arrow;
+  angleLabel: Text;
 
-  robotCurrentPositionPointer = new Circle();
+  robotCurrentPositionPointer: Circle = new Circle();
 
   lineLocked: boolean = false;
   isLineUpdated: boolean = false;
@@ -107,6 +96,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       rosImage.onerror = (err) => {
         observer.error(err);
       };
+
       rosImage.src = this.mapImage;
     });
 
@@ -122,6 +112,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             y: 0,
           });
 
+          this.rosMapLayer = new Layer({
+            x: 0,
+            y: 0,
+          });
+
           this.rosMap = new KonvaImage({
             image: img[0],
             width: img[0].width,
@@ -132,19 +127,30 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           this.rosMapLayer.add(this.rosMap);
-          // if (this.type === 'localizationEditor') {
-          //   this.rosMapLayer.add(this.localizationToolsGroup);
-          //   this.rosMapLayer.add(this.lidarPointsGroup);
-          // }
-          // this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
+          if (this.type === 'localizationEditor') {
+            this.lidarPointsGroup = new Group({
+              x: 0,
+              y: 0,
+              name: 'lidarPointsGroup',
+            });
+            this.localizationToolsGroup = new Group({
+              x: 0,
+              y: 0,
+              name: 'localizationToolsGroup',
+            });
+            this.rosMapLayer.add(this.localizationToolsGroup);
+            this.rosMapLayer.add(this.lidarPointsGroup);
+          }
+
+          this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
 
           this.stage.add(this.rosMapLayer);
-          // this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
+          this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
 
-          // this.stage.position({
-          //   x: 0,
-          //   y: 0,
-          // });
+          this.stage.position({
+            x: 0,
+            y: 0,
+          });
         }),
         tap(() => {
           this.stage.on('wheel', (event) => {
@@ -175,7 +181,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
             this.waypoint.on('mousedown touchstart', async (event: any) => {
               if (this.isReset && !this.lineLocked) {
-                this.rosMapLayer.getChildren().forEach((child) => {
+                this.localizationToolsGroup.getChildren().forEach((child) => {
                   if (child.className === 'Arrow') {
                     child.destroy();
                   }
@@ -183,13 +189,15 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
                 this.getRosMapXYPointer(event).subscribe((position) => {
                   this.isLineUpdated = true;
-                  this.line.setAttrs({
+
+                  this.line = new Arrow({
                     fill: 'black',
                     stroke: 'black',
-                    strokeWidth: 4,
+                    strokeWidth: 15 / this.scale,
                     // remove line from hit graph, so we can check intersections
                     listening: false,
                     name: 'angleLine',
+                    zIndex: 2,
                     points: [
                       this.waypoint.x(),
                       this.waypoint.y(),
@@ -235,9 +243,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                   }
                   if (!event.target.hasName('target')) {
                     if (
-                      this.rosMapLayer.find('.angleLine').length > 0 &&
+                      this.localizationToolsGroup.find('.angleLine').length >
+                        0 &&
                       this.isLineUpdated
                     ) {
+                      this.localizationToolsGroup
+                        .getChildren()
+                        .forEach((child: any) => {
+                          if (child.getAttrs().name === 'angleLabel') {
+                            child.destroy();
+                          }
+                        });
                       const { draggable } = this.stage.getAttrs();
                       if (!draggable) {
                         this.lineLocked = true;
@@ -365,7 +381,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     const { x, y, height, resolution }: any = this.metaData;
 
     const img = new Image();
-    img.src = '/assets/images/location.png';
+    img.src = './assets/images/location.png';
     const ob = new Observable((observer) => {
       img.onload = function () {
         observer.next({
@@ -410,7 +426,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                 resolution
             ),
           radius: 10,
-          zIndex: 1,
         });
         this.rosMapLayer.add(this.robotCurrentPositionPointer);
       }),
@@ -440,15 +455,18 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   createAngleLabel(degrees: number): Observable<any> {
     const { x, y } = this.centerOfWaypoint.getAttrs();
-    this.angleLabel.setAttrs({
-      x: x - 20,
-      y: y - 100 / this.rosScale - 30,
+    this.angleLabel = new Text({
+      x: x ,
+      y: y ,
       text: `${degrees}°`,
-      fontSize: 30,
+      fontSize: 80 / this.scale,
       fontFamily:
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
-      fill: 'blue',
+      fill: 'white',
+      stroke: 'black',
+      strokeWidth: 6 / this.scale,
       name: 'angleLabel',
+      zIndex: 1
     });
 
     return of(this.angleLabel.destroy()).pipe(
@@ -463,9 +481,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         this.waypoint.setAttrs({
           x: x,
           y: y,
-          radius: 100 / this.rosScale,
+          radius: 200 / this.scale,
           stroke: 'black',
-          strokeWidth: 4,
+          strokeWidth: 15 / this.scale,
           name: 'waypoint',
         });
 
@@ -474,7 +492,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           fill: 'red',
           x: x,
           y: y,
-          radius: 10 / this.rosScale,
+          radius: 10 / this.scale,
         });
 
         this.localizationToolsGroup.add(this.centerOfWaypoint);
@@ -567,7 +585,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       of(this.stage.draggable(false))
         .pipe(
           tap(() => this.zoomOut(scaleMultiplier)),
-          finalize(() => this.stage.draggable(true))
+          tap(() => this.stage.draggable(true))
         )
         .subscribe();
     }
@@ -579,7 +597,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       of(this.stage.draggable(false))
         .pipe(
           tap(() => this.zoomIn(scaleMultiplier)),
-          finalize(() => this.stage.draggable(true))
+          tap(() => this.stage.draggable(true))
         )
         .subscribe();
     }
