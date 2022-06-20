@@ -456,8 +456,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   createAngleLabel(degrees: number): Observable<any> {
     const { x, y } = this.centerOfWaypoint.getAttrs();
     this.angleLabel = new Text({
-      x: x ,
-      y: y ,
+      x: x,
+      y: y,
       text: `${degrees}°`,
       fontSize: 80 / this.scale,
       fontFamily:
@@ -466,7 +466,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       stroke: 'black',
       strokeWidth: 6 / this.scale,
       name: 'angleLabel',
-      zIndex: 1
+      zIndex: 1,
     });
 
     return of(this.angleLabel.destroy()).pipe(
@@ -583,11 +583,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
       of(this.stage.draggable(false))
-        .pipe(
-          tap(() => this.zoomOut(scaleMultiplier)),
-          tap(() => this.stage.draggable(true))
-        )
-        .subscribe();
+        .pipe(tap(() => this.zoomOut(scaleMultiplier)))
+        .subscribe(() => this.stage.draggable(true));
     }
   }
 
@@ -595,11 +592,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
       of(this.stage.draggable(false))
-        .pipe(
-          tap(() => this.zoomIn(scaleMultiplier)),
-          tap(() => this.stage.draggable(true))
-        )
-        .subscribe();
+        .pipe(tap(() => this.zoomIn(scaleMultiplier)))
+        .subscribe(() => this.stage.draggable(true));
     }
   }
 
