@@ -9,6 +9,7 @@ import {
   mergeMap,
   takeUntil,
   tap,
+  distinctUntilChanged,
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -29,6 +30,7 @@ export class DefaultComponent implements OnInit {
   @ViewChild('dialog') dialog: ModalComponent;
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
+  public routerSub = new Subscription();
   public option: string = '';
   public response: any;
 
@@ -36,7 +38,7 @@ export class DefaultComponent implements OnInit {
   modalTitle: string = '';
   isDisableClose: boolean;
   parentPayload: any = null;
-
+  prevUrl: string = '';
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -190,7 +192,7 @@ export class DefaultComponent implements OnInit {
     //     this.dialog.onCloseWithoutRefresh();
     //     this.sharedService.response$.next({ type: 'normal', message });
     //   });
-      
+
     // this.mqttService.$state
     //   .pipe(
     //     map((state) => JSON.parse(state)),
@@ -238,17 +240,16 @@ export class DefaultComponent implements OnInit {
     //   )
     //   .subscribe();
 
-    this.sub.add(
-      this.router.events
-        .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => {
-          console.log('router events changed: ');
-          setTimeout(() => {
-            this.getCurrentMode();
-            this.getCurrentMap();
-          }, 1000);
-        })
-    );
+    this.routerSub = this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        distinctUntilChanged((prev, curr) => this.router.url === this.prevUrl),
+        tap(() => (this.prevUrl = this.router.url)),
+        tap(() => this.getCurrentMode()),
+        tap(() => this.getCurrentMap()),
+        tap(() => console.log(`debug 1`))
+      )
+      .subscribe();
   }
 
   ngOnInit() {
@@ -270,6 +271,7 @@ export class DefaultComponent implements OnInit {
   // }
 
   getCurrentMap() {
+    console.log(`getCurrentMap`);
     this.mapService.getActiveMap().subscribe((response: MapResponse) => {
       console.log('Get Active Map:');
       console.log(response);
@@ -279,6 +281,7 @@ export class DefaultComponent implements OnInit {
   }
 
   getCurrentMode() {
+    console.log(`getCurrentMode`);
     this.modeService.getMode().subscribe((response: ModeResponse) => {
       console.log('Get Mode: ', response);
       const { state } = response;
@@ -335,5 +338,6 @@ export class DefaultComponent implements OnInit {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+    this.routerSub.unsubscribe();
   }
 }

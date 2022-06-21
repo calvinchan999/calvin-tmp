@@ -9,13 +9,15 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Stage } from 'konva/lib/Stage';
-import { Layer } from 'konva/lib/Layer';
-import { Circle } from 'konva/lib/shapes/Circle';
-import { Image as KonvaImage } from 'konva/lib/shapes/Image';
-import { Arrow } from 'konva/lib/shapes/Arrow';
-import { Text } from 'konva/lib/shapes/Text';
-import { Group } from 'konva/lib/Group';
+import Konva from 'konva';
+// import { Stage } from 'konva/lib/Stage';
+// import { Layer } from 'konva/lib/Layer';
+// import { Circle } from 'konva/lib/shapes/Circle';
+// import { Image as KonvaImage } from 'konva/lib/shapes/Image';
+// import { Arrow } from 'konva/lib/shapes/Arrow';
+// import { Text } from 'konva/lib/shapes/Text';
+// import { Group } from 'konva/lib/Group';
+// import {　Arc } from 'konva/lib/shapes/Arc';
 import { EMPTY, forkJoin, Observable, of, Subscription } from 'rxjs';
 import { delay, finalize, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
@@ -50,31 +52,31 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   @Input() metaData: any;
   @Output() isUpdatedWaypoint = new EventEmitter<any>(false);
   sub = new Subscription();
-  stage: Stage;
+  stage: Konva.Stage;
 
-  localizationToolsGroup: Group;
-  lidarPointsGroup: Group;
+  localizationToolsGroup: Konva.Group;
+  lidarPointsGroup: Konva.Group;
 
-  rosMapLayer: Layer;
+  rosMapLayer: Konva.Layer;
 
   degrees: number = 0;
   scale: number = 0.75; // 0.35
   rosScale: number = 0.66; // 0.66, 1.35
   floorPlanScale: number = 1;
   scaleMultiplier: number = 0.95; // 0.99
-  rosMap: any;
+  rosMap;
 
   isReset: boolean = false;
 
-  robotCurrentPosition: any;
-  lidarData: any;
+  robotCurrentPosition;
+  lidarData;
 
-  waypoint: Circle = new Circle();
-  centerOfWaypoint: Circle = new Circle();
-  line: Arrow;
-  angleLabel: Text;
+  waypoint: Konva.Circle = new Konva.Circle();
+  centerOfWaypoint:Konva.Circle = new Konva.Circle();
+  line: Konva.Arrow;
+  angleLabel: Konva.Text;
 
-  robotCurrentPositionPointer: Circle = new Circle();
+  robotCurrentPositionPointer: Konva.Circle = new Konva.Circle();
 
   lineLocked: boolean = false;
   isLineUpdated: boolean = false;
@@ -96,14 +98,13 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       rosImage.onerror = (err) => {
         observer.error(err);
       };
-
       rosImage.src = this.mapImage;
     });
 
     forkJoin([rosImg$])
       .pipe(
         tap((img) => {
-          this.stage = new Stage({
+          this.stage = new Konva.Stage({
             container: 'canvas',
             width: this.canvas.nativeElement.offsetWidth,
             height: this.canvas.nativeElement.offsetHeight,
@@ -112,12 +113,14 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             y: 0,
           });
 
-          this.rosMapLayer = new Layer({
+          this.rosMapLayer = new Konva.Layer({
             x: 0,
             y: 0,
           });
 
-          this.rosMap = new KonvaImage({
+          
+
+          this.rosMap = new Konva.Image({
             image: img[0],
             width: img[0].width,
             height: img[0].height,
@@ -125,15 +128,16 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             x: 0,
             y: 0,
           });
-
+          
           this.rosMapLayer.add(this.rosMap);
+         
           if (this.type === 'localizationEditor') {
-            this.lidarPointsGroup = new Group({
+            this.lidarPointsGroup = new Konva.Group({
               x: 0,
               y: 0,
               name: 'lidarPointsGroup',
             });
-            this.localizationToolsGroup = new Group({
+            this.localizationToolsGroup = new Konva.Group({
               x: 0,
               y: 0,
               name: 'localizationToolsGroup',
@@ -190,7 +194,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                 this.getRosMapXYPointer(event).subscribe((position) => {
                   this.isLineUpdated = true;
 
-                  this.line = new Arrow({
+                  this.line = new Konva.Arrow({
                     fill: 'black',
                     stroke: 'black',
                     strokeWidth: 15 / this.scale,
@@ -354,7 +358,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               const { pointList } = data;
               const { x, y, height, resolution }: any = this.metaData;
               for (const i in pointList) {
-                const redpoint = new Circle({
+                const redpoint = new Konva.Circle({
                   x: Math.abs((x - pointList[i]['x']) / resolution),
                   y: height - Math.abs((y - pointList[i]['y']) / resolution),
                   radius: 2,
@@ -393,7 +397,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     return ob.pipe(
       tap((data) => {
-        let locationImg = new KonvaImage({
+        let locationImg = new Konva.Image({
           x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
           y: height - Math.abs((y - targetY) / resolution) - data.img.height,
           image: data.img,
@@ -404,9 +408,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createRobotCurrentPosition(): Observable<any> {
+    // currentRobotPose mqtt
+    // robotCurrentPosition http request
     return of(null).pipe(
       tap(() => {
-        const { x, y, height, resolution }: any = this.metaData;
+        const { x, y, height, resolution } = this.metaData;
 
         this.robotCurrentPositionPointer.setAttrs({
           name: 'currentPosition',
@@ -455,7 +461,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   createAngleLabel(degrees: number): Observable<any> {
     const { x, y } = this.centerOfWaypoint.getAttrs();
-    this.angleLabel = new Text({
+    this.angleLabel = new Konva.Text({
       x: x,
       y: y,
       text: `${degrees}°`,
@@ -487,7 +493,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           name: 'waypoint',
         });
 
-        this.centerOfWaypoint = new Circle({
+        this.centerOfWaypoint = new Konva.Circle({
           name: 'centerOfWaypoint',
           fill: 'red',
           x: x,
@@ -509,11 +515,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  updateKonvasScale(scale: number): Observable<any> {
+  updateStageScale(scale: number): Observable<any> {
     return of(this.stage.scale({ x: scale, y: scale }));
   }
 
-  zoomIn(scaleMultiplier?: number) {
+  async zoomIn(scaleMultiplier?: number) {
     let scale = this.scale;
     const oldScale = this.stage.scaleX();
 
@@ -528,11 +534,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     scale /= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
-    scale = parseFloat(scale.toFixed(3));
+    scale = await parseFloat(scale.toFixed(3));
     if (scale <= 10) {
       this.scale = scale;
 
-      this.updateKonvasScale(scale)
+      this.updateStageScale(scale)
         .pipe(
           tap(() => {
             const newPos = {
@@ -540,13 +546,14 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               y: pointer.y - origin.y * scale,
             };
             this.stage.position(newPos);
+            this.rosMapLayer.batchDraw();
           })
         )
         .subscribe();
     }
   }
 
-  zoomOut(scaleMultiplier?: number) {
+  async zoomOut(scaleMultiplier?: number) {
     let scale = this.scale;
     const oldScale = this.stage.scaleX();
 
@@ -561,11 +568,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     scale *= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
-    scale = parseFloat(scale.toFixed(3));
+    scale = await parseFloat(scale.toFixed(3));
 
     if (scale >= 0.01) {
       this.scale = scale;
-      this.updateKonvasScale(scale)
+      this.updateStageScale(scale)
         .pipe(
           tap(() => {
             const newPos = {
@@ -573,6 +580,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               y: pointer.y - origin.y * scale,
             };
             this.stage.position(newPos);
+            this.rosMapLayer.batchDraw();
           })
         )
         .subscribe();

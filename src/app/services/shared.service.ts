@@ -32,8 +32,8 @@ export interface Modal {
   providedIn: 'root',
 })
 export class SharedService {
-  public currentMode$ = new BehaviorSubject<string>('');
-  public currentMap$ = new BehaviorSubject<string>('');
+  public currentMode$ = new Subject<string>();
+  public currentMap$ = new Subject<string>();
   public refresh$ = new Subject<boolean>();
   public loading$ = new Subject<boolean>();
   public response$ = new Subject<Response>();
