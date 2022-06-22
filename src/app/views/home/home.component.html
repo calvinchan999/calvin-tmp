@@ -36,6 +36,7 @@
         <app-card
           title="map"
           icon="map"
+          [disable]="!mode  ? true : false"
           (eventTrigger)="onChangeMap()"
         ></app-card>
       </div>

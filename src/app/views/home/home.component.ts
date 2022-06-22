@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit {
     });
 
     this.sharedService.currentPairingStatus$
-      .pipe(map((data) =>  data  instanceof Object ? data : JSON.parse(data)))
+      .pipe(map((data) => (data instanceof Object ? data : JSON.parse(data))))
       .subscribe((data) => {
         console.log(data);
         if (data?.pairingState) {
@@ -87,7 +87,9 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    this.router.navigate(['/map']);
+    if (this.mode) {
+      this.router.navigate(['/map']);
+    }
   }
 
   onSubmitLocalization() {
