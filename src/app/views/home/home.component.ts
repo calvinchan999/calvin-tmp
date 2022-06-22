@@ -4,8 +4,8 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
+import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
-// import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-home',
@@ -16,21 +16,35 @@ export class HomeComponent implements OnInit {
   mode: string;
   role: string;
   user: string;
-  features: any;
+  features;
+  pairingState;
   constructor(
     public router: Router,
     private sharedService: SharedService,
     private authService: AuthService,
     private indexedDbService: IndexedDbService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private mqttService: MqttService
   ) {
     this.features = this.appConfigService.getConfig().feature;
 
     // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
-    this.sharedService.currentMode$.subscribe((mode: string) => {
+    this.sharedService.currentMode$.pipe().subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
     });
+
+    this.sharedService.currentPairingStatus$
+      .pipe(map((data) =>  data  instanceof Object ? data : JSON.parse(data)))
+      .subscribe((data) => {
+        console.log(data);
+        if (data?.pairingState) {
+          const { pairingState } = data;
+          this.pairingState = pairingState;
+        } else {
+          this.pairingState = null;
+        }
+      });
   }
 
   ngOnInit() {
@@ -93,5 +107,21 @@ export class HomeComponent implements OnInit {
         mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
       )
       .subscribe();
+  }
+
+  onClickPairing() {
+    this.sharedService.isOpenModal$.next({
+      modal: 'pair',
+      modalHeader: 'pair',
+      isDisableClose: true,
+    });
+  }
+
+  onClickUnPairing() {
+    this.sharedService.isOpenModal$.next({
+      modal: 'unpair',
+      modalHeader: 'unpair',
+      isDisableClose: true,
+    });
   }
 }

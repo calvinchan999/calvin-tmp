@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService as NgxMqttService } from 'ngx-mqtt';
-import { Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
 import { IndexedDbService } from './indexed-db.service';
 import * as moment from 'moment-timezone';
+import { SharedService } from './shared.service';
 
 export interface Mqtt {
   ip_address: string;
@@ -29,10 +30,12 @@ export class MqttService {
   public $pose = new Subject<any>();
   public $pauseResume = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
+  public $pairing = new BehaviorSubject<any>(null);
   public clientId: string = '';
   constructor(
     private _mqttService: NgxMqttService,
-    private indexedDbService: IndexedDbService
+    private indexedDbService: IndexedDbService,
+    private sharedService: SharedService
   ) {}
 
   connectMqtt(config: Config) {
@@ -135,15 +138,23 @@ export class MqttService {
           );
         });
 
-        // this._mqttService
-        // .observe('rvautotech/fobo/obstacle/detection')
-        // .subscribe((message: IMqttMessage) => {
-        //   console.log('rvautotech/fobo/obstacle/detection');
-        //   console.log(new TextDecoder('utf-8').decode(message.payload));
-        //   this.$obstacleDetction.next(
-        //     new TextDecoder('utf-8').decode(message.payload)
-        //   );
-        // });
+      // this._mqttService
+      // .observe('rvautotech/fobo/obstacle/detection')
+      // .subscribe((message: IMqttMessage) => {
+      //   console.log('rvautotech/fobo/obstacle/detection');
+      //   console.log(new TextDecoder('utf-8').decode(message.payload));
+      //   this.$obstacleDetction.next(
+      //     new TextDecoder('utf-8').decode(message.payload)
+      //   );
+      // });
+
+      this._mqttService
+        .observe('rvautotech/fobo/followme/pairing')
+        .subscribe((message: IMqttMessage) => {
+          console.log('rvautotech/fobo/followme/pairing');
+          console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.sharedService.currentPairingStatus$.next(new TextDecoder('utf-8').decode(message.payload));
+        });
     }
   }
 

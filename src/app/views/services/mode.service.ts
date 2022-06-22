@@ -15,6 +15,13 @@ export interface ModeResponse {
   state: string;
 }
 
+export interface PairingResponse {
+  robotId: string;
+  pairingState: PairingState;
+}
+
+export type PairingState = 'UNPAIRED' | 'PAIRED' | 'PAIRING' | 'REPAIRING';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -44,6 +51,27 @@ export class ModeService {
     const url = `${this.appConfigService.getConfig().server.endpoint}${
       environment.api.mode
     }`;
-    return this.http.get<ModeResponse>(`${url}`);
+    return this.http.get<ModeResponse>(url);
+  }
+
+  followMePairing(): Observable<any> {
+    const url = `${this.appConfigService.getConfig().server.endpoint}${
+      environment.api.pairing
+    }/pair`;
+    return this.http.post<any>(url, {});
+  }
+
+  followMeUnpairing(): Observable<any> {
+    const url = `${this.appConfigService.getConfig().server.endpoint}${
+      environment.api.pairing
+    }/unpair`;
+    return this.http.post<any>(url, {});
+  }
+  
+  getPairingStatus(): Observable<PairingResponse> {
+    const url = `${this.appConfigService.getConfig().server.endpoint}${
+      environment.api.pairing
+    }`;
+    return this.http.get<PairingResponse>(url);
   }
 }

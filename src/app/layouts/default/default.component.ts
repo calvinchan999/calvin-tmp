@@ -246,8 +246,7 @@ export class DefaultComponent implements OnInit {
         distinctUntilChanged((prev, curr) => this.router.url === this.prevUrl),
         tap(() => (this.prevUrl = this.router.url)),
         tap(() => this.getCurrentMode()),
-        tap(() => this.getCurrentMap()),
-        tap(() => console.log(`debug 1`))
+        tap(() => this.getCurrentMap())
       )
       .subscribe();
   }
@@ -282,11 +281,27 @@ export class DefaultComponent implements OnInit {
 
   getCurrentMode() {
     console.log(`getCurrentMode`);
-    this.modeService.getMode().subscribe((response: ModeResponse) => {
-      console.log('Get Mode: ', response);
-      const { state } = response;
-      this.sharedService.currentMode$.next(state);
-    });
+    this.modeService
+      .getMode()
+      .pipe(
+        tap((response: ModeResponse) => {
+          console.log('Get Mode: ', response);
+          const { state } = response;
+          this.sharedService.currentMode$.next(state);
+          if (state !== `FOLLOW_ME`) {
+            this.sharedService.currentPairingStatus$.next(null);
+          }else {
+            this.getPairingStatus();
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  getPairingStatus() {
+    this.modeService.getPairingStatus().pipe(tap(data => {
+      this.sharedService.currentPairingStatus$.next(data);
+    })).subscribe();
   }
 
   initializeErrors() {

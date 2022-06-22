@@ -22,6 +22,7 @@ export const environment = {
     docking: '/api/docking/v1/charging',
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
     mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
-    lidar: '/api/lidar/v1'
+    lidar: '/api/lidar/v1',
+    pairing: '/api/followMe/v1/pairing'
   },
 };

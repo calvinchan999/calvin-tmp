@@ -10,14 +10,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import Konva from 'konva';
-// import { Stage } from 'konva/lib/Stage';
-// import { Layer } from 'konva/lib/Layer';
-// import { Circle } from 'konva/lib/shapes/Circle';
-// import { Image as KonvaImage } from 'konva/lib/shapes/Image';
-// import { Arrow } from 'konva/lib/shapes/Arrow';
-// import { Text } from 'konva/lib/shapes/Text';
-// import { Group } from 'konva/lib/Group';
-// import {　Arc } from 'konva/lib/shapes/Arc';
 import { EMPTY, forkJoin, Observable, of, Subscription } from 'rxjs';
 import { delay, finalize, mergeMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
@@ -72,7 +64,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   lidarData;
 
   waypoint: Konva.Circle = new Konva.Circle();
-  centerOfWaypoint:Konva.Circle = new Konva.Circle();
+  centerOfWaypoint: Konva.Circle = new Konva.Circle();
   line: Konva.Arrow;
   angleLabel: Konva.Text;
 
@@ -83,7 +75,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private waypointService: WaypointService,
-    private mapService: MapService // private indexedDbService: IndexedDbService
+    private mapService: MapService
   ) {}
 
   ngOnInit() {}
@@ -103,6 +95,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     forkJoin([rosImg$])
       .pipe(
+        // delay(1000),
         tap((img) => {
           this.stage = new Konva.Stage({
             container: 'canvas',
@@ -118,8 +111,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             y: 0,
           });
 
-          
-
           this.rosMap = new Konva.Image({
             image: img[0],
             width: img[0].width,
@@ -128,9 +119,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             x: 0,
             y: 0,
           });
-          
+
           this.rosMapLayer.add(this.rosMap);
-         
+
           if (this.type === 'localizationEditor') {
             this.lidarPointsGroup = new Konva.Group({
               x: 0,
@@ -142,8 +133,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               y: 0,
               name: 'localizationToolsGroup',
             });
-            this.rosMapLayer.add(this.localizationToolsGroup);
+
             this.rosMapLayer.add(this.lidarPointsGroup);
+            this.rosMapLayer.add(this.localizationToolsGroup);
           }
 
           this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
@@ -519,9 +511,8 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     return of(this.stage.scale({ x: scale, y: scale }));
   }
 
-  async zoomIn(scaleMultiplier?: number) {
-    let scale = this.scale;
-    const oldScale = this.stage.scaleX();
+  zoomIn(scaleMultiplier?: number) {
+    let oldScale = this.stage.scaleX();
 
     const pointer = {
       x: this.stage.width() / 2,
@@ -533,29 +524,30 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       y: (pointer.y - this.stage.y()) / oldScale,
     };
 
-    scale /= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
-    scale = await parseFloat(scale.toFixed(3));
-    if (scale <= 10) {
-      this.scale = scale;
+    const maxScale = 50;
 
-      this.updateStageScale(scale)
+    oldScale /= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
+    oldScale = Math.round(oldScale * 100) / 100;
+
+    if (oldScale <= maxScale) {
+      this.updateStageScale(oldScale)
         .pipe(
           tap(() => {
-            const newPos = {
-              x: pointer.x - origin.x * scale,
-              y: pointer.y - origin.y * scale,
+            const newPos: { x: number; y: number } = {
+              x: Math.round((pointer.x - origin.x * oldScale) * 100) / 100,
+              y: Math.round((pointer.y - origin.y * oldScale) * 100) / 100,
             };
+
             this.stage.position(newPos);
-            this.rosMapLayer.batchDraw();
+            this.scale = oldScale;
           })
         )
         .subscribe();
     }
   }
 
-  async zoomOut(scaleMultiplier?: number) {
-    let scale = this.scale;
-    const oldScale = this.stage.scaleX();
+  zoomOut(scaleMultiplier?: number) {
+    let oldScale = this.stage.scaleX();
 
     const pointer = {
       x: this.stage.width() / 2,
@@ -567,41 +559,39 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       y: (pointer.y - this.stage.y()) / oldScale,
     };
 
-    scale *= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
-    scale = await parseFloat(scale.toFixed(3));
+    oldScale *= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
+    oldScale = Math.round(oldScale * 100) / 100;
 
-    if (scale >= 0.01) {
-      this.scale = scale;
-      this.updateStageScale(scale)
-        .pipe(
-          tap(() => {
-            const newPos = {
-              x: pointer.x - origin.x * scale,
-              y: pointer.y - origin.y * scale,
-            };
-            this.stage.position(newPos);
-            this.rosMapLayer.batchDraw();
-          })
-        )
-        .subscribe();
-    }
+    this.updateStageScale(oldScale)
+      .pipe(
+        tap(() => {
+          const newPos: { x: number; y: number } = {
+            x: Math.round((pointer.x - origin.x * oldScale) * 100) / 100,
+            y: Math.round((pointer.y - origin.y * oldScale) * 100) / 100,
+          };
+
+          this.stage.position(newPos);
+          this.scale = oldScale;
+        })
+      )
+      .subscribe();
   }
 
   onPinchin(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
-      of(this.stage.draggable(false))
-        .pipe(tap(() => this.zoomOut(scaleMultiplier)))
-        .subscribe(() => this.stage.draggable(true));
+      this.stage.draggable(false);
+      this.zoomOut(scaleMultiplier);
+      this.stage.draggable(true);
     }
   }
 
   onPinchout(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
-      of(this.stage.draggable(false))
-        .pipe(tap(() => this.zoomIn(scaleMultiplier)))
-        .subscribe(() => this.stage.draggable(true));
+      this.stage.draggable(false);
+      this.zoomIn(scaleMultiplier);
+      this.stage.draggable(true);
     }
   }
 

@@ -34,6 +34,7 @@ export interface Modal {
 export class SharedService {
   public currentMode$ = new Subject<string>();
   public currentMap$ = new Subject<string>();
+  public currentPairingStatus$ = new BehaviorSubject<any>(null);
   public refresh$ = new Subject<boolean>();
   public loading$ = new Subject<boolean>();
   public response$ = new Subject<Response>();

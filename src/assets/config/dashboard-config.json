@@ -19,6 +19,7 @@
     "map": true,
     "localization": true,
     "mode": true,
-    "logs": true
+    "logs": true,
+    "pairing": true
   }
 }
