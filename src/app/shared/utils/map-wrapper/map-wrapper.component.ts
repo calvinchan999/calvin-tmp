@@ -119,9 +119,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             x: 0,
             y: 0,
           });
-
+          this.rosMap.cache({ pixelRatio: 0.5});
           this.rosMapLayer.add(this.rosMap);
-
+          
           if (this.type === 'localizationEditor') {
             this.lidarPointsGroup = new Konva.Group({
               x: 0,
@@ -141,12 +141,15 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           this.rosMapLayer.scale({ x: this.rosScale, y: this.rosScale });
 
           this.stage.add(this.rosMapLayer);
+
+     
           this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
 
           this.stage.position({
             x: 0,
             y: 0,
           });
+          
         }),
         tap(() => {
           this.stage.on('wheel', (event) => {
