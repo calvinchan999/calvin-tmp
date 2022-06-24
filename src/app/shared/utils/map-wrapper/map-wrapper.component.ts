@@ -97,7 +97,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(
         // delay(1000),
         tap((img) => {
-          this.stage = new Konva.Stage({
+          const stage = new Konva.Stage({
             container: 'canvas',
             width: this.canvas.nativeElement.offsetWidth,
             height: this.canvas.nativeElement.offsetHeight,
@@ -106,12 +106,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             y: 0,
           });
 
-          this.rosMapLayer = new Konva.Layer({
+          const rosMapLayer = new Konva.Layer({
             x: 0,
             y: 0,
           });
 
-          this.rosMap = new Konva.Image({
+          const rosMap = new Konva.Image({
             image: img[0],
             width: img[0].width,
             height: img[0].height,
@@ -119,9 +119,13 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             x: 0,
             y: 0,
           });
-          this.rosMap.cache({ pixelRatio: 0.5});
-          this.rosMapLayer.add(this.rosMap);
-          
+          rosMap.cache({ pixelRatio: 0.5 });
+          rosMapLayer.add(rosMap);
+
+          this.rosMap = rosMap;
+          this.rosMapLayer = rosMapLayer;
+          this.stage = stage;
+
           if (this.type === 'localizationEditor') {
             this.lidarPointsGroup = new Konva.Group({
               x: 0,
@@ -142,14 +146,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
           this.stage.add(this.rosMapLayer);
 
-     
           this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
 
           this.stage.position({
             x: 0,
             y: 0,
           });
-          
         }),
         tap(() => {
           this.stage.on('wheel', (event) => {

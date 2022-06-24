@@ -36,7 +36,7 @@
         <app-card
           title="map"
           icon="map"
-          [disable]="!mode  ? true : false"
+          [disable]="(!mode || mode ==='UNDEFINED' ) ? true : false"
           (eventTrigger)="onChangeMap()"
         ></app-card>
       </div>

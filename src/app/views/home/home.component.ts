@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    if (this.mode) {
+    if (!this.mode || this.mode ==='UNDEFINED' ) {
       this.router.navigate(['/map']);
     }
   }
