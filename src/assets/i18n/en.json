@@ -67,7 +67,12 @@
     "tips1": "Are you sure you want to logout?"
   },
   "refreshTokenFail": "The login session have expired, please login again or use guest mode",
-  "waypointDialog": {
-    "tips1":"Are you sure you want to select "
+  "pair": "Pairing",
+  "pairDialog":{
+    "pair": "Are you sure you want to be paired with FollowMe Mode?"
+  },
+  "unpair": "UnPairing",
+  "unpairDialog":{
+    "unpair": "Are you sure you want to unpair ?"
   }
 }

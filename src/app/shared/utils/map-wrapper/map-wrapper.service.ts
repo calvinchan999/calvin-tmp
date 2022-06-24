@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Stage } from 'konva/lib/Stage';
 import { Layer } from 'konva/lib/Layer';
 import { Circle } from 'konva/lib/shapes/Circle';
-import { Image, Image as KonvaImage } from 'konva/lib/shapes/Image';
+import { Image as KonvaImage } from 'konva/lib/shapes/Image';
 import { Arrow } from 'konva/lib/shapes/Arrow';
 import { Text } from 'konva/lib/shapes/Text';
 import { Group } from 'konva/lib/Group';
@@ -101,6 +101,7 @@ export class MapWrapperService {
 
   createRosMapImg$(data): Observable<KonvaImage> {
     this.rosMap = new KonvaImage(data);
+    this.rosMap.cache({ pixelRatio: 0.5 }); // handle large image
     return of( this.rosMap);
   }
 
@@ -133,6 +134,7 @@ export class MapWrapperService {
 
   createFloorPlanImg$(data): Observable<KonvaImage> {
     this.floorPlan = new KonvaImage(data);
+    this.floorPlan.cache({ pixelRatio: 1 }); // handle large image 
     return of(this.floorPlan);
   }
 
@@ -272,7 +274,6 @@ export class MapWrapperService {
     this.rosMapLayer.destroy(); // Layer
     this.floorPlanLayer.destroy(); // Layer
 
-    this.stage.destroyChildren();
-    this.stage.destroy();
+    // this.stage.destroy();
   }
 }

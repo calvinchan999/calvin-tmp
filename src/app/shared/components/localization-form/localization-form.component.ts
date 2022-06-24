@@ -36,6 +36,7 @@ export class LocalizationFormComponent implements OnInit {
   ngOnInit(): void {
     this.setMessage();
     this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
+      console.log(`debug test ${currentMap}`);
       if (currentMap) {
         const data = {
           code: currentMap,

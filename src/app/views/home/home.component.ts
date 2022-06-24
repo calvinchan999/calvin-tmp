@@ -15,7 +15,8 @@ export class HomeComponent implements OnInit {
   mode: string;
   role: string;
   user: string;
-  features: any;
+  features;
+  pairingState;
   constructor(
     public router: Router,
     private sharedService: SharedService,
@@ -26,8 +27,21 @@ export class HomeComponent implements OnInit {
     this.features = this.appConfigService.getConfig().feature;
 
     this.sharedService.currentMode$.subscribe((mode: string) => {
+      console.log(mode);
       this.mode = mode;
     });
+
+    this.sharedService.currentPairingStatus$
+      .pipe(map(data => (data instanceof Object ? data : JSON.parse(data))))
+      .subscribe(data => {
+        console.log(data);
+        if (data?.pairingState) {
+          const { pairingState } = data;
+          this.pairingState = pairingState;
+        } else {
+          this.pairingState = null;
+        }
+      });
   }
 
   ngOnInit() {
@@ -70,7 +84,10 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    this.router.navigate(['/map']);
+    console.log(this.mode);
+    if (this.mode !== 'UNDEFINED') {
+      this.router.navigate(['/map']);
+    }
   }
 
   onSubmitLocalization() {
@@ -90,5 +107,21 @@ export class HomeComponent implements OnInit {
         mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
       )
       .subscribe();
+  }
+
+  onClickPairing() {
+    this.sharedService.isOpenModal$.next({
+      modal: 'pair',
+      modalHeader: 'pair',
+      isDisableClose: true
+    });
+  }
+
+  onClickUnPairing() {
+    this.sharedService.isOpenModal$.next({
+      modal: 'unpair',
+      modalHeader: 'unpair',
+      isDisableClose: true
+    });
   }
 }

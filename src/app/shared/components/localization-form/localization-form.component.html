@@ -1,6 +1,7 @@
 <div class="localization-map-wrapper" *ngIf="rosMapData">
   <div class="container-fluid  localization-map-container">
     <app-map-wrapper
+      *ngIf="rosMapData && metaData"
       [toolType]="type"
       [floorPlanData]="floorPlanData"
       [rosMapData]="rosMapData"

@@ -67,7 +67,12 @@
     "tips1": "你確定你要登出嗎？"
   },
   "refreshTokenFail":"登錄的證書已過期, 請重新登入或使用訪客模式",
-  "waypointDialog": {
-    "tips1":"你確定要選擇 "
+  "pair": "跟隨模式配對",
+  "pairDialog":{
+    "pair": "確認要進行跟隨模式配對"
+  },
+  "unpair": "取消跟隨模式配對",
+  "unpairDialog":{
+    "unpair": "確認要取消配對？"
   }
 }

@@ -25,5 +25,6 @@ export const environment = {
     lidar: '/api/lidar/v1',
     floorPlans: '/api/floorPlan/v1',
     floorPlanByMapCode: (code: string) => `/api/floorPlan/v1/mapCode/${code}`,
+    pairing: '/api/followMe/v1/pairing'
   },
 };

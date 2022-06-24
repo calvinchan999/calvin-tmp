@@ -9,6 +9,7 @@ import {
   mergeMap,
   takeUntil,
   tap,
+  distinctUntilChanged
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -22,13 +23,14 @@ import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
 @Component({
   selector: 'app-default',
   templateUrl: './default.component.html',
-  styleUrls: ['./default.component.scss'],
+  styleUrls: ['./default.component.scss']
 })
 export class DefaultComponent implements OnInit {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
+  public routerSub = new Subscription();
   public option: string = '';
   public response: any;
 
@@ -36,7 +38,7 @@ export class DefaultComponent implements OnInit {
   modalTitle: string = '';
   isDisableClose: boolean;
   parentPayload: any = null;
-
+  prevUrl: string = '';
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -60,24 +62,28 @@ export class DefaultComponent implements OnInit {
 
     this.mqttService.$completion
       .pipe(
-        map((feedback) => JSON.parse(feedback)),
-        mergeMap((data) =>
+        map(feedback => JSON.parse(feedback)),
+        mergeMap(data =>
           this.translateService
             .get('arrivedAtDestination')
             .pipe(
-              map((arrivedAtDestination) => ({ ...data, arrivedAtDestination }))
+              map(arrivedAtDestination => ({ ...data, arrivedAtDestination }))
             )
         ),
-        mergeMap((data) =>
+        mergeMap(data =>
           this.translateService
             .get('cancelledTask')
-            .pipe(map((cancelledTask) => ({ ...data, cancelledTask })))
+            .pipe(map(cancelledTask => ({ ...data, cancelledTask })))
         )
       )
-      .subscribe((data) => {
+      .subscribe(data => {
         if (data) {
-          const { completed, cancelled, arrivedAtDestination, cancelledTask } =
-            data;
+          const {
+            completed,
+            cancelled,
+            arrivedAtDestination,
+            cancelledTask
+          } = data;
           let message = '';
           if (completed) {
             if (!cancelled) {
@@ -98,7 +104,7 @@ export class DefaultComponent implements OnInit {
         }
       });
 
-    this.mqttService.$dockingChargingFeedback.subscribe((feedback) => {
+    this.mqttService.$dockingChargingFeedback.subscribe(feedback => {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
         if (chargingStatus === 'CHARGING') {
@@ -157,12 +163,12 @@ export class DefaultComponent implements OnInit {
                 this.sharedService.refresh$.next(false);
                 this.reloadCurrentRoute();
               }),
-              catchError((error) => {
+              catchError(error => {
                 this.sharedService.refresh$.next(false);
                 return of(
                   this.sharedService.response$.next({
                     type: 'normal',
-                    message: 'refreshTokenFail',
+                    message: 'refreshTokenFail'
                   })
                 ).pipe(
                   tap(() => setTimeout(() => this.redirectToHome(), 5000))
@@ -178,10 +184,10 @@ export class DefaultComponent implements OnInit {
 
     this.mqttService.$mapActive
       .pipe(
-        mergeMap((data) =>
+        mergeMap(data =>
           this.translateService
             .get('mapChanged')
-            .pipe(map((mapChanged) => ({ ...JSON.parse(data), mapChanged })))
+            .pipe(map(mapChanged => ({ ...JSON.parse(data), mapChanged })))
         )
       )
       .subscribe((data: any) => {
@@ -193,13 +199,13 @@ export class DefaultComponent implements OnInit {
 
     this.mqttService.$state
       .pipe(
-        map((state) => JSON.parse(state)),
-        mergeMap((data) =>
+        map(state => JSON.parse(state)),
+        mergeMap(data =>
           this.translateService
             .get('modeChanged')
-            .pipe(map((modeChanged) => ({ ...data, modeChanged })))
+            .pipe(map(modeChanged => ({ ...data, modeChanged })))
         ),
-        mergeMap((data) => {
+        mergeMap(data => {
           const { state } = data;
           let index: any;
           switch (state) {
@@ -212,10 +218,10 @@ export class DefaultComponent implements OnInit {
           }
           return this.translateService
             .get(index)
-            .pipe(map((mode) => ({ ...data, mode })));
+            .pipe(map(mode => ({ ...data, mode })));
         })
       )
-      .subscribe((data) => {
+      .subscribe(data => {
         const { modeChanged, mode } = data;
         const message: string = [modeChanged, mode].join('');
         this.dialog.onCloseWithoutRefresh();
@@ -238,17 +244,15 @@ export class DefaultComponent implements OnInit {
     //   )
     //   .subscribe();
 
-    this.sub.add(
-      this.router.events
-        .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => {
-          console.log('router events changed: ');
-          setTimeout(() => {
-            this.getCurrentMode();
-            this.getCurrentMap();
-          }, 1000);
-        })
-    );
+    this.routerSub = this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        distinctUntilChanged((prev, curr) => this.router.url === this.prevUrl),
+        tap(() => (this.prevUrl = this.router.url)),
+        tap(() => this.getCurrentMode()),
+        tap(() => this.getCurrentMap())
+      )
+      .subscribe();
   }
 
   ngOnInit() {
@@ -279,11 +283,32 @@ export class DefaultComponent implements OnInit {
   }
 
   getCurrentMode() {
-    this.modeService.getMode().subscribe((response: ModeResponse) => {
-      console.log('Get Mode: ', response);
-      const { state } = response;
-      this.sharedService.currentMode$.next(state);
-    });
+    this.modeService
+      .getMode()
+      .pipe(
+        tap((response: ModeResponse) => {
+          console.log('Get Mode: ', response);
+          const { state } = response;
+          this.sharedService.currentMode$.next(state);
+          if (state !== `FOLLOW_ME`) {
+            this.sharedService.currentPairingStatus$.next(null);
+          } else {
+            this.getPairingStatus();
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  getPairingStatus() {
+    this.modeService
+      .getPairingStatus()
+      .pipe(
+        tap(data => {
+          this.sharedService.currentPairingStatus$.next(data);
+        })
+      )
+      .subscribe();
   }
 
   initializeErrors() {
@@ -315,8 +340,8 @@ export class DefaultComponent implements OnInit {
       this.router
         .navigate([path], {
           queryParams: {
-            payload,
-          },
+            payload
+          }
         })
         .then(() => location.reload());
     } else {
@@ -332,6 +357,7 @@ export class DefaultComponent implements OnInit {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+    this.routerSub.unsubscribe();
     if (this.sub) {
       this.sub.unsubscribe();
     }

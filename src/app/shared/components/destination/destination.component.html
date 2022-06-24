@@ -1,17 +1,18 @@
-
-
-<div class="container-fluid destination-container" *ngIf="floorPlanData && rosMapData && metaData && type">
+<div
+  class="container-fluid destination-container"
+  *ngIf="floorPlanData && rosMapData && metaData && type"
+>
   <div class="card ">
     <app-map-wrapper
-    class="map"
-    [toolType]="type"
-    [floorPlanData]="floorPlanData"
-    [rosMapData]="rosMapData"
-    [currentRobotPose]="currentRobotPose"
-    [metaData]="metaData"
-    [targetWaypoints]="payload"
-  ></app-map-wrapper>
-   
+    *ngIf="floorPlanData && rosMapData && metaData && type"
+      class="map"
+      [toolType]="type"
+      [floorPlanData]="floorPlanData"
+      [rosMapData]="rosMapData"
+      [currentRobotPose]="currentRobotPose"
+      [metaData]="metaData"
+      [targetWaypoints]="payload"
+    ></app-map-wrapper>
   </div>
   <div class="spuare-group">
     <div class="square-button cancel" (click)="onCancel()">

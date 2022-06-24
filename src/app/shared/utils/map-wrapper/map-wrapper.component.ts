@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { EMPTY, forkJoin, Observable, of, Subscription } from 'rxjs';
-import { catchError, delay, mergeMap, tap } from 'rxjs/operators';
+import { catchError, delay, mergeMap, tap, switchMap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import * as Hammer from 'hammerjs';
@@ -42,9 +42,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   degrees: number = 0;
   scale: number = 0.75; // 0.35
-  rosScale: number = 0;
+  rosScale: number = 1;
   floorPlanScale: number = 1;
-  scaleMultiplier: number = 0.99; // 0.99
+  scaleMultiplier: number = 0.9; // 0.99
   rosMap;
   floorPlanMap;
 
@@ -62,13 +62,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
     private mapWrapperService: MapWrapperService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.floorPlanData);
+    console.log(this.rosMapData);
+  }
 
   ngAfterViewInit() {
     if (this.rosMapData?.map) {
       const { scale } = this.rosMapData?.map;
-      this.rosScale = scale;
+      this.rosScale = scale ? scale : 1;
     }
+
     if (this.toolType) {
       const rosImg$ = new Observable<HTMLImageElement>(observer => {
         const rosImage = new Image();
@@ -119,6 +123,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         ])
           .pipe(
             tap(img => {
+              console.log(img);
               const stagaScale = this.scale;
               const rosScale = this.rosScale;
               const rosLayer = this.mapWrapperService.getRosMapLayer();
@@ -159,6 +164,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                       ),
                       mergeMap(() =>
                         this.mapWrapperService.updateStageScale$(stagaScale)
+                      ),
+                      mergeMap(() =>
+                        this.mapWrapperService.updateStagePosition$({
+                          x: 0,
+                          Y: 0
+                        })
                       )
                     )
                     .subscribe();
@@ -233,7 +244,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                 //           mergeMap(() =>
                 //             this.mapWrapperService.updateRosMapScale$(rosScale)
                 //           ),
-          
+
                 //           mergeMap(() =>
                 //             this.mapWrapperService.pushToStage$(rosLayer)
                 //           ),
@@ -259,12 +270,22 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                 //       resolve(true);
                 //     }
                 //   });
- 
+
                 Promise.all([
-                  floorPlanPromise(img[1]),
+                  floorPlanPromise(img[1])
                   // rosMapPromise(img[0])
                 ]).then(() => {
-                  this.mapWrapperService.updateStageScale$(this.scale);
+                  this.mapWrapperService
+                    .updateStageScale$(this.scale)
+                    .pipe(
+                      switchMap(() =>
+                        this.mapWrapperService.updateStagePosition$({
+                          x: 0,
+                          y: 0
+                        })
+                      )
+                    )
+                    .subscribe();
                 });
               } else if (this.toolType === Category.WAYPOINTSELECTOR) {
                 const floorPlanImage = img[1];
@@ -343,19 +364,11 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             }),
             tap(() => {
               console.log(`tool-type  ${this.toolType}`);
-              const hammer = new Hammer(this.canvas.nativeElement);
-              const stage = this.mapWrapperService.stage;
+              const stage = this.mapWrapperService.getStage();
               const rosMapLayer = this.mapWrapperService.getRosMapLayer();
               const localizationPoint = this.mapWrapperService.getLocalizationPoint();
               const waypointsGroup = this.mapWrapperService.getWaypointsGroup();
-              stage.on('touchstart', () => {
-                hammer.get('pinch').set({ enable: true });
-              });
-
-              stage.on('touchend', () => {
-                hammer.get('pinch').set({ enable: false });
-              });
-
+  
               stage.on('wheel', event => {
                 event.evt.preventDefault();
                 let direction = event.evt.deltaY > 0 ? 1 : -1;
@@ -369,21 +382,41 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
               if (this.toolType === Category.LOCALIZATIONEDITER) {
                 rosMapLayer.on('mousedown touchstart', async (event: any) => {
                   if (this.isReset) {
+                    console.log(rosMapLayer);
                     if (rosMapLayer.find('.waypoint').length <= 0) {
+                      console.log(`debug 1`);
+                      let positionTemp: any;
                       this.getRosMapXYPointer(event)
                         .pipe(
-                          mergeMap(position => this.drawnWaypoint$(position))
+                          tap(position => (positionTemp = position)),
+                          switchMap(() =>
+                            this.mapWrapperService.destroyWaypoint$()
+                          ),
+                          switchMap(() =>
+                            this.mapWrapperService.removeLidarPointsGroup$()
+                          ),
+                          mergeMap(() => this.drawnWaypoint$(positionTemp))
                         )
                         .subscribe();
                     } else {
-                      stage.draggable(true);
+                      console.log(`debug 2`);
+                      console.log(localizationPoint);
+                      this.mapWrapperService.updateStageDraggable$(true);
                     }
                   }
                 });
+               
+                // test
+                // this.mapWrapperService
+                // .getLocalizationToolsGroup().on('mousedown touchstart', () =>{
+                //   console.log(`getLocalizationToolsGroup`);
+                // })
 
-                localizationPoint.on(
+                // bug
+                rosMapLayer.on(
                   'mousedown touchstart',
                   async (event: any) => {
+                    console.log(`localizationPoint touchstart`);
                     if (this.isReset && !this.lineLocked) {
                       rosMapLayer.getChildren().forEach(child => {
                         if (child.className === 'Arrow') {
@@ -579,25 +612,21 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   init() {
-    if (!this.isReset) {
-      // handle 2 cases "localizationEditor" & "positionListener"
-      // localizationEditor
-      // user can monitior the robot currnet position in positionListener mode
-      if (this.toolType === Category.LOCALIZATIONEDITER) {
-        this.sub.add(
-          forkJoin([
-            this.createRobotCurrentPosition(),
-            this.createLidarRedpoints()
-          ]).subscribe()
-        );
-      } else if (this.toolType === Category.POSITIONLISTNER) {
-        this.sub.add(
-          forkJoin([
-            this.createTargetPoint(),
-            this.createRobotCurrentPosition()
-          ]).subscribe()
-        );
-      }
+    // if (!this.isReset) {
+    // handle 2 cases "localizationEditor" & "positionListener"
+    // localizationEditor
+    // user can monitior the robot currnet position in positionListener mode
+    if (this.toolType === Category.LOCALIZATIONEDITER) {
+      forkJoin([
+        this.createRobotCurrentPosition(),
+        this.createLidarRedpoints()
+      ]).subscribe();
+    } else if (this.toolType === Category.POSITIONLISTNER) {
+      forkJoin([
+        this.createTargetPoint(),
+        this.createRobotCurrentPosition()
+      ]).subscribe();
+      // }
       // this.createOriginPoint(); // for testing - show the origin point of the robot scanning map
     }
   }
@@ -814,14 +843,14 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
         this.mapWrapperService.pushToLocalizationGroup$(centerOfWaypoint);
         this.mapWrapperService.pushToLocalizationGroup$(localizationPoint);
+        this.mapWrapperService.getStage().batchDraw(); // test
       })
     );
   }
 
-  zoomIn() {
-    let scale: number = this.scale;
-
-    const oldScale = this.mapWrapperService.getStage().scaleX();
+  zoomIn(scaleMultiplier?: number) {
+    const maxScale = 50;
+    let oldScale = this.mapWrapperService.getStage().scaleX();
 
     const pointer = {
       x: this.mapWrapperService.getStage().width() / 2,
@@ -833,28 +862,28 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       y: (pointer.y - this.mapWrapperService.getStage().y()) / oldScale
     };
 
-    scale /= this.scaleMultiplier;
-    scale = parseFloat(scale.toFixed(100));
-
-    this.scale = scale;
-    this.mapWrapperService
-      .updateStageScale$(scale)
-      .pipe(
-        mergeMap(() => {
-          const newPos = {
-            x: pointer.x - origin.x * scale,
-            y: pointer.y - origin.y * scale
-          };
-          return this.mapWrapperService.updateStagePosition$(newPos);
-        })
-      )
-      .subscribe();
+    oldScale /= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
+    oldScale = Math.round(oldScale * 100) / 100;
+    if (oldScale <= 10) {
+      this.scale = maxScale;
+      this.mapWrapperService
+        .updateStageScale$(oldScale)
+        .pipe(
+          mergeMap(() => {
+            const newPos = {
+              x: Math.round((pointer.x - origin.x * oldScale) * 100) / 100,
+              y: Math.round((pointer.y - origin.y * oldScale) * 100) / 100
+            };
+            this.scale = oldScale;
+            return this.mapWrapperService.updateStagePosition$(newPos);
+          })
+        )
+        .subscribe();
+    }
   }
 
-  zoomOut() {
-    let scale: any = this.scale;
-    const oldScale = this.mapWrapperService.getStage().scaleX();
-
+  zoomOut(scaleMultiplier?: number) {
+    let oldScale = this.mapWrapperService.getStage().scaleX();
     const pointer = {
       x: this.mapWrapperService.getStage().width() / 2,
       y: this.mapWrapperService.getStage().height() / 2
@@ -865,17 +894,18 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       y: (pointer.y - this.mapWrapperService.getStage().y()) / oldScale
     };
 
-    scale *= this.scaleMultiplier;
-    scale = parseFloat(scale.toFixed(100));
-    this.scale = scale;
+    oldScale *= scaleMultiplier ? scaleMultiplier : this.scaleMultiplier;
+    oldScale = Math.round(oldScale * 100) / 100;
+
     this.mapWrapperService
-      .updateStageScale$(scale)
+      .updateStageScale$(oldScale)
       .pipe(
         mergeMap(() => {
           const newPos = {
-            x: pointer.x - origin.x * scale,
-            y: pointer.y - origin.y * scale
+            x: Math.round((pointer.x - origin.x * oldScale) * 100) / 100,
+            y: Math.round((pointer.y - origin.y * oldScale) * 100) / 100
           };
+          this.scale = oldScale;
           return this.mapWrapperService.updateStagePosition$(newPos);
         })
       )
@@ -884,13 +914,25 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   onPinchin(event: Event) {
     if (event) {
-      this.zoomOut();
+      const scaleMultiplier = 0.9;
+      of( this.mapWrapperService.updateStageDraggable$(false))
+        .pipe(
+          tap(() => this.zoomOut(scaleMultiplier)),
+          tap(() => this.mapWrapperService.updateStageDraggable$(true))
+        )
+        .subscribe();
     }
   }
 
   onPinchout(event: Event) {
     if (event) {
-      this.zoomIn();
+      const scaleMultiplier = 0.9;
+      of(this.mapWrapperService.updateStageDraggable$(false))
+        .pipe(
+          tap(() => this.zoomIn(scaleMultiplier)),
+          tap(() => this.mapWrapperService.updateStageDraggable$(true))
+        )
+        .subscribe();
     }
   }
 
@@ -971,7 +1013,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   onPreviewMode() {
     this.isReset = false;
-    this.mapWrapperService.stage.draggable(true);
+    this.mapWrapperService.updateStageDraggable$(true),
     this.isUpdatedWaypoint.emit(false);
     forkJoin([this.getRobotCurrentPosition$(), this.getLidarData$()])
       .pipe(mergeMap(() => this.onReset()))
@@ -993,5 +1035,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       this.sub.unsubscribe();
     }
     this.mapWrapperService.destroyStage();
+    this.isReset = false;
   }
 }

@@ -19,6 +19,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MapWrapperComponent } from './utils/map-wrapper/map-wrapper.component';
 import { TextboxComponent } from './components/textbox/textbox.component';
 import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.component';
+import { PairingPairComponent } from './components/pairing-pair/pairing-pair.component';
+import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpair.component';
 
 @NgModule({
   imports: [
@@ -27,7 +29,7 @@ import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.c
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule.forChild(),
+    TranslateModule.forChild()
   ],
   declarations: [
     HeaderComponent,
@@ -44,7 +46,9 @@ import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.c
     WaypointFormComponent,
     MapWrapperComponent,
     TextboxComponent,
-    SignOutFormComponent
+    SignOutFormComponent,
+    PairingPairComponent,
+    PairingUnpairComponent
   ],
   exports: [
     HeaderComponent,
@@ -61,8 +65,10 @@ import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.c
     WaypointFormComponent,
     MapWrapperComponent,
     TextboxComponent,
-    SignOutFormComponent
+    SignOutFormComponent,
+    PairingPairComponent,
+    PairingUnpairComponent
   ],
-  providers: [ModalComponent],
+  providers: [ModalComponent]
 })
 export class SharedModule {}
