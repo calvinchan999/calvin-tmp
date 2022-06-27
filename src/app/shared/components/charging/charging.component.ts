@@ -5,17 +5,19 @@ import { DockingService } from 'src/app/views/services/docking.service';
 @Component({
   selector: 'app-charging',
   templateUrl: './charging.component.html',
-  styleUrls: ['./charging.component.scss']
+  styleUrls: ['./charging.component.scss'],
 })
 export class ChargingComponent implements OnInit {
+  constructor(
+    private dockingService: DockingService,
+    private sharedService: SharedService
+  ) {}
 
-  constructor(private dockingService: DockingService, private sharedService: SharedService) { }
-
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   onClickCancelCharging() {
-    this.dockingService.cancelDocking().subscribe(() => this.sharedService.loading$.next(true));
+    this.dockingService
+      .cancelDocking()
+      .subscribe(() => this.sharedService.loading$.next(true));
   }
-
 }

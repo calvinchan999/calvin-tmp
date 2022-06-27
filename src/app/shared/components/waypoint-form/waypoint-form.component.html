@@ -3,25 +3,22 @@
     <div
       class="waypoint-item"
       *ngFor="let waypoint of waypointLists$ | async"
-      [ngClass]="{ selected: selectedWaypoint?.name === waypoint.name }"
+      [ngClass]="{ selected: selectedWaypoint?.id === waypoint.id }"
       (click)="onSelectedWaypoint(waypoint)"
     >
-      {{ waypoint.waypointName}} 
+      {{ waypoint.waypointName }}
     </div>
   </div>
 </div>
 <div class="waypoint-btn-container d-flex justify-content-around">
-  <!-- <button class="btn waypoint-cancel-button" (click)="onCloseModel()">
-    {{ "cancel" | translate }}
-  </button> -->
   <button
     *ngIf="selectedWaypoint"
     class="btn waypoint-confirm-button"
     (click)="onSubmitModel(selectedWaypoint?.name)"
   >
-  <i class="mdi mdi-chevron-right waypoint-confirm-button-icon"></i>
-  <label class="waypoint-confirm-button-title">{{
-    "confirm" | translate
-  }}</label>
+    <i class="mdi mdi-chevron-right waypoint-confirm-button-icon"></i>
+    <label class="waypoint-confirm-button-title">{{
+      "confirm" | translate
+    }}</label>
   </button>
 </div>

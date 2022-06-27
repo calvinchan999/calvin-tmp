@@ -67,20 +67,8 @@ export class WaypointFormComponent implements OnInit {
       };
       this.waypointService
         .sendTask(data)
-        .pipe
-        // mergeMap(() => this.translateService.get('navigatingtoDestination'))
-        ()
-        .subscribe((navigatingtoDestination) => {
-          // this.sharedService.isOpenModal$.next({
-          //   modal: 'destination',
-          //   modalHeader: navigatingtoDestination,
-          //   isDisableClose: false,
-          //   payload: {
-          //     targetX: this.selectedWaypoint?.x,
-          //     targetY: this.selectedWaypoint?.y,
-          //     targetAngle: this.selectedWaypoint?.angle,
-          //   }
-          // });
+        .pipe()
+        .subscribe(() => {
           const payload = JSON.stringify({
             targetX: this.selectedWaypoint?.x,
             targetY: this.selectedWaypoint?.y,
@@ -91,8 +79,6 @@ export class WaypointFormComponent implements OnInit {
               payload,
             },
           });
-          // this.sharedService.isGoingDestination$.next(true);
-          // this.sharedService.response$.next('模式已更新');
         });
     }
   }

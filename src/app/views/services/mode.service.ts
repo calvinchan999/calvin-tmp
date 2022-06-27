@@ -44,7 +44,7 @@ export class ModeService {
     const url = `${
       this.appConfigService.getConfig().server.endpoint
     }${currentModeApi}`;
-    return this.http.post<any>(`${url}`, {});
+    return this.http.post<any>(url, {});
   }
 
   getMode(): Observable<ModeResponse> {

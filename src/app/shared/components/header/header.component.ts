@@ -131,12 +131,6 @@ export class HeaderComponent implements OnInit {
       .subscribe();
   }
 
-  // ngDoCheck() {
-  //   if (this.mode.length <= 0 && this.map.length <= 0) {
-  //     this.sharedService.loading$.next(true);
-  //   }
-  // }
-
   getBattery() {
     // @todo check connection
     this.mqttService.$battery
@@ -162,11 +156,6 @@ export class HeaderComponent implements OnInit {
       localStorage.setItem('language', 'tc');
     }
   }
-
-  // useAdminMode() {
-  //   this.sharedService._userRole().subscribe();
-  // }
-
   goToLogin() {
     this.router.navigate(['/login']);
   }
@@ -220,7 +209,6 @@ export class HeaderComponent implements OnInit {
   }
 
   goToDashboard() {
-    // this.router.navigate(['/']);
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/']);
     });

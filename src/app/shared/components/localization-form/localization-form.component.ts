@@ -35,7 +35,6 @@ export class LocalizationFormComponent implements OnInit {
     this.setMessage();
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
       if (currentMap) {
-        // let currentMap = '5W';
         this.mapService
           .getMapImage(currentMap)
           .pipe(
@@ -49,10 +48,7 @@ export class LocalizationFormComponent implements OnInit {
                 .pipe(tap((metaData) => (this.metaData = metaData)))
             )
           )
-          .subscribe(() => {
-            // console.log(this.metaData);
-            // console.log(this.mapImage);
-          });
+          .subscribe();
       }
     });
   }

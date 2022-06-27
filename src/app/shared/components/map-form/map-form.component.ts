@@ -17,12 +17,10 @@ export class MapFormComponent implements OnInit {
   constructor(
     private modalComponent: ModalComponent,
     private mapService: MapService,
-    private sharedService: SharedService,
-    private translateService: TranslateService
+    private sharedService: SharedService
   ) {}
 
   ngOnInit(): void {}
-
 
   onSelectedMap(map: Map) {
     this.selectedMap = map;
@@ -39,7 +37,6 @@ export class MapFormComponent implements OnInit {
       };
       this.mapService
         .changeMap(data)
-        // .pipe(mergeMap(() => this.translateService.get('mapDialog.tips1')))
         .subscribe(() => {
           this.modalComponent.closeTrigger$.next();
           this.sharedService.response$.next({

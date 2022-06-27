@@ -15,7 +15,6 @@ import { Metadata } from '../localization-form/localization-form.component';
 })
 export class DestinationComponent implements OnInit {
   @Input() payload: any;
-  floorPlanImg: string;
   rosMapImage: string;
   metaData: Metadata;
   currentRobotPose: any;
@@ -37,8 +36,7 @@ export class DestinationComponent implements OnInit {
             mergeMap(async (data) => {
               const img: string = URL.createObjectURL(data);
               return (
-              (this.floorPlanImg = ""),
-              (this.rosMapImage = img)
+                this.rosMapImage = img
             );
             }),
             mergeMap(() =>

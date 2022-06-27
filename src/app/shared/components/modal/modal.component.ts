@@ -40,8 +40,6 @@ export class ModalComponent implements OnInit {
   ngOnInit(): void {}
 
   ngOnDestroy() {
-    // Prevent modal from not executing its closing actions if the user navigated away (for example,
-    // through a link).
     this.close();
   }
 
