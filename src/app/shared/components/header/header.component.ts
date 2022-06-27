@@ -106,28 +106,6 @@ export class HeaderComponent implements OnInit {
         )
         .subscribe()
     );
-    // this.sub.add(
-    //   combineLatest(
-    //     this.sharedService.currentMode$
-    //     // this.sharedService.currentMap$
-    //   )
-    //     .pipe(
-    //       tap((response: any) => {
-    //         this.mode = response[0];
-    //         // this.map = response[1];
-    //         return response;
-    //       }),
-    //       // mergeMap(() =>
-    //       //   this.translateService
-    //       //     .get('mapNotFound')
-    //       //     .pipe(
-    //       //       tap((mapTranslation) => (this.mapTranslation = mapTranslation))
-    //       //     )
-    //       // ),
-    //       mergeMap(() => this.getTranlateModeMessage$())
-    //     )
-    //     .subscribe()
-    // );
   }
 
   ngOnInit() {

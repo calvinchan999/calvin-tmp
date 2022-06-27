@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { of, Subject, Subscription } from 'rxjs';
+import { iif, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -50,15 +50,6 @@ export class DefaultComponent implements OnInit {
     private toastrService: ToastrService,
     private authService: AuthService
   ) {
-    // @todo check connection
-    // this.sharedService.timer$.subscribe((i) => {
-    //   if (i > 0) {
-    //     console.log(i);
-    //     this.sharedService.loading$.next(true);
-    //   } else {
-    //     this.sharedService.loading$.next(false);
-    //   }
-    // });
 
     this.mqttService.$completion
       .pipe(
@@ -104,9 +95,6 @@ export class DefaultComponent implements OnInit {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
         if (chargingStatus === 'CHARGING') {
-          // this.responseDialog.onCloseWithoutRefresh();
-          // this.dialog.onCloseWithoutRefresh();
-          // this.chargingDialog.open();
           this.translateService
             .get('dockingDialog.tips2')
             .pipe(
@@ -115,10 +103,6 @@ export class DefaultComponent implements OnInit {
             )
             .subscribe();
         } else if (chargingStatus === 'NOT_CHARGING') {
-          // this.dialog.onCloseWithoutRefresh();
-          // this.chargingDialog.onCloseWithoutRefresh();
-          // this.sharedService.loading$.next(false);
-
           this.router.navigate(['/']);
         }
       }
@@ -153,27 +137,27 @@ export class DefaultComponent implements OnInit {
     this.sharedService.refresh$
       .pipe(
         mergeMap((refresh: boolean) => {
-          if (refresh) {
-            return this.authService.refreshToken().pipe(
+          return iif(
+            () => !!refresh,
+            this.authService.refreshToken().pipe(
               tap(() => {
                 this.sharedService.refresh$.next(false);
                 this.reloadCurrentRoute();
               }),
-              catchError((error) => {
+              catchError(error => {
                 this.sharedService.refresh$.next(false);
                 return of(
                   this.sharedService.response$.next({
                     type: 'normal',
-                    message: 'refreshTokenFail',
+                    message: 'refreshTokenFail'
                   })
                 ).pipe(
                   tap(() => setTimeout(() => this.redirectToHome(), 5000))
                 );
               })
-            );
-          } else {
-            return of(null);
-          }
+            ),
+            of(null)
+          );
         })
       )
       .subscribe();
@@ -253,24 +237,9 @@ export class DefaultComponent implements OnInit {
 
   ngOnInit() {
     this.initializeErrors();
-    // if (!localStorage.getItem('role')) {
-    //   this.sharedService._userRole().subscribe();
-    // } else {
-    //   this.sharedService.userRole$.next(String(localStorage.getItem('role')));
-    // }
   }
 
-  // for testing
-  // ngAfterViewInit() {
-  //   this.sharedService.isOpenModal$.next({
-  //     modal: 'destination',
-  //     modalHeader: 'testing',
-  //     isDisableClose: false,
-  //   });
-  // }
-
   getCurrentMap() {
-    console.log(`getCurrentMap`);
     this.mapService.getActiveMap().subscribe((response: MapResponse) => {
       console.log('Get Active Map:');
       console.log(response);
@@ -280,7 +249,6 @@ export class DefaultComponent implements OnInit {
   }
 
   getCurrentMode() {
-    console.log(`getCurrentMode`);
     this.modeService
       .getMode()
       .pipe(

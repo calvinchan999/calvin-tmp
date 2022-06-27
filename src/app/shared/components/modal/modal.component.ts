@@ -3,9 +3,7 @@ import {
   Component,
   ContentChild,
   ElementRef,
-  HostListener,
   Input,
-  OnChanges,
   OnInit,
   TemplateRef,
 } from '@angular/core';
