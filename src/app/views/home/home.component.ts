@@ -23,12 +23,9 @@ export class HomeComponent implements OnInit {
     private sharedService: SharedService,
     private authService: AuthService,
     private indexedDbService: IndexedDbService,
-    private appConfigService: AppConfigService,
-    private mqttService: MqttService
+    private appConfigService: AppConfigService
   ) {
     this.features = this.appConfigService.getConfig().feature;
-
-    // this.sharedService.isDynamicAction$.subscribe((reponse: any) => {
     this.sharedService.currentMode$.pipe().subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);

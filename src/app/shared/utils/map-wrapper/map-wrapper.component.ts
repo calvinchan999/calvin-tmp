@@ -95,7 +95,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
     forkJoin([rosImg$])
       .pipe(
-        // delay(1000),
         tap((img) => {
           const stage = new Konva.Stage({
             container: 'canvas',

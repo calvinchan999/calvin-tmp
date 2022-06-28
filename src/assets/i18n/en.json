@@ -74,5 +74,12 @@
   "unpair": "UnPairing",
   "unpairDialog":{
     "unpair": "Are you sure you want to unpair ?"
-  }
+  },
+  "followMeInspector": "FollowMe",
+  "followMeInspectorDialog":{
+    "title": "Please confirm your current map status."
+  },
+  "hasMap": "map available",
+  "notMap": "not map",
+  "mapNotFoundError": "Please select the follow me mode without map as the active map not found"
 }

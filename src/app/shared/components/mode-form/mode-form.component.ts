@@ -39,13 +39,19 @@ export class ModeFormComponent implements OnInit {
   }
 
   onSubmitModel(selectedMode: Mode) {
-    if (selectedMode) {
+    if (selectedMode === Mode.NAVIGATION) {
       this.modeService.changeMode(selectedMode).subscribe(() => {
         this.modalComponent.closeTrigger$.next();
         this.sharedService.response$.next({
           type: 'normal',
           message: 'modeDialog.tips1',
         });
+      });
+    } else if (selectedMode === Mode.FOLLOW_ME) {
+      this.sharedService.isOpenModal$.next({
+        modal: 'follow-me-inspector',
+        modalHeader: 'followMeInspector',
+        isDisableClose: true,
       });
     }
   }

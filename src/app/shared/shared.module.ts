@@ -21,7 +21,7 @@ import { TextboxComponent } from './components/textbox/textbox.component';
 import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.component';
 import { PairingPairComponent } from './components/pairing-pair/pairing-pair.component';
 import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpair.component';
-
+import { FollowMeInspectorDialogComponent } from './components/follow-me-inspector-dialog/follow-me-inspector-dialog.component';
 
 @NgModule({
   imports: [
@@ -49,7 +49,8 @@ import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpa
     TextboxComponent,
     SignOutFormComponent,
     PairingPairComponent,
-    PairingUnpairComponent
+    PairingUnpairComponent,
+    FollowMeInspectorDialogComponent,
   ],
   exports: [
     HeaderComponent,
@@ -68,7 +69,8 @@ import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpa
     TextboxComponent,
     SignOutFormComponent,
     PairingPairComponent,
-    PairingUnpairComponent
+    PairingUnpairComponent,
+    FollowMeInspectorDialogComponent
   ],
   providers: [ModalComponent],
 })

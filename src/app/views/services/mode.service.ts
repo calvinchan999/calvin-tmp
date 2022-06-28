@@ -4,10 +4,11 @@ import { Observable } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
 
-export interface Mode {
-  mode: string;
+// export  type Mode = 'FOLLOW_ME' | 'NAVIGATION';
+export enum Mode {
+  FOLLOW_ME = 'FOLLOW_ME',
+  NAVIGATION = 'NAVIGATION',
 }
-
 export interface ModeResponse {
   followMeStandalone: string;
   manual: boolean;
@@ -47,6 +48,16 @@ export class ModeService {
     return this.http.post<any>(url, {});
   }
 
+  followMeWithMap(map: string): Observable<any> {
+    return this.http.post<any>(
+      `${
+        this.appConfigService.getConfig().server.endpoint +
+        environment.api.followMe
+      }/${map}`,
+      {}
+    );
+  }
+
   getMode(): Observable<ModeResponse> {
     const url = `${this.appConfigService.getConfig().server.endpoint}${
       environment.api.mode
@@ -67,7 +78,7 @@ export class ModeService {
     }/unpair`;
     return this.http.post<any>(url, {});
   }
-  
+
   getPairingStatus(): Observable<PairingResponse> {
     const url = `${this.appConfigService.getConfig().server.endpoint}${
       environment.api.pairing

@@ -74,5 +74,12 @@
   "unpair": "取消跟随模式配对",
   "unpairDialog":{
     "unpair": "确认要取消配对？"
-  }
+  },
+  "followMeInspector": "跟随模式",
+  "followMeInspectorDialog":{
+    "title": "请确认您当前的地图状态"
+  },
+  "hasMap": "有地图",
+  "notMap": "没有地图",
+  "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图"
 }

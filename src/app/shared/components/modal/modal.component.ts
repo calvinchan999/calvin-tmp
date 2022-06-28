@@ -37,7 +37,7 @@ export class ModalComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.close();
@@ -57,6 +57,7 @@ export class ModalComponent implements OnInit {
     setTimeout(() => {
       this.visible = false;
       this.changeDetectorRef.markForCheck();
+      // this.router.navigate([currentUrl]).then(() => location.reload());
       this.router.navigate(['']);
     }, 200);
   }
