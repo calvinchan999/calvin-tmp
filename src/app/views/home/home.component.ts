@@ -33,8 +33,7 @@ export class HomeComponent implements OnInit {
 
     this.sharedService.currentPairingStatus$
       .pipe(map((data) => (data instanceof Object ? data : JSON.parse(data))))
-      .subscribe((data) => {
-        console.log(data);
+      .subscribe((data) => {0
         if (data?.pairingState) {
           const { pairingState } = data;
           this.pairingState = pairingState;
