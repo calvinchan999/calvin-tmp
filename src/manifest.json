@@ -2,8 +2,8 @@
     "theme_color": "#fff",
     "background_color": "#fff",
     "display": "fullscreen",
-    "scope": "/",
-    "start_url": "/",
+    "scope": "/RV",
+    "start_url": "/RV",
     "name": "mobile-chair",
     "short_name": "mobile-chair",
     "icons": [

@@ -64,13 +64,13 @@ export class MapService {
   }
 
   getMapImage(name: string): Observable<any> {
-    const url = `${this.baseUrl}${environment.api.mapImage('hkaa')}`;
+    const url = `${this.baseUrl}${environment.api.mapImage(name)}`;
     // @ts-ignore
     return this.http.get<any>(url, { responseType: 'blob' });
   }
 
   getMapMetaData(name: string): Observable<MapMetaData> {
-    const url = `${this.baseUrl}${environment.api.mapMetaData('hkaa')}`;
+    const url = `${this.baseUrl}${environment.api.mapMetaData(name)}`;
     return this.http.get<MapMetaData>(url);
   }
 
