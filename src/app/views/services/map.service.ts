@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
 export interface Map {
   map: string;
 }
@@ -65,13 +64,13 @@ export class MapService {
   }
 
   getMapImage(name: string): Observable<any> {
-    const url = `${this.baseUrl}${environment.api.mapImage(name)}`;
+    const url = `${this.baseUrl}${environment.api.mapImage('hkaa')}`;
     // @ts-ignore
     return this.http.get<any>(url, { responseType: 'blob' });
   }
 
   getMapMetaData(name: string): Observable<MapMetaData> {
-    const url = `${this.baseUrl}${environment.api.mapMetaData(name)}`;
+    const url = `${this.baseUrl}${environment.api.mapMetaData('hkaa')}`;
     return this.http.get<MapMetaData>(url);
   }
 

@@ -73,10 +73,19 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   lineLocked: boolean = false;
   isLineUpdated: boolean = false;
 
+  userAgent = navigator.userAgent;
+  platform: string = '';
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService
-  ) {}
+  ) {
+    if (/android/i.test(this.userAgent)) {
+      this.platform = 'android';
+    }
+    if (/iPad|iPhone|iPod/i.test(this.userAgent)) {
+      this.platform = 'ios';
+    }
+  }
 
   ngOnInit() {}
 
@@ -118,7 +127,10 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             x: 0,
             y: 0,
           });
-          rosMap.cache({ pixelRatio: 0.5 });
+
+          if (this.platform !== 'ios') {
+            rosMap.cache({ pixelRatio: 0.5 });
+          }
           rosMapLayer.add(rosMap);
 
           this.rosMap = rosMap;
@@ -165,6 +177,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           if (this.type === 'localizationEditor') {
             this.rosMapLayer.on('mousedown touchstart', async (event: any) => {
               if (this.isReset) {
+                this.stage.draggable(true);
+              }
+            });
+
+            this.rosMapLayer.on('dblclick dbltap', async (event: any) => {
+              if (this.isReset) {
                 if (this.rosMapLayer.find('.waypoint').length <= 0) {
                   this.getRosMapXYPointer(event)
                     .pipe(
@@ -173,8 +191,6 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
                       tap(() => this.lidarPointsGroup.removeChildren())
                     )
                     .subscribe();
-                } else {
-                  this.stage.draggable(true);
                 }
               }
             });

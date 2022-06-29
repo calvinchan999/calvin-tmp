@@ -27,8 +27,8 @@ export class FollowMeInspectorDialogComponent implements OnInit {
       .pipe(
         mergeMap((map) => {
           return iif(
-            () => !!map,
-            this.modeService.followMeWithMap(map.name).pipe(
+            () => !!map?.name,
+            this.modeService.followMeWithMap(map?.name).pipe(
               switchMap(() =>
                 of(
                   this.sharedService.response$.next({
