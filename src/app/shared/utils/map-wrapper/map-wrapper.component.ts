@@ -453,10 +453,12 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           x: this.rosMapLayer.x() - currentPosition.x / this.stage.scaleX(),
           y: this.rosMapLayer.y() - currentPosition.y / this.stage.scaleY(),
         };
+
         if (
           this.rosMapLayer.find('.currentPosition').length > 0 &&
           pointTo.x &&
-          pointTo.y
+          pointTo.y &&
+          !this.isReset
         ) {
           const absolutePosition =
             this.robotCurrentPositionPointer.getAbsolutePosition();

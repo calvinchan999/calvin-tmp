@@ -31,6 +31,7 @@ export class MqttService {
   public $pauseResume = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
   public $pairing = new BehaviorSubject<any>(null);
+  public $execution = new Subject<any>();
   public clientId: string = '';
   constructor(
     private _mqttService: NgxMqttService,
@@ -153,7 +154,19 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/followme/pairing');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.sharedService.currentPairingStatus$.next(new TextDecoder('utf-8').decode(message.payload));
+          this.sharedService.currentPairingStatus$.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
+        });
+
+      this._mqttService
+        .observe('rvautotech/fobo/execution')
+        .subscribe((message: IMqttMessage) => {
+          console.log('rvautotech/fobo/execution');
+          console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.$execution.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
         });
     }
   }
