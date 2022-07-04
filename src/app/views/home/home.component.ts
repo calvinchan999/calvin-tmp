@@ -4,7 +4,6 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
-import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -33,7 +32,7 @@ export class HomeComponent implements OnInit {
 
     this.sharedService.currentPairingStatus$
       .pipe(map((data) => (data instanceof Object ? data : JSON.parse(data))))
-      .subscribe((data) => {0
+      .subscribe((data) => {
         if (data?.pairingState) {
           const { pairingState } = data;
           this.pairingState = pairingState;
@@ -83,7 +82,7 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    if (this.mode && this.mode !=='UNDEFINED' ) {
+    if (this.mode && this.mode !== 'UNDEFINED') {
       this.router.navigate(['/map']);
     }
   }

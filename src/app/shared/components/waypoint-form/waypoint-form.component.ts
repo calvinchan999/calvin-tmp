@@ -65,21 +65,22 @@ export class WaypointFormComponent implements OnInit {
           },
         ],
       };
-      this.waypointService
-        .sendTask(data)
-        .pipe()
-        .subscribe(() => {
-          const payload = JSON.stringify({
-            targetX: this.selectedWaypoint?.x,
-            targetY: this.selectedWaypoint?.y,
-            targetAngle: this.selectedWaypoint?.angle,
-          });
-          this.router.navigate(['/waypoint/destination'], {
-            queryParams: {
-              payload,
-            },
-          });
-        });
+      this.waypointService.sendTask(data).subscribe();
+    //   this.waypointService
+    //     .sendTask(data)
+    //     .pipe()
+    //     .subscribe(() => {
+    //       const payload = JSON.stringify({
+    //         targetX: this.selectedWaypoint?.x,
+    //         targetY: this.selectedWaypoint?.y,
+    //         targetAngle: this.selectedWaypoint?.angle,
+    //       });
+    //       this.router.navigate(['/waypoint/destination'], {
+    //         queryParams: {
+    //           payload,
+    //         },
+    //       });
+    //     });
     }
   }
 }

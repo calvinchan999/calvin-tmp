@@ -4,7 +4,7 @@ import { ModeService, Mode } from 'src/app/views/services/mode.service';
 import { ModalComponent } from '../modal/modal.component';
 import { mergeMap, switchMap } from 'rxjs/operators';
 import { MapService } from 'src/app/views/services/map.service';
-import { iif, of } from 'rxjs';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-follow-me-inspector-dialog',
@@ -25,30 +25,68 @@ export class FollowMeInspectorDialogComponent implements OnInit {
     this.mapService
       .getActiveMap()
       .pipe(
-        mergeMap((map) => {
-          return iif(
-            () => !!map?.name,
-            this.modeService.followMeWithMap(map?.name).pipe(
-              switchMap(() =>
-                of(
-                  this.sharedService.response$.next({
-                    type: 'normal',
-                    message: 'modeDialog.tips1',
-                  })
-                )
-              ),
-              mergeMap(() => of(this.modalComponent.closeTrigger$.next()))
-            ),
-            of(
-              this.sharedService.response$.next({
-                type: 'warning',
-                message: 'mapNotFoundError',
-              })
-            )
-          );
+        switchMap((map) => {
+          if (map) {
+            const { name } = map;
+            if (name !== 'UNDEFINED' && name.length > 0) {
+              return this.modeService.followMeWithMap(name).pipe(
+                mergeMap(() =>
+                  of(
+                    this.sharedService.response$.next({
+                      type: 'normal',
+                      message: 'modeDialog.tips1',
+                    })
+                  )
+                ),
+                mergeMap(() => of(this.modalComponent.closeTrigger$.next()))
+              );
+            } else {
+              return of(
+                this.sharedService.response$.next({
+                  type: 'warning',
+                  message: 'mapNotFoundError',
+                })
+              );
+            }
+          } else {
+            return of(null);
+          }
         })
       )
       .subscribe();
+
+    // this.mapService
+    //   .getActiveMap()
+    //   .pipe(
+    //     switchMap((map) => {
+    //       if (map) {
+    //         const { name } = map;
+    //         return iif(
+    //           () => name !== 'UNDEFINED',
+    //           this.modeService.followMeWithMap(name).pipe(
+    //             mergeMap(() =>
+    //               of(
+    //                 this.sharedService.response$.next({
+    //                   type: 'normal',
+    //                   message: 'modeDialog.tips1',
+    //                 })
+    //               )
+    //             ),
+    //             mergeMap(() => of(this.modalComponent.closeTrigger$.next()))
+    //           ),
+    //           of(
+    //             this.sharedService.response$.next({
+    //               type: 'warning',
+    //               message: 'mapNotFoundError',
+    //             })
+    //           )
+    //         );
+    //       } else {
+    //         return of(null);
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
   }
 
   onSubmitWithoutMap() {
