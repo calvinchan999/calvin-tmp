@@ -379,7 +379,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       mergeMap(() =>
         of(this.lidarData).pipe(
           tap((data) => {
-            if (data.pointList) {
+            if (data?.pointList) {
               const { pointList } = data;
               const { x, y, height, resolution }: any = this.metaData;
               for (const i in pointList) {
