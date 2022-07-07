@@ -4,7 +4,7 @@ import { ModeService, Mode } from 'src/app/views/services/mode.service';
 import { ModalComponent } from '../modal/modal.component';
 import { mergeMap, switchMap } from 'rxjs/operators';
 import { MapService } from 'src/app/views/services/map.service';
-import { of } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-follow-me-inspector-dialog',
@@ -12,6 +12,7 @@ import { of } from 'rxjs';
   styleUrls: ['./follow-me-inspector-dialog.component.scss'],
 })
 export class FollowMeInspectorDialogComponent implements OnInit {
+  sub = new Subscription();
   constructor(
     private modeService: ModeService,
     private modalComponent: ModalComponent,
@@ -22,14 +23,14 @@ export class FollowMeInspectorDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmitMap() {
-    this.mapService
-      .getActiveMap()
+    this.sub = this.sharedService
+      .currentMapBehaviorSubject$
       .pipe(
-        switchMap((map) => {
-          if (map) {
-            const { name } = map;
-            if (name !== 'UNDEFINED' && name.length > 0) {
-              return this.modeService.followMeWithMap(name).pipe(
+        switchMap((mapName) => {
+          if (mapName) {
+            // const { name } = map;
+            if (mapName !== 'UNDEFINED' && mapName.length > 0) {
+              return this.modeService.followMeWithMap(mapName).pipe(
                 mergeMap(() =>
                   of(
                     this.sharedService.response$.next({
@@ -97,5 +98,9 @@ export class FollowMeInspectorDialogComponent implements OnInit {
         message: 'modeDialog.tips1',
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

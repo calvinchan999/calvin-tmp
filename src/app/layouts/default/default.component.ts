@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { iif, of, Subject, Subscription } from 'rxjs';
+import { iif, Observable, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -10,6 +10,7 @@ import {
   takeUntil,
   tap,
   distinctUntilChanged,
+  take,
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -19,6 +20,8 @@ import { ToastrService } from 'src/app/services/toastr.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapResponse, MapService } from 'src/app/views/services/map.service';
 import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
+import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
+import { WaypointService } from 'src/app/views/services/waypoint.service';
 
 @Component({
   selector: 'app-default',
@@ -39,6 +42,7 @@ export class DefaultComponent implements OnInit {
   isDisableClose: boolean;
   parentPayload: any = null;
   prevUrl: string = '';
+  closeDialogAfterRefresh: boolean = false;
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -48,10 +52,11 @@ export class DefaultComponent implements OnInit {
     private translateService: TranslateService,
     private httpStatusService: HttpStatusService,
     private toastrService: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private taskService: TaskService,
+    private waypointService: WaypointService
   ) {
-
-    this.mqttService.$completion
+    this.mqttService.completion$
       .pipe(
         map((feedback) => JSON.parse(feedback)),
         mergeMap((data) =>
@@ -91,7 +96,7 @@ export class DefaultComponent implements OnInit {
         }
       });
 
-    this.mqttService.$dockingChargingFeedback.subscribe((feedback) => {
+    this.mqttService.dockingChargingFeedback$.subscribe((feedback) => {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
         if (chargingStatus === 'CHARGING') {
@@ -108,9 +113,19 @@ export class DefaultComponent implements OnInit {
       }
     });
 
+    this.mqttService.departure$
+      .pipe(
+        map((departure) => JSON.parse(departure)),
+        tap((departure) => this.getTaskWaypointPointer(departure))
+      )
+      .subscribe();
+
     this.sharedService.response$.subscribe((response: any) => {
       if (response) {
         this.response = response;
+        this.closeDialogAfterRefresh = response?.closeAfterRefresh
+          ? true
+          : false;
         setTimeout(() => {
           this.responseDialog.open();
         }, 1000);
@@ -144,12 +159,12 @@ export class DefaultComponent implements OnInit {
                 this.sharedService.refresh$.next(false);
                 this.reloadCurrentRoute();
               }),
-              catchError(error => {
+              catchError(() => {
                 this.sharedService.refresh$.next(false);
                 return of(
                   this.sharedService.response$.next({
                     type: 'normal',
-                    message: 'refreshTokenFail'
+                    message: 'refreshTokenFail',
                   })
                 ).pipe(
                   tap(() => setTimeout(() => this.redirectToHome(), 5000))
@@ -158,6 +173,14 @@ export class DefaultComponent implements OnInit {
             ),
             of(null)
           );
+        })
+      )
+      .subscribe();
+
+    this.sharedService.departureWaypoint$
+      .pipe(
+        tap((data) => {
+          if (data) this.router.navigate(['/waypoint/destination']);
         })
       )
       .subscribe();
@@ -224,13 +247,18 @@ export class DefaultComponent implements OnInit {
     //   )
     //   .subscribe();
 
+    // this.mqttService.execution$.subscribe(() => {
+
+    // })
+
     this.routerSub = this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         distinctUntilChanged((prev, curr) => this.router.url === this.prevUrl),
         tap(() => (this.prevUrl = this.router.url)),
         tap(() => this.getCurrentMode()),
-        tap(() => this.getCurrentMap())
+        tap(() => this.getCurrentMap()),
+        tap(() => this.getTaskStatus())
       )
       .subscribe();
   }
@@ -254,11 +282,12 @@ export class DefaultComponent implements OnInit {
       .pipe(
         tap((response: ModeResponse) => {
           console.log('Get Mode: ', response);
-          const { state } = response;
+          const { state, manual } = response;
           this.sharedService.currentMode$.next(state);
+          this.sharedService.currentManualStatus$.next(manual);
           if (state !== `FOLLOW_ME`) {
             this.sharedService.currentPairingStatus$.next(null);
-          }else {
+          } else {
             this.getPairingStatus();
           }
         })
@@ -267,10 +296,93 @@ export class DefaultComponent implements OnInit {
   }
 
   getPairingStatus() {
-    this.modeService.getPairingStatus().pipe(tap(data => {
-      this.sharedService.currentPairingStatus$.next(data);
-    })).subscribe();
+    this.modeService
+      .getPairingStatus()
+      .pipe(
+        tap((data) => {
+          this.sharedService.currentPairingStatus$.next(data);
+        })
+      )
+      .subscribe();
   }
+
+  getTaskWaypointPointer(departurePayload) {
+    if (departurePayload?.movement) {
+      const { waypointName } = departurePayload.movement;
+      this.sharedService.currentMapBehaviorSubject$
+        .pipe(
+          take(1),
+          mergeMap((mapName) =>
+            this.waypointService.getWaypoint(mapName).pipe(
+              map((waypoints) => {
+                for (let waypoint of waypoints) {
+                  if (waypoint.name.indexOf(waypointName) > -1) {
+                    return waypoint;
+                  }
+                }
+              }),
+              tap((waypoint) => {
+                if (waypoint) {
+                  const { name, x, y } = waypoint;
+                  this.sharedService.departureWaypoint$.next({ x, y, name });
+                } else {
+                  this.translateService
+                    .get('destinationNotFoundError', {
+                      mapName,
+                      waypointName,
+                    })
+                    .subscribe((msg) => {
+                      this.sharedService.response$.next({
+                        type: 'warning',
+                        message: msg,
+                        closeAfterRefresh: true,
+                      });
+                    });
+                }
+              })
+            )
+          )
+        )
+
+        .subscribe();
+    }
+  }
+
+  getTaskStatus() {
+    this.taskService
+      .getTaskStatus()
+      .pipe(
+        mergeMap((data) => {
+          if (
+            data.taskDepartureDTO !== null &&
+            data.taskCompletionDTO === null
+          ) {
+            return of(this.getTaskWaypointPointer(data.taskDepartureDTO));
+          } else {
+            return of(null);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  // getTaskStatus() {
+  //   const callback = (data) => {
+  //     return Boolean(data.taskDepartureDTO) &&  (data.taskCompletionDTO === null);
+  //   }
+  //   this.taskService
+  //     .getTaskStatus()
+  //     .pipe(
+  //       mergeMap((data) =>
+  //         iif(
+  //           () => callback(data),
+  //           of(this.getTaskWaypointPointer(data.taskDepartureDTO)),
+  //           of(null)
+  //         )
+  //       )
+  //     )
+  //     .subscribe();
+  // }
 
   initializeErrors() {
     this.httpStatusService

@@ -1,4 +1,3 @@
-
 <div class="default-wrapper" fxFlexFill fxLayout="column">
   <div fxFlex="none">
     <app-header></app-header>
@@ -15,7 +14,7 @@
 <app-modal
   #responseDialog
   disableClose="true"
-  localizationFormComponent="response?.localizationFormComponent"
+  [closeAfterRefresh]="closeDialogAfterRefresh"
 >
   <!-- <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
     ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
@@ -25,7 +24,9 @@
     ><h2 class="modal-title">{{ response.type | translate }}</h2></ng-template
   >
   <ng-template #modalResponse
-    ><label class="modal-body">{{ response?.message | translate }}</label></ng-template
+    ><label class="modal-body">{{
+      response?.message | translate
+    }}</label></ng-template
   >
 </app-modal>
 

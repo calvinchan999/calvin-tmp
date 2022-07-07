@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, timer } from 'rxjs';
-import { startWith, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { startWith, switchMap, tap } from 'rxjs/operators';
 
 export interface ModalAction {
   topic: string;
@@ -19,6 +19,7 @@ export interface Mode {
 export interface Response {
   type: 'normal' | 'warning';
   message: string;
+  closeAfterRefresh?: boolean;
 }
 
 export interface Modal {
@@ -28,11 +29,19 @@ export interface Modal {
   payload?: any;
 }
 
+export interface DepartureWaypoint {
+  x: number;
+  y: number;
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class SharedService {
+  public currentMapBehaviorSubject$ = new BehaviorSubject<string>('');
   public currentMode$ = new Subject<string>();
+  public currentManualStatus$ = new Subject<Boolean>();
   public currentMap$ = new Subject<string>();
   public currentPairingStatus$ = new BehaviorSubject<any>(null);
   public refresh$ = new Subject<boolean>();
@@ -40,28 +49,18 @@ export class SharedService {
   public response$ = new Subject<Response>();
   public isOpenModal$ = new Subject<Modal>();
 
+  public departureWaypoint$ = new BehaviorSubject<DepartureWaypoint>(null);
+
   public reset$ = new Subject<number>();
   public timer$: Observable<any>;
 
   constructor() {
-  // @todo check connection
-    // this.timer$ = this.reset$.pipe(
-    //   startWith(0),
-    //   switchMap(() => timer(0, 10000)) // Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
-    // );
+    this.currentMap$
+      .pipe(
+        tap((mapName) => {
+          this.currentMapBehaviorSubject$.next(mapName);
+        })
+      )
+      .subscribe();
   }
-
-  // _userRole(): Observable<any> {
-  //   if (typeof localStorage.getItem('role') !== 'string' ||　!localStorage.getItem('role')) {
-  //     localStorage.setItem('role', 'client');
-  //     this.userRole$.next("client");
-  //   } else if (localStorage.getItem('role') === 'client') {
-  //     localStorage.setItem('role', 'admin');
-  //     this.userRole$.next('admin');
-  //   } else if (localStorage.getItem('role') === 'admin') {
-  //     localStorage.setItem('role', 'client');
-  //     this.userRole$.next('client');
-  //   }
-  //   return of(null);
-  // }
 }

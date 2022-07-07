@@ -133,7 +133,7 @@ export class HeaderComponent implements OnInit {
 
   getBattery() {
     // @todo check connection
-    this.mqttService.$battery
+    this.mqttService.battery$
       .pipe(tap(() => this.sharedService.reset$.next(0)))
       .subscribe((battery) => {
         if (battery) {

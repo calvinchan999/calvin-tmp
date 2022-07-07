@@ -22,7 +22,7 @@ export class ModalComponent implements OnInit {
   @ContentChild('modalResponse') response: TemplateRef<any>;
   @Input() closeOnOutsideClick = true;
   @Input() disableClose = false;
-  @Input() localizationFormComponent = null;
+  @Input() closeAfterRefresh = false;
   public closeTrigger$ = new Subject<any>();
 
   visible = false;
@@ -37,7 +37,7 @@ export class ModalComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {  console.log(`closeAfterRefresh ${this.closeAfterRefresh}`);}
 
   ngOnDestroy() {
     this.close();

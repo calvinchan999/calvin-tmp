@@ -25,7 +25,7 @@
   "resume": "Resume",
   "resumeMessage": "Restart to the destination",
   "pause": "Pause",
-  "pauseMessage":"Pause to the destination",
+  "pauseMessage": "Pause to the destination",
   "sosDialog": {
     "tips1": "Are you sure to execute the SOS signal?",
     "tips2": "SOS signal has been issued"
@@ -63,23 +63,24 @@
     "error1": "Please enter a valid username and password"
   },
   "signout": "Sign out",
-  "signoutDialog":{
+  "signoutDialog": {
     "tips1": "Are you sure you want to logout?"
   },
   "refreshTokenFail": "The login session have expired, please login again or use guest mode",
   "pair": "Pairing",
-  "pairDialog":{
+  "pairDialog": {
     "pair": "Are you sure you want to be paired with FollowMe Mode?"
   },
   "unpair": "UnPairing",
-  "unpairDialog":{
+  "unpairDialog": {
     "unpair": "Are you sure you want to unpair ?"
   },
   "followMeInspector": "FollowMe",
-  "followMeInspectorDialog":{
+  "followMeInspectorDialog": {
     "title": "Please confirm your current map status."
   },
   "hasMap": "map available",
   "notMap": "not map",
-  "mapNotFoundError": "Please select the follow me mode without map as the active map not found"
+  "mapNotFoundError": "Please select the follow me mode without map as the active map not found",
+  "destinationNotFoundError": "The destination({{waypointName}}) has not found on the map({{mapName}})"
 }

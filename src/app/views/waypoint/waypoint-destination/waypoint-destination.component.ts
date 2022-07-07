@@ -9,9 +9,9 @@ import { ActivatedRoute } from '@angular/router';
 export class WaypointDestinationComponent implements OnInit {
   payload: any;
   constructor(private router: ActivatedRoute) {
-    this.router.queryParams.subscribe((params: any) => {
-      this.payload = JSON.parse(params.payload);
-    });
+    // this.router.queryParams.subscribe((params: any) => {
+    //   this.payload = JSON.parse(params.payload);
+    // });
   }
 
   ngOnInit(): void {}

@@ -333,12 +333,25 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         )
       )
       .subscribe(() => {
-        this.init();
+        if (
+          this.rosMapLayer &&
+          this.metaData &&
+          this.type &&
+          this.mapImage
+        ) {
+          this.init();
+        }
       });
   }
 
   ngOnChanges() {
-    if (this.currentRobotPose && this.metaData && this.type && this.mapImage) {
+    if (
+      // (this.currentRobotPose || this.targetWaypoints) &&
+      this.rosMapLayer &&
+      this.metaData &&
+      this.type &&
+      this.mapImage
+    ) {
       this.init();
     }
   }
@@ -393,30 +406,33 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   createTargetPosition(): Observable<any> {
-    const { targetX, targetY, targetAngle } = this.targetWaypoints;
-    const { x, y, height, resolution }: any = this.metaData;
+    if (this.targetWaypoints && this.metaData) {
+      const { targetX, targetY, targetAngle } = this.targetWaypoints;
+      const { x, y, height, resolution }: any = this.metaData;
+      const img = new Image();
+      img.src = './assets/images/location.png';
+      const ob = new Observable((observer) => {
+        img.onload = function () {
+          observer.next({
+            img,
+          });
+          observer.complete();
+        };
+      });
 
-    const img = new Image();
-    img.src = './assets/images/location.png';
-    const ob = new Observable((observer) => {
-      img.onload = function () {
-        observer.next({
-          img,
-        });
-        observer.complete();
-      };
-    });
-
-    return ob.pipe(
-      tap((data) => {
-        let locationImg = new Konva.Image({
-          x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
-          y: height - Math.abs((y - targetY) / resolution) - data.img.height,
-          image: data.img,
-        });
-        this.rosMapLayer.add(locationImg);
-      })
-    );
+      return ob.pipe(
+        tap((data) => {
+          let locationImg = new Konva.Image({
+            x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
+            y: height - Math.abs((y - targetY) / resolution) - data.img.height,
+            image: data.img,
+          });
+          this.rosMapLayer.add(locationImg);
+        })
+      );
+    } else {
+      return of(null);
+    }
   }
 
   createRobotCurrentPosition(): Observable<any> {

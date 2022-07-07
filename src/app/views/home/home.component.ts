@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
   user: string;
   features;
   pairingState;
+ 
   constructor(
     public router: Router,
     private sharedService: SharedService,
@@ -40,6 +41,10 @@ export class HomeComponent implements OnInit {
           this.pairingState = null;
         }
       });
+
+      // this.sharedService.isProcessingTask$.subscribe((task: boolean) => {
+      //   this.isProcessingTask = task;
+      // })
   }
 
   ngOnInit() {
@@ -82,7 +87,7 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    if (this.mode && this.mode !== 'UNDEFINED') {
+    if (this.mode && this.mode !== 'UNDEFINED' ) {
       this.router.navigate(['/map']);
     }
   }

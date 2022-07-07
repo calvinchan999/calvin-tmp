@@ -11,6 +11,7 @@ export const environment = {
     auth: '/api/authentication/v1/login',
     refreshAuth: '/api/authentication/v1/refresh',
     task: '/api/task/v1/move',
+    taskStatus: '/api/task/v1/status',
     followMe: '/api/mode/v1/followMe',
     navigation: '/api/mode/v1/navigation',
     mode: '/api/mode/v1',

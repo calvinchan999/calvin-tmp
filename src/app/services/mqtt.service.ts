@@ -22,16 +22,18 @@ export interface Config {
 export class MqttService {
   private client: any;
 
-  public $battery = new Subject<any>();
-  public $dockingChargingFeedback = new Subject<any>();
-  public $completion = new Subject<any>();
+  public battery$ = new Subject<any>();
+  public dockingChargingFeedback$ = new Subject<any>();
+  public completion$ = new Subject<any>();
   // public $mapActive = new Subject<any>();
   // public $state = new Subject<any>();
-  public $pose = new Subject<any>();
-  public $pauseResume = new Subject<any>();
+  public pose$ = new Subject<any>();
+  public pauseResume$ = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
-  public $pairing = new BehaviorSubject<any>(null);
-  public $execution = new Subject<any>();
+  // public pairing$ = new BehaviorSubject<any>(null);
+  public execution$ = new Subject<any>();
+  public departure$ = new Subject<any>();
+
   public clientId: string = '';
   constructor(
     private _mqttService: NgxMqttService,
@@ -80,7 +82,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           // console.log('rvautotech/fobo/battery');
           // console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$battery.next(new TextDecoder('utf-8').decode(message.payload));
+          this.battery$.next(new TextDecoder('utf-8').decode(message.payload));
         });
 
       this._mqttService
@@ -88,7 +90,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/docking/charging/feedback');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$dockingChargingFeedback.next(
+          this.dockingChargingFeedback$.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -98,7 +100,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/completion');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$completion.next(
+          this.completion$.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -126,7 +128,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           // console.log('rvautotech/fobo/pose');
           // console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$pose.next(new TextDecoder('utf-8').decode(message.payload));
+          this.pose$.next(new TextDecoder('utf-8').decode(message.payload));
         });
 
       this._mqttService
@@ -134,7 +136,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/baseController/pauseResume');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$pauseResume.next(
+          this.pauseResume$.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -159,12 +161,22 @@ export class MqttService {
           );
         });
 
+      //   this._mqttService
+      //     .observe('rvautotech/fobo/execution')
+      //     .subscribe((message: IMqttMessage) => {
+      //       console.log('rvautotech/fobo/execution');
+      //       console.log(new TextDecoder('utf-8').decode(message.payload));
+      //       this.execution$.next(
+      //         new TextDecoder('utf-8').decode(message.payload)
+      //       );
+      //     });
+
       this._mqttService
-        .observe('rvautotech/fobo/execution')
+        .observe('rvautotech/fobo/departure')
         .subscribe((message: IMqttMessage) => {
-          console.log('rvautotech/fobo/execution');
-          console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.$execution.next(
+          // console.log('rvautotech/fobo/departure');
+          // console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.departure$.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });

@@ -25,7 +25,7 @@
   "resume": "重新开始",
   "resumeMessage": "重新开始前往目的地",
   "pause": "暂停",
-  "pauseMessage":"暂停前往目的地",
+  "pauseMessage": "暂停前往目的地",
   "sosDialog": {
     "tips1": "你确定要执行SOS信号吗？",
     "tips2": "已经发出SOS信号"
@@ -63,23 +63,24 @@
     "error1": "请输入有效用户的帐号和密码"
   },
   "signout": "登出",
-  "signoutDialog":{
+  "signoutDialog": {
     "tips1": "你确定你要登出吗？"
   },
-  "refreshTokenFail":"登录的证书已过期, 请重新登入或使用访客模式",
+  "refreshTokenFail": "登录的证书已过期, 请重新登入或使用访客模式",
   "pair": "跟随模式配对",
-  "pairDialog":{
+  "pairDialog": {
     "pair": "确认要进行跟随模式配对"
   },
   "unpair": "取消跟随模式配对",
-  "unpairDialog":{
+  "unpairDialog": {
     "unpair": "确认要取消配对？"
   },
   "followMeInspector": "跟随模式",
-  "followMeInspectorDialog":{
+  "followMeInspectorDialog": {
     "title": "请确认您当前的地图状态"
   },
   "hasMap": "有地图",
   "notMap": "没有地图",
-  "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图"
+  "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图",
+  "destinationNotFoundError": "在地图({{mapName}})找不到目的地({{waypointName}})"
 }

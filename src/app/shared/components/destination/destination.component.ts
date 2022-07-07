@@ -14,12 +14,13 @@ import { Metadata } from '../localization-form/localization-form.component';
   styleUrls: ['./destination.component.scss'],
 })
 export class DestinationComponent implements OnInit {
-  @Input() payload: any;
+  // @Input() payload: any;
   rosMapImage: string;
   metaData: Metadata;
   currentRobotPose: any;
 
   sub = new Subscription();
+  targetWaypointData;
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
@@ -35,9 +36,7 @@ export class DestinationComponent implements OnInit {
           .pipe(
             mergeMap(async (data) => {
               const img: string = URL.createObjectURL(data);
-              return (
-                this.rosMapImage = img
-            );
+              return (this.rosMapImage = img);
             }),
             mergeMap(() =>
               this.mapService
@@ -50,7 +49,7 @@ export class DestinationComponent implements OnInit {
     });
 
     this.sub.add(
-      this.mqttService.$pose
+      this.mqttService.pose$
         .pipe(
           map((pose) => JSON.parse(pose)),
           tap((pose) => (this.currentRobotPose = pose))
@@ -59,7 +58,7 @@ export class DestinationComponent implements OnInit {
     );
 
     this.sub.add(
-      this.mqttService.$pauseResume
+      this.mqttService.pauseResume$
         .pipe(
           map((pauseResume) => {
             let data = JSON.parse(pauseResume);
@@ -78,6 +77,20 @@ export class DestinationComponent implements OnInit {
             this.sharedService.response$.next({ type: 'normal', message });
           });
         })
+    );
+
+    this.sub.add(
+      this.sharedService.departureWaypoint$.subscribe((data) => {
+        if (data) {
+          const { x, y, name } = data;
+          this.targetWaypointData = {
+            targetX: x,
+            targetY: y,
+            targetAngle: 0,
+            targetName: name,
+          };
+        }
+      })
     );
   }
 
@@ -102,6 +115,8 @@ export class DestinationComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.sub) { this.sub.unsubscribe(); }
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }
