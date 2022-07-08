@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap, take } from 'rxjs/operators';
-import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
-
 import {
   WaypointService,
   Waypoint,
@@ -52,7 +50,6 @@ export class WaypointFormComponent implements OnInit {
     // this.sub = this.sharedService.currentMode$.subscribe((mode) =>
     //   console.log(mode)
     // );
-    
     // this.sub.add(
     //   this.sharedService.currentManualStatus$.subscribe((manual) =>
     //     console.log(manual)
@@ -66,10 +63,6 @@ export class WaypointFormComponent implements OnInit {
     this.selectedWaypoint = waypoint;
   }
 
-  // onCloseModel() {
-  //   this.modalComponent.closeTrigger$.next();
-  // }
-
   onSubmitModel(selectedWaypoint: Waypoint) {
     if (selectedWaypoint) {
       const data: TaskConfig = {
@@ -81,10 +74,16 @@ export class WaypointFormComponent implements OnInit {
           },
         ],
       };
-
-      this.waypointService
-        .sendTask(data)
-        .subscribe(() => this.router.navigate(['/waypoint/destination']));
+      this.sharedService.isOpenModal$.next({
+        modal: 'final-destination-dialog',
+        modalHeader: 'finalDestination',
+        isDisableClose: true,
+        metaData: data,
+        closeAfterRefresh: false,
+      });
+      // this.waypointService
+      //   .sendTask(data)
+      //   .subscribe(() => this.router.navigate(['/waypoint/destination']));
 
       // this.waypointService
       //   .sendTask(data)

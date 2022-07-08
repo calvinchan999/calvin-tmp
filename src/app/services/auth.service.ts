@@ -86,7 +86,7 @@ export class AuthService {
     }
 
     if (data.userId) {
-      console.log('if (data.userId)');
+      console.log('(data.userId)');
       return sessionStorage.setItem('payload', JSON.stringify(data));
     }
   }

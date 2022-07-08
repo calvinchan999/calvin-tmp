@@ -28,7 +28,6 @@ export class FollowMeInspectorDialogComponent implements OnInit {
       .pipe(
         switchMap((mapName) => {
           if (mapName) {
-            // const { name } = map;
             if (mapName !== 'UNDEFINED' && mapName.length > 0) {
               return this.modeService.followMeWithMap(mapName).pipe(
                 mergeMap(() =>

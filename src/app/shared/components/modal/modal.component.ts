@@ -27,6 +27,7 @@ export class ModalComponent implements OnInit {
 
   visible = false;
   visibleAnimate = false;
+  
   constructor(
     private elementRef: ElementRef,
     private changeDetectorRef: ChangeDetectorRef,
@@ -37,7 +38,13 @@ export class ModalComponent implements OnInit {
     });
   }
 
-  ngOnInit() {  console.log(`closeAfterRefresh ${this.closeAfterRefresh}`);}
+  ngOnInit() {
+
+  }
+
+  ngOnChanges() {
+   
+  }
 
   ngOnDestroy() {
     this.close();

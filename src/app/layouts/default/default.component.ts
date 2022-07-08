@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { iif, Observable, of, Subject, Subscription } from 'rxjs';
+import { iif, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -11,11 +11,15 @@ import {
   tap,
   distinctUntilChanged,
   take,
+  finalize,
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { MqttService } from 'src/app/services/mqtt.service';
-import { SharedService } from 'src/app/services/shared.service';
+import {
+  SharedService,
+  TaskCompletionType,
+} from 'src/app/services/shared.service';
 import { ToastrService } from 'src/app/services/toastr.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapResponse, MapService } from 'src/app/views/services/map.service';
@@ -40,7 +44,7 @@ export class DefaultComponent implements OnInit {
   modal: string = '';
   modalTitle: string = '';
   isDisableClose: boolean;
-  parentPayload: any = null;
+  metaData: any = null;
   prevUrl: string = '';
   closeDialogAfterRefresh: boolean = false;
   constructor(
@@ -73,6 +77,31 @@ export class DefaultComponent implements OnInit {
         )
       )
       .subscribe((data) => {
+        // todo, bad nested subscription due the time
+        // this.sharedService.taskCompletionType$
+        //   .pipe(
+        //     mergeMap((type) => {
+        //       console.log(`type ${type}`);
+        //       if (type === TaskCompletionType.RELEASE) {
+        //         return this.taskService.releaseTask();
+        //       } else if (type === TaskCompletionType.HOLD) {
+        //         return this.taskService.holdTask();
+        //       } else {
+        //         return of(null);
+        //       }
+        //     }),
+        //     tap(() => this.sharedService.taskCompletionType$.)
+        //   )
+        //   .subscribe();
+
+        const taskType = this.sharedService.taskCompletionType$.getValue();
+        if (taskType === TaskCompletionType.RELEASE) {
+          this.taskService.releaseTask().subscribe();
+        } else if (taskType === TaskCompletionType.HOLD) {
+          this.taskService.holdTask().subscribe();
+        }
+        this.sharedService.taskCompletionType$.next(null);
+
         if (data) {
           const { completed, cancelled, arrivedAtDestination, cancelledTask } =
             data;
@@ -134,12 +163,19 @@ export class DefaultComponent implements OnInit {
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
       if (response) {
-        const { modal, modalHeader, isDisableClose, payload } = response;
+        const {
+          modal,
+          modalHeader,
+          isDisableClose,
+          metaData,
+          closeAfterRefresh,
+        } = response;
         if (modal) {
           this.modal = modal;
           this.modalTitle = modalHeader;
           this.isDisableClose = isDisableClose;
-          this.parentPayload = payload;
+          this.metaData = metaData;
+          this.closeDialogAfterRefresh = closeAfterRefresh;
           this.dialog.open();
         } else {
           this.dialog.onCloseWithoutRefresh();
@@ -390,8 +426,26 @@ export class DefaultComponent implements OnInit {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((errors: any) => {
         if (errors?.inFlight) {
-          const message =
-            'Status : ' + errors.errorCode + ' - ' + errors.errorMsg;
+          let errorMsg;
+          switch (errors.errorCode) {
+            case 20001:
+            case 20002:
+            case 20003:
+            case 20004:
+            case 100003:
+            case 200013:
+            case 300002:
+              this.translateService
+                .get(`error.httpErrorCode.${errors.errorCode}`)
+                .subscribe((translate) => {
+                  errorMsg = translate;
+                });
+              break;
+            default:
+              errorMsg = errors.errorMsg;
+              break;
+          }
+          const message = 'Status : ' + errors.errorCode + ' - ' + errorMsg;
           if (errors.errorCode !== 403) {
             this.sharedService.response$.next({ type: 'warning', message });
           }

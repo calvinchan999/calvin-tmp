@@ -82,5 +82,22 @@
   "hasMap": "map available",
   "notMap": "not map",
   "mapNotFoundError": "Please select the follow me mode without map as the active map not found",
-  "destinationNotFoundError": "The destination({{waypointName}}) has not found on the map({{mapName}})"
+  "destinationNotFoundError": "The destination({{waypointName}}) has not found on the map({{mapName}})",
+  "finalDestination": "Final Destination",
+  "finalDestinationDialog": {
+    "title": "Are you sure this is the final destination?"
+  },
+  "error": {
+    "httpErrorCode": {
+      "20001": "Object not found",
+      "20002": "The task is invalid",
+      "20003": "The task is invalid",
+      "20004": "The execution is failed",
+      "100003": "Login failed",
+      "200013": "Password not matched",
+      "300002": "Door pin code not available"
+    }
+  },
+  "yes": "Yes",
+  "no": "No"
 }

@@ -165,6 +165,7 @@ export class HeaderComponent implements OnInit {
       modal: 'signout',
       modalHeader: 'signout',
       isDisableClose: true,
+      closeAfterRefresh: true
     });
   }
 

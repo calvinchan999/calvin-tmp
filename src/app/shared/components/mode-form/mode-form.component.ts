@@ -52,6 +52,7 @@ export class ModeFormComponent implements OnInit {
         modal: 'follow-me-inspector',
         modalHeader: 'followMeInspector',
         isDisableClose: true,
+        closeAfterRefresh: false
       });
     }
   }

@@ -82,5 +82,22 @@
   "hasMap": "有地图",
   "notMap": "没有地图",
   "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图",
-  "destinationNotFoundError": "在地图({{mapName}})找不到目的地({{waypointName}})"
+  "destinationNotFoundError": "在地图({{mapName}})找不到目的地({{waypointName}})",
+  "finalDestination":"最终目的地",
+  "finalDestinationDialog": {
+    "title": "你确定这是最终目的地?"
+  },
+  "error": {
+    "httpErrorCode":{
+      "20001": "找不到任務",
+      "20002": "任务错误",
+      "20003": "任务错误",
+      "20004": "执行任务出现错误",
+      "100003": "登录失败",
+      "200013": "旧密码不正确",
+      "300002": "验证码错误"
+    }
+  },
+  "yes": "是",
+  "no": "不是"
 }

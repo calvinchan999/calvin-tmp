@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap, take } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
     private appConfigService: AppConfigService
   ) {
     this.features = this.appConfigService.getConfig().feature;
-    this.sharedService.currentMode$.pipe().subscribe((mode: string) => {
+    this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
     });
@@ -116,6 +116,7 @@ export class HomeComponent implements OnInit {
       modal: 'pair',
       modalHeader: 'pair',
       isDisableClose: true,
+      closeAfterRefresh: false
     });
   }
 
@@ -124,6 +125,7 @@ export class HomeComponent implements OnInit {
       modal: 'unpair',
       modalHeader: 'unpair',
       isDisableClose: true,
+      closeAfterRefresh: false
     });
   }
 }

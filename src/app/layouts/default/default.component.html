@@ -39,7 +39,7 @@
   </ng-template>
 </app-modal> -->
 
-<app-modal #dialog [disableClose]="isDisableClose">
+<app-modal #dialog [disableClose]="isDisableClose" [closeAfterRefresh]="closeDialogAfterRefresh">
   <ng-template #modalHeader
     ><h2 class="modal-title">{{ modalTitle | translate }}</h2></ng-template
   >
@@ -63,7 +63,7 @@
       <app-mode-form></app-mode-form>
     </div>
     <div *ngSwitchCase="'destination'">
-      <app-destination [payload]="parentPayload"></app-destination>
+      <app-destination></app-destination>
     </div>
     <div *ngSwitchCase="'signout'">
       <app-sign-out-form></app-sign-out-form>
@@ -76,6 +76,9 @@
     </div>
     <div *ngSwitchCase="'follow-me-inspector'">
       <app-follow-me-inspector-dialog></app-follow-me-inspector-dialog>
+    </div>
+    <div *ngSwitchCase="'final-destination-dialog'">
+      <app-final-destination-dialog [metaData]="metaData"></app-final-destination-dialog>
     </div>
   </ng-template>
 </app-modal>

@@ -22,6 +22,7 @@ import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.c
 import { PairingPairComponent } from './components/pairing-pair/pairing-pair.component';
 import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpair.component';
 import { FollowMeInspectorDialogComponent } from './components/follow-me-inspector-dialog/follow-me-inspector-dialog.component';
+import { FinalDestinationDialogComponent } from './components/waypoint-form/final-destination-dialog/final-destination-dialog.component';
 
 @NgModule({
   imports: [
@@ -51,6 +52,7 @@ import { FollowMeInspectorDialogComponent } from './components/follow-me-inspect
     PairingPairComponent,
     PairingUnpairComponent,
     FollowMeInspectorDialogComponent,
+    FinalDestinationDialogComponent,
   ],
   exports: [
     HeaderComponent,
@@ -70,7 +72,8 @@ import { FollowMeInspectorDialogComponent } from './components/follow-me-inspect
     SignOutFormComponent,
     PairingPairComponent,
     PairingUnpairComponent,
-    FollowMeInspectorDialogComponent
+    FollowMeInspectorDialogComponent,
+    FinalDestinationDialogComponent
   ],
   providers: [ModalComponent],
 })

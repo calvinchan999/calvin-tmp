@@ -26,13 +26,19 @@ export interface Modal {
   modal: string | null;
   modalHeader: string | null;
   isDisableClose?: boolean;
-  payload?: any;
+  metaData?: any;
+  closeAfterRefresh?: boolean;
 }
 
 export interface DepartureWaypoint {
   x: number;
   y: number;
   name: string;
+}
+
+export enum TaskCompletionType {
+  'RELEASE',
+  'HOLD',
 }
 
 @Injectable({
@@ -50,6 +56,7 @@ export class SharedService {
   public isOpenModal$ = new Subject<Modal>();
 
   public departureWaypoint$ = new BehaviorSubject<DepartureWaypoint>(null);
+  public taskCompletionType$ = new BehaviorSubject<any>(null);
 
   public reset$ = new Subject<number>();
   public timer$: Observable<any>;

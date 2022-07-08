@@ -333,12 +333,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         )
       )
       .subscribe(() => {
-        if (
-          this.rosMapLayer &&
-          this.metaData &&
-          this.type &&
-          this.mapImage
-        ) {
+        if (this.rosMapLayer && this.metaData && this.type && this.mapImage) {
           this.init();
         }
       });
