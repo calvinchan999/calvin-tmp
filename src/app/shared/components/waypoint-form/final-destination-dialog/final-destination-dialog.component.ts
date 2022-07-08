@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
 import { SharedService, TaskCompletionType } from 'src/app/services/shared.service';
-import { TaskService, } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 
 @Component({
