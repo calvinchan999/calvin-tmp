@@ -88,6 +88,8 @@
     "title": "你确定这是最终目的地?"
   },
   "error": {
+    "httpStatue":"HTTP状态:",
+    "httpError": "- HTTP错误:",
     "httpErrorCode":{
       "20001": "找不到任務",
       "20002": "任务错误",

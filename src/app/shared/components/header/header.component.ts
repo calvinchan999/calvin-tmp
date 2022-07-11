@@ -26,6 +26,7 @@ export class HeaderComponent implements OnInit {
   percentage: number = 0;
   robotId: string = '';
   mode: string = '';
+  manual: boolean = undefined;
   modeTranslation: string = '';
 
   currentUrl: string = '';
@@ -105,6 +106,15 @@ export class HeaderComponent implements OnInit {
           mergeMap(() => this.getTranlateModeMessage$())
         )
         .subscribe()
+    );
+
+    this.sub.add(
+      this.sharedService.currentManualStatus$
+        .pipe(
+          tap((manual:any) => {
+            this.manual = manual;
+          })
+        ).subscribe()
     );
   }
 

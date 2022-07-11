@@ -96,22 +96,48 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         .tz('Asia/Hong_Kong')
         .format('YYYY-MM-DD HH:mm:ss'),
     });
+
     switch (httpStatusCode) {
       case 500:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
       case 400:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
       case 401:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
       case 403:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         setTimeout(() => this.sharedService.refresh$.next(true), 1000);
         break;
       default:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
     }
     throw null;

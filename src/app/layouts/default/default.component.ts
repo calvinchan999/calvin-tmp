@@ -424,7 +424,7 @@ export class DefaultComponent implements OnInit {
     this.httpStatusService
       .getHttpStatus()
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((errors: any) => {
+      .subscribe(async (errors: any) => {
         if (errors?.inFlight) {
           let errorMsg;
           switch (errors.errorCode) {
@@ -445,7 +445,15 @@ export class DefaultComponent implements OnInit {
               errorMsg = errors.errorMsg;
               break;
           }
-          const message = 'Status : ' + errors.errorCode + ' - ' + errorMsg;
+          const httpStatusPromise = await this.translateService.get('error.httpStatue').toPromise();
+          const httpErrorPromise = await this.translateService.get('error.httpError').toPromise();
+          const statusCodeMsg = errors.statusCode
+            ? `${httpStatusPromise} ${errors.statusCode}`
+            : '';
+          const errorCodeMsg = errors.errorCode
+            ? `${httpErrorPromise} ${errors.errorCode}`
+            : '';
+          const message = ` ${statusCodeMsg} ${errorCodeMsg} - ${errorMsg}`;
           if (errors.errorCode !== 403) {
             this.sharedService.response$.next({ type: 'warning', message });
           }

@@ -8,16 +8,9 @@
     >
       <label class="mode-title"> {{ modeTranslation }}</label>
     </div>
-    <!-- <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}testtesttesttest</label
-      >
-    </div> -->
 
     <div
-      class="navbar-collapse collapse flex-sm-grow-1  flex-shrink-1 justify-content-end align-self-center"
+      class="navbar-collapse collapse flex-sm-grow-1 flex-shrink-1 justify-content-end align-self-center"
       style="flex: 1"
     >
       <ul class="navbar-nav ms-auto" style="display: flex; gap: 5px">
@@ -62,6 +55,15 @@
             *ngIf="powerSupplyStatus === 'CHARGING'"
           ></i>
         </li>
+
+        <!-- manual -->
+        <li class="nav-item admin-container" *ngIf="manual">
+          <i class="mdi mdi-microsoft-xbox-controller icon"></i>
+        </li>
+        <li class="nav-item admin-container" *ngIf="!manual">
+          <i class="mdi mdi-microsoft-xbox-controller-off icon"></i>
+        </li>
+
         <!-- login -->
         <li
           class="nav-item admin-container"
@@ -94,7 +96,6 @@
         </li>
       </ul>
     </div>
-   
   </div>
   <!-- <div class="container-fluid">
     <div

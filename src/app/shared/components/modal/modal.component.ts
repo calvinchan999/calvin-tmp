@@ -27,7 +27,7 @@ export class ModalComponent implements OnInit {
 
   visible = false;
   visibleAnimate = false;
-  
+
   constructor(
     private elementRef: ElementRef,
     private changeDetectorRef: ChangeDetectorRef,
@@ -38,13 +38,9 @@ export class ModalComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit() {}
 
-  }
-
-  ngOnChanges() {
-   
-  }
+  ngOnChanges() {}
 
   ngOnDestroy() {
     this.close();

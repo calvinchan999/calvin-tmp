@@ -88,6 +88,8 @@
     "title": "Are you sure this is the final destination?"
   },
   "error": {
+    "httpStatue":"HTTP STATUS:",
+    "httpError": "- HTTP ERROR:",
     "httpErrorCode": {
       "20001": "Object not found",
       "20002": "The task is invalid",
