@@ -137,9 +137,25 @@
           width: 100%;
           white-space: nowrap;
         "
-        >{{ currentPageTitle | translate }}</label
+        *ngIf="
+          currentUrl === '/waypoint/destination' && waypointName;
+          else regularCase;
+        "
+        >{{ currentPageTitle | translate }} - {{ waypointName }}</label
       >
     </div>
+    <ng-template #regularCase>
+      <label
+        style="
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: start;
+          width: 100%;
+          white-space: nowrap;
+        "
+        >{{ currentPageTitle | translate }}</label
+      >
+    </ng-template>
   </div>
 </nav>
 <!-- <nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">

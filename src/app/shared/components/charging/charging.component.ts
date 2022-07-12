@@ -21,7 +21,7 @@ export class ChargingComponent implements OnInit {
   ngOnInit(): void {}
 
   onClickCancelCharging() {
-    this.sub = this.authService.isAuthenticatedSubject
+    this.sub = this.authService.currentPayloadSubject
       .pipe(
         mergeMap((auth) => {
           if (auth) {
@@ -47,6 +47,10 @@ export class ChargingComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.sub) this.sub.unsubscribe();
+    this.sub.unsubscribe();
+    // this.sharedService.isOpenModal$.next({
+    //   modal: null,
+    //   modalHeader: null,
+    // });
   }
 }

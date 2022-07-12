@@ -74,32 +74,21 @@ export class WaypointFormComponent implements OnInit {
           },
         ],
       };
-      this.sharedService.isOpenModal$.next({
-        modal: 'final-destination-dialog',
-        modalHeader: 'finalDestination',
-        isDisableClose: true,
-        metaData: data,
-        closeAfterRefresh: false,
-      });
-      // this.waypointService
-      //   .sendTask(data)
-      //   .subscribe(() => this.router.navigate(['/waypoint/destination']));
+      // this.sharedService.isOpenModal$.next({
+      //   modal: 'final-destination-dialog',
+      //   modalHeader: 'finalDestination',
+      //   isDisableClose: true,
+      //   metaData: data,
+      //   closeAfterRefresh: false,
+      // });
 
-      // this.waypointService
-      //   .sendTask(data)
-      //   .pipe()
-      //   .subscribe(() => {
-      //     const payload = JSON.stringify({
-      //       targetX: this.selectedWaypoint?.x,
-      //       targetY: this.selectedWaypoint?.y,
-      //       targetAngle: this.selectedWaypoint?.angle,
-      //     });
-      //     this.router.navigate(['/waypoint/destination'], {
-      //       queryParams: {
-      //         payload,
-      //       },
-      //     });
-      //   });
+      this.waypointService
+        .sendTask(data)
+        .subscribe(() =>
+          this.router.navigate(['/waypoint/destination'], {
+            queryParams: { waypointName: selectedWaypoint },
+          })
+        );
     }
   }
 

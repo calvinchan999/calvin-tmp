@@ -18,17 +18,17 @@ export class ToastrService {
     );
   }
 
-
   removeByMessage(message: string) {
     if (message.length > 0) {
       const data: any = _.find(this.currentToastlists, ['message', message]);
-      try {
-        if (data['toastId']) {
-          this.toastr.remove(data.toastId);
-        }
-      } catch (e) {
-        console.log(e);
-      }
+      this.toastr.remove(data?.toastId);
+      // try {
+      //   if (data['toastId']) {
+      //     this.toastr.remove(data?.toastId);
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
     }
   }
 }

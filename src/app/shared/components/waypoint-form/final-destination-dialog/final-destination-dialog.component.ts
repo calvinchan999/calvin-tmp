@@ -36,14 +36,6 @@ export class FinalDestinationDialogComponent implements OnInit {
   }
 
   onClickYes(){
-    // this.taskService
-    //   .releaseTask()
-    //   .pipe(
-    //     mergeMap(() => this.task$()),
-    //     tap(() => this.onClose()),
-    //     finalize(() => this.router.navigate(['/waypoint/destination']))
-    //   )
-    //   .subscribe();
 
     this.task$().pipe(
       tap(() => this.onClose()),
@@ -53,14 +45,6 @@ export class FinalDestinationDialogComponent implements OnInit {
   }
 
   onClickNo() {
-    // this.taskService
-    //   .holdTask()
-    //   .pipe(
-    //     mergeMap(() => this.task$()),
-    //     tap(() => this.onClose()),
-    //     finalize(() => this.router.navigate(['/waypoint/destination']))
-    //   )
-    //   .subscribe();
     this.task$().pipe(
       tap(() => this.onClose()),
       tap(() => this.sharedService.taskCompletionType$.next(TaskCompletionType.HOLD)),

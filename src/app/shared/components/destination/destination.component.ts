@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap, finalize, delay } from 'rxjs/operators';
@@ -26,7 +27,8 @@ export class DestinationComponent implements OnInit {
     private sharedService: SharedService,
     private mapService: MapService,
     private mqttService: MqttService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router
   ) {
     this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
       console.log('currentMap: ', currentMap);
@@ -94,7 +96,13 @@ export class DestinationComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    setTimeout(() => {
+      if (!this.targetWaypointData) {
+        this.router.navigate(['/']);
+      }
+    }, 3000);
+  }
 
   onPause() {
     this.waypointService

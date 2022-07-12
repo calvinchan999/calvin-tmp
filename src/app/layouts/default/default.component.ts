@@ -11,7 +11,7 @@ import {
   tap,
   distinctUntilChanged,
   take,
-  finalize,
+  switchMap,
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -76,6 +76,17 @@ export class DefaultComponent implements OnInit {
             .get('cancelledTask')
             .pipe(map((cancelledTask) => ({ ...data, cancelledTask })))
         )
+        // switchMap(() => {
+        //   const taskType = this.sharedService.taskCompletionType$.getValue();
+        //   if (taskType === TaskCompletionType.RELEASE) {
+        //     return this.taskService.releaseTask();
+        //   } else if (taskType === TaskCompletionType.HOLD) {
+        //     return this.taskService.holdTask();
+        //   } else {
+        //     return of(null);
+        //   }
+        // }),
+        // tap(() =>  this.sharedService.taskCompletionType$.next(null))
       )
       .subscribe((data) => {
         // todo, bad nested subscription due the time
@@ -95,13 +106,14 @@ export class DefaultComponent implements OnInit {
         //   )
         //   .subscribe();
 
-        const taskType = this.sharedService.taskCompletionType$.getValue();
-        if (taskType === TaskCompletionType.RELEASE) {
-          this.taskService.releaseTask().subscribe();
-        } else if (taskType === TaskCompletionType.HOLD) {
-          this.taskService.holdTask().subscribe();
-        }
-        this.sharedService.taskCompletionType$.next(null);
+        // const taskType = this.sharedService.taskCompletionType$.getValue();
+        // if (taskType === TaskCompletionType.RELEASE) {
+        //   this.taskService.releaseTask().subscribe();
+        // } else if (taskType === TaskCompletionType.HOLD) {
+        //   this.taskService.holdTask().subscribe();
+        // }
+
+        // this.sharedService.taskCompletionType$.next(null);
 
         if (data) {
           const {
@@ -234,7 +246,13 @@ export class DefaultComponent implements OnInit {
     this.sharedService.departureWaypoint$
       .pipe(
         tap((data) => {
-          if (data) this.router.navigate(['/waypoint/destination']);
+          if (data) {
+            console.log(data);
+            const { name } = data;
+            this.router.navigate(['/waypoint/destination'], {
+              queryParams: { waypointName: name },
+            });
+          }
         })
       )
       .subscribe();
@@ -362,7 +380,6 @@ export class DefaultComponent implements OnInit {
 
   getTaskWaypointPointer(departurePayload) {
     if (departurePayload?.movement) {
-      // const { taskId } = departurePayload; // todo, ChargeTask && RegularTask
       const { waypointName } = departurePayload.movement;
       this.sharedService.currentMapBehaviorSubject$
         .pipe(
@@ -377,7 +394,6 @@ export class DefaultComponent implements OnInit {
                 }
               }),
               tap((waypoint) => {
-                // this.taskId = taskId; // todo, string or subject or behavior subject
                 if (waypoint) {
                   const { name, x, y } = waypoint;
                   this.sharedService.departureWaypoint$.next({ x, y, name });

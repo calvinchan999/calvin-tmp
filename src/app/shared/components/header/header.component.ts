@@ -36,6 +36,7 @@ export class HeaderComponent implements OnInit {
 
   sub = new Subscription();
   user: string;
+  waypointName: string;
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
@@ -69,8 +70,10 @@ export class HeaderComponent implements OnInit {
         if (event instanceof NavigationEnd) {
           // event is an instance of NavigationEnd, get url!
           this.currentUrl = event.urlAfterRedirects;
-          if (this.currentUrl.indexOf('/waypoint/destination?payload') === 0) {
-            this.currentUrl = '/waypoint/destination?payload';
+          if (
+            this.currentUrl.indexOf('/waypoint/destination?waypointName') > -1
+          ) {
+            this.currentUrl = '/waypoint/destination';
           }
           const backToPreviousButtonBackLists = [
             {
@@ -111,10 +114,17 @@ export class HeaderComponent implements OnInit {
     this.sub.add(
       this.sharedService.currentManualStatus$
         .pipe(
-          tap((manual:any) => {
+          tap((manual: any) => {
             this.manual = manual;
           })
-        ).subscribe()
+        )
+        .subscribe()
+    );
+    this.sub.add(
+      this.route.queryParams.subscribe((params: any) => {
+        const { waypointName } = params;
+        this.waypointName = waypointName;
+      })
     );
   }
 
@@ -175,7 +185,7 @@ export class HeaderComponent implements OnInit {
       modal: 'signout',
       modalHeader: 'signout',
       isDisableClose: true,
-      closeAfterRefresh: true
+      closeAfterRefresh: true,
     });
   }
 
