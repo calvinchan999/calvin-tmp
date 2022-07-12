@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActiveToast, Toast, ToastrService as ToastService } from 'ngx-toastr';
+import { ActiveToast, ToastrService as ToastService } from 'ngx-toastr';
 import * as _ from 'lodash';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class ToastrService {
   publish(msg: string) {
     this.currentToastlists.push(
       this.toastr.info(msg, '', {
-        disableTimeOut: true,
+        disableTimeOut: false,
         tapToDismiss: true,
       })
     );

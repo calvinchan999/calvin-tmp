@@ -35,7 +35,8 @@
     "tips2": "返回充電站中",
     "tips3": "機器人充電中...",
     "tips4": "請操作人員離開充電區",
-    "cancalCharging": "取消充電"
+    "cancalCharging": "取消充電",
+    "cancalChargingTips": "充電已被取消"
   },
   "mapDialog": {
     "tips1": "地圖已更新"
@@ -62,6 +63,7 @@
   "loginError": {
     "error1": "請輸入有效的用戶帳號和密碼"
   },
+  "signIn": "登入",
   "signout": "登出",
   "signoutDialog": {
     "tips1": "你確定你要登出嗎？"

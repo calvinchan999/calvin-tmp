@@ -47,10 +47,10 @@ export class HttpStatusInterceptor implements HttpInterceptor {
           .handle(req)
           .pipe(
             catchError((err) => this.errorHandler(err)),
-            finalize(() => {
-              // request completes, errors, or is cancelled
-              this.sharedService.loading$.next(false);
-            })
+            // finalize(() => {
+            //   // request completes, errors, or is cancelled
+            //   this.sharedService.loading$.next(false);
+            // })
           )
           .subscribe(
             (event) => {

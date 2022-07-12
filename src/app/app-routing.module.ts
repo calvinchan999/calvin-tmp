@@ -39,7 +39,7 @@ const routes: Routes = [
       },
       {
         path: 'charging',
-        canActivateChild: [AuthGuard],
+        // canActivateChild: [AuthGuard],
         loadChildren: () =>
           import('./views/charging/charging.module').then(
             (m) => m.ChargingModule

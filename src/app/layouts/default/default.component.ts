@@ -47,6 +47,7 @@ export class DefaultComponent implements OnInit {
   metaData: any = null;
   prevUrl: string = '';
   closeDialogAfterRefresh: boolean = false;
+  // taskId: string = null;
   constructor(
     private router: Router,
     private sharedService: SharedService,
@@ -103,8 +104,13 @@ export class DefaultComponent implements OnInit {
         this.sharedService.taskCompletionType$.next(null);
 
         if (data) {
-          const { completed, cancelled, arrivedAtDestination, cancelledTask } =
-            data;
+          const {
+            taskId,
+            completed,
+            cancelled,
+            arrivedAtDestination,
+            cancelledTask,
+          } = data;
           let message = '';
           if (completed) {
             if (!cancelled) {
@@ -119,7 +125,11 @@ export class DefaultComponent implements OnInit {
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
             setTimeout(() => {
-              this.router.navigate(['/']);
+              if (completed && !cancelled && taskId.indexOf('Charge') > -1) {
+                this.router.navigate(['/charging/charging-mqtt']);
+              } else {
+                this.router.navigate(['/']);
+              }
             }, 2000);
           }
         }
@@ -137,7 +147,15 @@ export class DefaultComponent implements OnInit {
             )
             .subscribe();
         } else if (chargingStatus === 'NOT_CHARGING') {
-          this.router.navigate(['/']);
+          this.translateService
+            .get('dockingDialog.cancalChargingTips')
+            .pipe(
+              tap((cancalChargingTips: string) =>
+                this.toastrService.publish(cancalChargingTips)
+              ),
+              tap(() => this.router.navigate(['/']))
+            )
+            .subscribe();
         }
       }
     });
@@ -344,6 +362,7 @@ export class DefaultComponent implements OnInit {
 
   getTaskWaypointPointer(departurePayload) {
     if (departurePayload?.movement) {
+      // const { taskId } = departurePayload; // todo, ChargeTask && RegularTask
       const { waypointName } = departurePayload.movement;
       this.sharedService.currentMapBehaviorSubject$
         .pipe(
@@ -358,6 +377,7 @@ export class DefaultComponent implements OnInit {
                 }
               }),
               tap((waypoint) => {
+                // this.taskId = taskId; // todo, string or subject or behavior subject
                 if (waypoint) {
                   const { name, x, y } = waypoint;
                   this.sharedService.departureWaypoint$.next({ x, y, name });
@@ -445,8 +465,12 @@ export class DefaultComponent implements OnInit {
               errorMsg = errors.errorMsg;
               break;
           }
-          const httpStatusPromise = await this.translateService.get('error.httpStatue').toPromise();
-          const httpErrorPromise = await this.translateService.get('error.httpError').toPromise();
+          const httpStatusPromise = await this.translateService
+            .get('error.httpStatue')
+            .toPromise();
+          const httpErrorPromise = await this.translateService
+            .get('error.httpError')
+            .toPromise();
           const statusCodeMsg = errors.statusCode
             ? `${httpStatusPromise} ${errors.statusCode}`
             : '';

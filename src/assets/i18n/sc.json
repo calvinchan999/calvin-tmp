@@ -35,7 +35,8 @@
     "tips2": "返回充电站中",
     "tips3": "机器人充电中...",
     "tips4": "请操作人员离开充电区",
-    "cancalCharging": "取消充电"
+    "cancalCharging": "取消充电",
+    "cancalChargingTips": "充电已被取消"
   },
   "mapDialog": {
     "tips1": "地图已更新"
@@ -62,6 +63,7 @@
   "loginError": {
     "error1": "请输入有效用户的帐号和密码"
   },
+  "signIn": "登入",
   "signout": "登出",
   "signoutDialog": {
     "tips1": "你确定你要登出吗？"

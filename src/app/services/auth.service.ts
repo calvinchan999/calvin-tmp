@@ -49,25 +49,18 @@ export class AuthService {
       environment.api.auth
     }`;
 
-    return this.http
-      .post<Auth>(
-        loginUrl,
-        { userId, password }
-      )
-      .pipe(
-        tap((res) => this.storeToken(res)),
-        catchError((err) => {
-          this.removeToken();
-          return throwError(err);
-        }),
-        finalize(() => this.isAuthenticatedSubject.next(this.isAuthenticated()))
-      );
+    return this.http.post<Auth>(loginUrl, { userId, password }).pipe(
+      tap((res) => this.storeToken(res)),
+      catchError((err) => {
+        this.removeToken();
+        return throwError(err);
+      }),
+      finalize(() => this.isAuthenticatedSubject.next(this.isAuthenticated()))
+    );
   }
 
   logout(): Observable<any> {
     return of(this.removeToken());
-    // return await this.removeToken();
-    // location.reload();
   }
 
   private async storeToken(data: Auth): Promise<void> {
@@ -119,15 +112,4 @@ export class AuthService {
         finalize(() => this.isAuthenticatedSubject.next(this.isAuthenticated()))
       );
   }
-
-  // resetPassword({ userId, oldPassword, newPassword }: any): Observable<any> {
-  //   const resetPassworUrl = `${
-  //     this.appConfigService.getConfig().server.endpoint
-  //   }${environment.api.resetPassword}`;
-  //   return this.http.put<{
-  //     userId: string;
-  //     oldPassword: string;
-  //     newPassword: string;
-  //   }>(resetPassworUrl, { userId, oldPassword, newPassword });
-  // }
 }

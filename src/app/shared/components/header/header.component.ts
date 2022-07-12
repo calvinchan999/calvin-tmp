@@ -80,7 +80,7 @@ export class HeaderComponent implements OnInit {
               backlist: '/charging/charging-dialog',
             },
             {
-              backlist: '/waypoint/destination?payload',
+              backlist: '/waypoint/destination',
             },
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [

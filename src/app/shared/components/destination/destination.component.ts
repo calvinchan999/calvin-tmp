@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap, finalize, delay } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -97,21 +97,30 @@ export class DestinationComponent implements OnInit {
   ngOnInit(): void {}
 
   onPause() {
-    setTimeout(() => {
-      this.waypointService.pause().subscribe();
-    }, 1000);
+    this.waypointService
+      .pause()
+      .pipe(tap(() => this.sharedService.loading$.next(true)))
+      .subscribe(() => {
+        setTimeout(() => this.sharedService.loading$.next(false), 3000);
+      });
   }
 
   onResume() {
-    setTimeout(() => {
-      this.waypointService.resume().subscribe();
-    }, 1000);
+    this.waypointService
+      .resume()
+      .pipe(tap(() => this.sharedService.loading$.next(true)))
+      .subscribe(() =>
+        setTimeout(() => this.sharedService.loading$.next(false), 3000)
+      );
   }
 
   onCancel() {
-    setTimeout(() => {
-      this.waypointService.deleteTask().subscribe();
-    }, 1000);
+    this.waypointService
+      .deleteTask()
+      .pipe(tap(() => this.sharedService.loading$.next(true)))
+      .subscribe(() =>
+        setTimeout(() => this.sharedService.loading$.next(false), 3000)
+      );
   }
 
   ngOnDestroy() {
