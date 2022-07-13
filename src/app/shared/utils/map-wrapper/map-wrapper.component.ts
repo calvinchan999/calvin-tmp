@@ -415,12 +415,17 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
         };
       });
 
+      if (this.rosMapLayer.findOne('.targetWaypoint')?.getAttrs()) {
+        this.rosMapLayer.findOne('.targetWaypoint').destroy();
+      }
+
       return ob.pipe(
         tap((data) => {
           let locationImg = new Konva.Image({
             x: Math.abs((x - targetX) / resolution) - data.img.width / 2,
             y: height - Math.abs((y - targetY) / resolution) - data.img.height,
             image: data.img,
+            name: 'targetWaypoint',
           });
           this.rosMapLayer.add(locationImg);
         })
