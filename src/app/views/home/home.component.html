@@ -51,36 +51,30 @@
           (eventTrigger)="onSubmitLocalization()"
         ></app-card>
       </div>
-      <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="
-          user?.length > 0 &&
-          mode === 'FOLLOW_ME' &&
-          features.pairing &&
-          pairingState === 'UNPAIRED'
-        "
-      >
-        <app-card
-          title="pair"
-          icon="gesture-tap"
-          (eventTrigger)="onClickPairing()"
-        ></app-card>
-      </div>
-      <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="
-          user?.length > 0 &&
-          mode === 'FOLLOW_ME' &&
-          features.pairing &&
-          pairingState !== 'UNPAIRED'
-        "
-      >
-        <app-card
-          title="unpair"
-          icon="gesture-tap"
-          (eventTrigger)="onClickUnPairing()"
-        ></app-card>
-      </div>
+      <ng-container *ngIf="user?.length > 0">
+        <div
+          class="col-md-12 col-xs-12 col-md-offset-2"
+          *ngIf="followMePairingState$ | async"
+        >
+          <app-card
+            title="pair"
+            icon="gesture-tap"
+            (eventTrigger)="onClickPairing()"
+          ></app-card>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="user?.length > 0">
+        <div
+          class="col-md-12 col-xs-12 col-md-offset-2"
+          *ngIf="followMeUnPairingState$ | async"
+        >
+          <app-card
+            title="unpair"
+            icon="gesture-tap"
+            (eventTrigger)="onClickUnPairing()"
+          ></app-card>
+        </div>
+      </ng-container>
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.mode"

@@ -6,7 +6,7 @@ import * as _ from 'lodash';
   providedIn: 'root',
 })
 export class ToastrService {
-  currentToastlists: Array<ActiveToast<any>> = [];
+  currentToastlists: Array<ActiveToast<[]>> = [];
   constructor(private toastr: ToastService) {}
 
   publish(msg: string) {

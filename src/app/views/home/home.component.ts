@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs/internal/Observable';
 import { map, mergeMap, tap, take } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
@@ -17,7 +18,8 @@ export class HomeComponent implements OnInit {
   user: string;
   features;
   pairingState;
- 
+  followMePairingState$: Observable<boolean>;
+  followMeUnPairingState$: Observable<boolean>;
   constructor(
     public router: Router,
     private sharedService: SharedService,
@@ -36,15 +38,34 @@ export class HomeComponent implements OnInit {
       .subscribe((data) => {
         if (data?.pairingState) {
           const { pairingState } = data;
-          this.pairingState = pairingState;
+          if (pairingState === 'UNPAIRED') {
+            this.followMePairingState$ = new Observable((observer) =>
+              observer.next(true)
+            );
+            this.followMeUnPairingState$ = new Observable((observer) =>
+              observer.next(false)
+            );
+          } else if (pairingState !== 'UNPAIRED') {
+            this.followMePairingState$ = new Observable((observer) =>
+              observer.next(false)
+            );
+            this.followMeUnPairingState$ = new Observable((observer) =>
+              observer.next(true)
+            );
+          }
         } else {
-          this.pairingState = null;
+          this.followMePairingState$ = new Observable((observer) =>
+            observer.next(false)
+          );
+          this.followMeUnPairingState$ = new Observable((observer) =>
+            observer.next(false)
+          );
         }
       });
 
-      // this.sharedService.isProcessingTask$.subscribe((task: boolean) => {
-      //   this.isProcessingTask = task;
-      // })
+    // this.sharedService.isProcessingTask$.subscribe((task: boolean) => {
+    //   this.isProcessingTask = task;
+    // })
   }
 
   ngOnInit() {
@@ -87,7 +108,7 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    if (this.mode && this.mode !== 'UNDEFINED' ) {
+    if (this.mode && this.mode !== 'UNDEFINED') {
       this.router.navigate(['/map']);
     }
   }
@@ -116,7 +137,7 @@ export class HomeComponent implements OnInit {
       modal: 'pair',
       modalHeader: 'pair',
       isDisableClose: true,
-      closeAfterRefresh: false
+      closeAfterRefresh: false,
     });
   }
 
@@ -125,7 +146,7 @@ export class HomeComponent implements OnInit {
       modal: 'unpair',
       modalHeader: 'unpair',
       isDisableClose: true,
-      closeAfterRefresh: false
+      closeAfterRefresh: false,
     });
   }
 }

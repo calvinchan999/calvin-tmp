@@ -137,7 +137,12 @@ export class DefaultComponent implements OnInit {
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
             setTimeout(() => {
-              if (completed && !cancelled && taskId.indexOf('Charge') > -1) {
+              if (
+                completed &&
+                !cancelled &&
+                taskId &&
+                taskId.indexOf('Charge') > -1
+              ) {
                 this.router.navigate(['/charging/charging-mqtt']);
               } else {
                 this.router.navigate(['/']);
@@ -188,6 +193,20 @@ export class DefaultComponent implements OnInit {
         setTimeout(() => {
           this.responseDialog.open();
         }, 1000);
+      }
+    });
+
+    this.mqttService.state$.pipe(map(state => JSON.parse(state))).subscribe((response: any) => {
+      if (response) {
+        const { state, manual } = response;
+        console.log(response);
+        this.sharedService.currentMode$.next(state);
+        this.sharedService.currentManualStatus$.next(manual);
+        if (state !== `FOLLOW_ME`) {
+          this.sharedService.currentPairingStatus$.next(null);
+        } else {
+          this.getPairingStatus();
+        }
       }
     });
 

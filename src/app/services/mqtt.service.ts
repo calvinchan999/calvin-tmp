@@ -33,6 +33,7 @@ export class MqttService {
   // public pairing$ = new BehaviorSubject<any>(null);
   public execution$ = new Subject<any>();
   public departure$ = new Subject<any>();
+  public state$ = new Subject<any>();
 
   public clientId: string = '';
   constructor(
@@ -179,6 +180,12 @@ export class MqttService {
           this.departure$.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
+        });
+
+      this._mqttService
+        .observe('rvautotech/fobo/state')
+        .subscribe((message: IMqttMessage) => {
+          this.state$.next(new TextDecoder('utf-8').decode(message.payload));
         });
     }
   }
