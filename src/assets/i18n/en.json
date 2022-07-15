@@ -44,7 +44,8 @@
   "modeDialog": {
     "tips1": "The mode has been updated"
   },
-  "arrivedAtDestination": "Arrived at destination",
+  "arrivedAtDestination": "Arrived at destination {{waypointName}}",
+  "completedTask":"The Task has been completed",
   "cancelledTask": "The Task has been cancelled",
   "navigatingtoDestination": "Destination",
   "localizationDialog": {
@@ -90,7 +91,7 @@
     "title": "Are you sure this is the final destination?"
   },
   "error": {
-    "httpStatue":"HTTP STATUS:",
+    "httpStatue": "HTTP STATUS:",
     "httpError": "- HTTP ERROR:",
     "httpErrorCode": {
       "20001": "Object not found",
@@ -103,5 +104,8 @@
     }
   },
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "taskActions": {
+    "batteryChargeAction": "Battery Charging Action will been executed"
+  }
 }

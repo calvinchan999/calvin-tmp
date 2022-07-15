@@ -61,72 +61,73 @@ export class DefaultComponent implements OnInit {
     private taskService: TaskService,
     private waypointService: WaypointService
   ) {
+    this.mqttService.actionExecution$
+      .pipe(
+        map((actionData) => JSON.parse(actionData)),
+        tap((actionData) => {
+          const { action } = actionData;
+          if (action) {
+            const { alias } = action;
+            if (alias && alias.indexOf('BATTERY_CHARGE') > -1) {
+              this.sharedService.response$.next({
+                type: 'normal',
+                message: 'taskActions.batteryChargeAction',
+              });
+            }
+          }
+        })
+      )
+      .subscribe();
+
+    this.mqttService.arrival$
+      .pipe(
+        map((arrival) => JSON.parse(arrival)),
+        switchMap((arrival) => {
+          if (arrival) {
+            const { movement } = arrival;
+            if (movement) {
+              const { waypointName } = movement;
+              return this.translateService
+                .get('arrivedAtDestination', { waypointName })
+                .pipe(
+                  tap((msg) =>
+                    this.sharedService.response$.next({
+                      type: 'normal',
+                      message: msg,
+                    })
+                  )
+                );
+            } else {
+              return of(null);
+            }
+          }
+          return of(null);
+        })
+      )
+      .subscribe();
+
     this.mqttService.completion$
       .pipe(
         map((feedback) => JSON.parse(feedback)),
         mergeMap((data) =>
           this.translateService
-            .get('arrivedAtDestination')
-            .pipe(
-              map((arrivedAtDestination) => ({ ...data, arrivedAtDestination }))
-            )
+            .get('completedTask')
+            .pipe(map((completedTask) => ({ ...data, completedTask })))
         ),
         mergeMap((data) =>
           this.translateService
             .get('cancelledTask')
             .pipe(map((cancelledTask) => ({ ...data, cancelledTask })))
         )
-        // switchMap(() => {
-        //   const taskType = this.sharedService.taskCompletionType$.getValue();
-        //   if (taskType === TaskCompletionType.RELEASE) {
-        //     return this.taskService.releaseTask();
-        //   } else if (taskType === TaskCompletionType.HOLD) {
-        //     return this.taskService.holdTask();
-        //   } else {
-        //     return of(null);
-        //   }
-        // }),
-        // tap(() =>  this.sharedService.taskCompletionType$.next(null))
       )
       .subscribe((data) => {
-        // todo, bad nested subscription due the time
-        // this.sharedService.taskCompletionType$
-        //   .pipe(
-        //     mergeMap((type) => {
-        //       console.log(`type ${type}`);
-        //       if (type === TaskCompletionType.RELEASE) {
-        //         return this.taskService.releaseTask();
-        //       } else if (type === TaskCompletionType.HOLD) {
-        //         return this.taskService.holdTask();
-        //       } else {
-        //         return of(null);
-        //       }
-        //     }),
-        //     tap(() => this.sharedService.taskCompletionType$.)
-        //   )
-        //   .subscribe();
-
-        // const taskType = this.sharedService.taskCompletionType$.getValue();
-        // if (taskType === TaskCompletionType.RELEASE) {
-        //   this.taskService.releaseTask().subscribe();
-        // } else if (taskType === TaskCompletionType.HOLD) {
-        //   this.taskService.holdTask().subscribe();
-        // }
-
-        // this.sharedService.taskCompletionType$.next(null);
-
         if (data) {
-          const {
-            taskId,
-            completed,
-            cancelled,
-            arrivedAtDestination,
-            cancelledTask,
-          } = data;
+          const { taskId, completed, cancelled, completedTask, cancelledTask } =
+            data;
           let message = '';
           if (completed) {
             if (!cancelled) {
-              message = arrivedAtDestination;
+              message = completedTask;
             } else {
               message = cancelledTask;
             }
@@ -134,20 +135,24 @@ export class DefaultComponent implements OnInit {
             message = cancelledTask;
           }
           if (message.length > 0) {
+            this.sharedService.loading$.next(true);
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
             setTimeout(() => {
-              if (
-                completed &&
-                !cancelled &&
-                taskId &&
-                taskId.indexOf('Charge') > -1
-              ) {
-                this.router.navigate(['/charging/charging-mqtt']);
-              } else {
-                this.router.navigate(['/']);
-              }
-            }, 2000);
+              // if (
+              //   completed &&
+              //   !cancelled &&
+              //   taskId &&
+              //   taskId.indexOf('Charge') > -1
+              // ) {
+              //   this.router.navigate(['/charging/charging-mqtt']);
+              // } else {
+              //   this.router.navigate(['/']);
+              // }
+              this.sharedService.loading$.next(false);
+              this.router.navigate(['/']);
+            
+            }, 3000);
           }
         }
       });
@@ -196,19 +201,20 @@ export class DefaultComponent implements OnInit {
       }
     });
 
-    this.mqttService.state$.pipe(map(state => JSON.parse(state))).subscribe((response: any) => {
-      if (response) {
-        const { state, manual } = response;
-        console.log(response);
-        this.sharedService.currentMode$.next(state);
-        this.sharedService.currentManualStatus$.next(manual);
-        if (state !== `FOLLOW_ME`) {
-          this.sharedService.currentPairingStatus$.next(null);
-        } else {
-          this.getPairingStatus();
+    this.mqttService.state$
+      .pipe(map((state) => JSON.parse(state)))
+      .subscribe((response: any) => {
+        if (response) {
+          const { state, manual } = response;
+          this.sharedService.currentMode$.next(state);
+          this.sharedService.currentManualStatus$.next(manual);
+          if (state !== `FOLLOW_ME`) {
+            this.sharedService.currentPairingStatus$.next(null);
+          } else {
+            this.getPairingStatus();
+          }
         }
-      }
-    });
+      });
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
       if (response) {
@@ -266,7 +272,6 @@ export class DefaultComponent implements OnInit {
       .pipe(
         tap((data) => {
           if (data) {
-            console.log(data);
             const { name } = data;
             this.router.navigate(['/waypoint/destination'], {
               queryParams: { waypointName: name },

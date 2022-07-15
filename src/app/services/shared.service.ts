@@ -41,6 +41,11 @@ export enum TaskCompletionType {
   'HOLD',
 }
 
+export enum LocalizationType {
+  'LIST',
+  'MAP',
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -60,6 +65,10 @@ export class SharedService {
 
   public reset$ = new Subject<number>();
   public timer$: Observable<any>;
+
+  public localizationType$ = new BehaviorSubject<LocalizationType>(
+    LocalizationType.LIST
+  );
 
   constructor() {
     this.currentMap$

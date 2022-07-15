@@ -102,7 +102,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
       rosImage.src = this.mapImage;
     });
 
-    forkJoin([rosImg$])
+    this.sub = forkJoin([rosImg$])
       .pipe(
         tap((img) => {
           const stage = new Konva.Stage({
@@ -129,7 +129,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           if (this.platform !== 'ios') {
-            rosMap.cache({ pixelRatio: 0.5 });
+            // rosMap.cache({ pixelRatio: 0.5});
           }
           rosMapLayer.add(rosMap);
 

@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
-import { SharedService } from 'src/app/services/shared.service';
+import {
+  LocalizationType,
+  SharedService,
+} from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapService } from 'src/app/views/services/map.service';
 
@@ -23,6 +26,7 @@ export class LocalizationFormComponent implements OnInit {
   message: any;
 
   sub = new Subscription();
+  type: string;
 
   constructor(
     private modalComponent: ModalComponent,
@@ -51,6 +55,15 @@ export class LocalizationFormComponent implements OnInit {
           .subscribe();
       }
     });
+
+    this.sub.add(
+      this.sharedService.localizationType$
+        .pipe(
+          tap((type) => (this.type = LocalizationType[type])),
+          tap(() => console.log(console.log(this.type)))
+        )
+        .subscribe()
+    );
   }
 
   setMessage() {

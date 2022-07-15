@@ -34,6 +34,8 @@ export class MqttService {
   public execution$ = new Subject<any>();
   public departure$ = new Subject<any>();
   public state$ = new Subject<any>();
+  public actionExecution$ = new Subject<any>();
+  public arrival$ = new Subject<any>();
 
   public clientId: string = '';
   constructor(
@@ -186,6 +188,21 @@ export class MqttService {
         .observe('rvautotech/fobo/state')
         .subscribe((message: IMqttMessage) => {
           this.state$.next(new TextDecoder('utf-8').decode(message.payload));
+        });
+
+      this._mqttService
+        .observe('rvautotech/fobo/action/execution')
+        .subscribe((message: IMqttMessage) => {
+          this.actionExecution$.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
+        });
+
+      this._mqttService
+        .observe('rvautotech/fobo/arrival')
+        .subscribe((message: IMqttMessage) => {
+          console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.arrival$.next(new TextDecoder('utf-8').decode(message.payload));
         });
     }
   }

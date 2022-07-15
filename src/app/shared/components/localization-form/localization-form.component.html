@@ -1,11 +1,15 @@
-<div class="localization-map-wrapper" *ngIf="rosMapImage">
-  <div class="container-fluid localization-map-container">
-    <app-map-wrapper
-      type="localizationEditor"
-      [floorPlan]="floorPlanImg"
-      [mapImage]="rosMapImage"
-      [metaData]="metaData"
-      (isUpdatedWaypoint)="isLocalizedLocation($event)"
-    ></app-map-wrapper>
+<ng-container *ngIf="type === 'MAP'">
+  <div class="localization-map-wrapper" *ngIf="rosMapImage">
+    <div class="container-fluid localization-map-container">
+      <app-map-wrapper
+        type="localizationEditor"
+        [floorPlan]="floorPlanImg"
+        [mapImage]="rosMapImage"
+        [metaData]="metaData"
+        (isUpdatedWaypoint)="isLocalizedLocation($event)"
+      ></app-map-wrapper>
+    </div>
   </div>
-</div>
+</ng-container>
+
+<ng-container *ngIf="type === 'LIST'"></ng-container>

@@ -6,11 +6,14 @@ import {
   Router,
 } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
-import { SharedService } from 'src/app/services/shared.service';
+import {
+  LocalizationType,
+  SharedService,
+} from 'src/app/services/shared.service';
 import { Location } from '@angular/common';
 import * as _ from 'lodash';
 import { Auth, AuthService } from 'src/app/services/auth.service';
@@ -37,6 +40,8 @@ export class HeaderComponent implements OnInit {
   sub = new Subscription();
   user: string;
   waypointName: string;
+  localizationType: string;
+
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
@@ -120,11 +125,22 @@ export class HeaderComponent implements OnInit {
         )
         .subscribe()
     );
+
     this.sub.add(
       this.route.queryParams.subscribe((params: any) => {
         const { waypointName } = params;
         this.waypointName = waypointName;
       })
+    );
+
+    this.sub.add(
+      this.sharedService.localizationType$
+        .pipe(
+          tap((type) => {
+            this.localizationType = LocalizationType[type];
+          })
+        )
+        .subscribe()
     );
   }
 
@@ -162,6 +178,14 @@ export class HeaderComponent implements OnInit {
           this.percentage = Math.round(percentage * 100);
         }
       });
+  }
+
+  localizationByMap() {
+    this.sharedService.localizationType$.next(LocalizationType.MAP);
+  }
+
+  localizationByList() {
+    this.sharedService.localizationType$.next(LocalizationType.LIST);
   }
 
   useLanguage() {

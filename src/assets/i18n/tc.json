@@ -44,7 +44,8 @@
   "modeDialog": {
     "tips1": "模式已更新"
   },
-  "arrivedAtDestination": "已到達目的地",
+  "arrivedAtDestination": "已到達目的地 {{waypointName}}",
+  "completedTask":"任務已完成",
   "cancelledTask": "任務已取消",
   "navigatingtoDestination": "導航至目的地",
   "localizationDialog": {
@@ -103,5 +104,8 @@
     }
   },
   "yes": "是",
-  "no": "不是"
+  "no": "不是",
+  "taskActions": {
+    "batteryChargeAction": "將會執行電池充電動作"
+  }
 }

@@ -47,7 +47,7 @@ export class SignInFormComponent implements OnInit {
           tap(() => {
             const currentUrl = this.router.url;
             if (currentUrl === '/login') {
-              this.router.navigate(['/']).then(() => location.reload());
+              this.router.navigate(['/']);
             } else {
               this.router.navigate([currentUrl]).then(() => location.reload());
             }

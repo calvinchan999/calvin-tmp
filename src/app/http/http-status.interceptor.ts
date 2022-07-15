@@ -7,15 +7,16 @@ import {
   HttpErrorResponse,
   HttpResponse,
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { empty, Observable, of, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, timeout } from 'rxjs/operators';
 import { IndexedDbService } from '../services/indexed-db.service';
 import * as moment from 'moment-timezone';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
+  DEFAULTTIMEOUT: number = 30000;
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
@@ -46,7 +47,15 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         const subscription = next
           .handle(req)
           .pipe(
-            catchError((err) => this.errorHandler(err)),
+            timeout(this.DEFAULTTIMEOUT),
+            catchError((err) => {
+              if (err instanceof TimeoutError) {
+                console.error('Timeout has occurred', req.url);
+                return this.timeoutHandler();
+              } else {
+                return this.errorHandler(err);
+              }
+            })
             // finalize(() => {
             //   // request completes, errors, or is cancelled
             //   this.sharedService.loading$.next(false);
@@ -72,6 +81,20 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         };
       }
     );
+  }
+
+  private timeoutHandler(): Observable<[]> {
+    this.indexedDbService.addlogs({
+      type: 'httpRequestTimeout',
+      errorCode: null,
+      statusCode: null,
+      description: 'Http Request Timeout',
+      created_at: moment(new Date())
+        .tz('Asia/Hong_Kong')
+        .format('YYYY-MM-DD HH:mm:ss'),
+    });
+    this.status.setHttpStatus(true, null, null, `HTTP Request Timeout`);
+    throw null;
   }
 
   private errorHandler(

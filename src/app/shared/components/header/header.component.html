@@ -139,7 +139,7 @@
         "
         *ngIf="
           currentUrl === '/waypoint/destination' && waypointName;
-          else regularCase;
+          else regularCase
         "
         >{{ currentPageTitle | translate }} - {{ waypointName }}</label
       >
@@ -149,13 +149,30 @@
         style="
           overflow: hidden;
           text-overflow: ellipsis;
-          text-align: start;
           width: 100%;
           white-space: nowrap;
+          text-align: center;
         "
         >{{ currentPageTitle | translate }}</label
       >
     </ng-template>
+    <div
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-center"
+      style="flex: 1"
+      *ngIf="currentUrl === '/localization'"
+    >
+      <i
+        class="mdi mdi-map-legend icon"
+        (click)="localizationByMap()"
+        *ngIf="localizationType === 'LIST'"
+      ></i>
+
+      <i
+        class="mdi mdi-format-list-bulleted icon"
+        (click)="localizationByList()"
+        *ngIf="localizationType === 'MAP'"
+      ></i>
+    </div>
   </div>
 </nav>
 <!-- <nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
