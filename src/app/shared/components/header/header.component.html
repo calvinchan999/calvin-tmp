@@ -109,16 +109,17 @@
   <div
     class="container-fluid"
     *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    "
   >
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center"
       style="flex: 1"
     >
-      <!-- <label
-        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
-      >
-        {{ modeTranslation }}</label
-      > -->
       <i
         class="mdi mdi-chevron-left icon"
         (click)="backToPreviousPage()"
@@ -146,12 +147,16 @@
     </div>
     <ng-template #regularCase>
       <label
+        [ngStyle]="
+          currentUrl !== '/localization'
+            ? { 'text-align': 'start' }
+            : { 'text-align': 'center' }
+        "
         style="
           overflow: hidden;
           text-overflow: ellipsis;
           width: 100%;
           white-space: nowrap;
-          text-align: center;
         "
         >{{ currentPageTitle | translate }}</label
       >

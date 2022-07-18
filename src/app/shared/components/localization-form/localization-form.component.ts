@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import {
   LocalizationType,
@@ -8,6 +8,12 @@ import {
 } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapService } from 'src/app/views/services/map.service';
+import {
+  Waypoint,
+  WaypointService,
+} from 'src/app/views/services/waypoint.service';
+import * as _ from 'lodash';
+import { Router } from '@angular/router';
 
 export interface Metadata {
   x: number;
@@ -20,19 +26,37 @@ export interface Metadata {
   styleUrls: ['./localization-form.component.scss'],
 })
 export class LocalizationFormComponent implements OnInit {
+  sub = new Subscription();
   floorPlanImg: string;
   rosMapImage: string;
   metaData: Metadata;
   message: any;
-
-  sub = new Subscription();
   type: string;
+
+  waypointLists$: Observable<any> =
+    this.sharedService.currentMapBehaviorSubject$.pipe(
+      mergeMap((map) => this.waypointService.getWaypoint(map)),
+      map((data) => {
+        const dataTransfor = [];
+        for (let i of data) {
+          const splitName = i.name.split('%');
+          dataTransfor.push({
+            ...i,
+            waypointName: splitName[1] ?? splitName[0],
+          });
+        }
+        return _.orderBy(dataTransfor, 'waypointName', 'asc');
+      })
+    );
+  selectedWaypoint: Waypoint;
 
   constructor(
     private modalComponent: ModalComponent,
     private sharedService: SharedService,
     private translateService: TranslateService,
-    private mapService: MapService
+    private mapService: MapService,
+    private waypointService: WaypointService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -58,10 +82,7 @@ export class LocalizationFormComponent implements OnInit {
 
     this.sub.add(
       this.sharedService.localizationType$
-        .pipe(
-          tap((type) => (this.type = LocalizationType[type])),
-          tap(() => console.log(console.log(this.type)))
-        )
+        .pipe(tap((type) => (this.type = LocalizationType[type])))
         .subscribe()
     );
   }
@@ -111,6 +132,30 @@ export class LocalizationFormComponent implements OnInit {
         message: `${this.message.fail.message} \n ${error.message}`,
       });
     }
+  }
+
+  onSelectedWaypoint(waypoint: Waypoint) {
+    this.selectedWaypoint = waypoint;
+  }
+
+  onSubmitLocalizationPoint(point) {
+    this.waypointService.localize(point).subscribe(
+      () => {
+        this.isLocalizedLocation({
+          status: 'success',
+        });
+
+        setTimeout(() => {
+          this.router.navigate(['/']);
+        }, 3000);
+      },
+      (error) => {
+        this.isLocalizedLocation({
+          status: 'failed',
+          error,
+        });
+      }
+    );
   }
 
   onCloseModel() {
