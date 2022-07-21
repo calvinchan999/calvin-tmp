@@ -5,7 +5,7 @@ import { map, mergeMap, tap, take } from 'rxjs/operators';
 import {
   WaypointService,
   Waypoint,
-  TaskConfig,
+  TaskConfig
 } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { SharedService } from 'src/app/services/shared.service';
@@ -13,32 +13,37 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-waypoint-form',
   templateUrl: './waypoint-form.component.html',
-  styleUrls: ['./waypoint-form.component.scss'],
+  styleUrls: ['./waypoint-form.component.scss']
 })
 export class WaypointFormComponent implements OnInit {
-  waypointLists$: Observable<any> =
-    this.sharedService.currentMapBehaviorSubject$.pipe(
-      take(1),
-      mergeMap((currentMap: string) => {
-        if (currentMap) {
-          return this.waypointService.getWaypoint(currentMap).pipe(
-            map((data) => {
-              const dataTransfor = [];
-              for (let i of data) {
-                const splitName = i.name.split('%');
-                dataTransfor.push({
-                  ...i,
-                  waypointName: splitName[1] ?? splitName[0],
-                });
-              }
-              return _.orderBy(dataTransfor, 'waypointName', 'asc');
-            })
-          );
-        } else {
-          return of(null).pipe(tap(() => this.router.navigate(['/'])));
-        }
-      })
-    );
+  waypointLists$: Observable<
+    any
+  > = this.sharedService.currentMapBehaviorSubject$.pipe(
+    take(1),
+    mergeMap((currentMap: string) => {
+      if (currentMap) {
+        const filter = _.pickBy(
+          { mapName: currentMap },
+          _.identity
+        );
+        return this.waypointService.getWaypoint({filter}).pipe(
+          map(data => {
+            const dataTransfor = [];
+            for (let i of data) {
+              const splitName = i.name.split('%');
+              dataTransfor.push({
+                ...i,
+                waypointName: splitName[1] ?? splitName[0]
+              });
+            }
+            return _.orderBy(dataTransfor, 'waypointName', 'asc');
+          })
+        );
+      } else {
+        return of(null).pipe(tap(() => this.router.navigate(['/'])));
+      }
+    })
+  );
 
   selectedWaypoint: Waypoint;
   sub = new Subscription();
@@ -69,10 +74,10 @@ export class WaypointFormComponent implements OnInit {
         taskItemList: [
           {
             movement: {
-              waypointName: selectedWaypoint,
-            },
-          },
-        ],
+              waypointName: selectedWaypoint
+            }
+          }
+        ]
       };
       // this.sharedService.isOpenModal$.next({
       //   modal: 'final-destination-dialog',
@@ -82,13 +87,11 @@ export class WaypointFormComponent implements OnInit {
       //   closeAfterRefresh: false,
       // });
 
-      this.waypointService
-        .sendTask(data)
-        .subscribe(() =>
-          this.router.navigate(['/waypoint/destination'], {
-            queryParams: { waypointName: selectedWaypoint },
-          })
-        );
+      this.waypointService.sendTask(data).subscribe(() =>
+        this.router.navigate(['/waypoint/destination'], {
+          queryParams: { waypointName: selectedWaypoint }
+        })
+      );
     }
   }
 

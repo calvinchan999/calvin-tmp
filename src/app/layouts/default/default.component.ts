@@ -11,7 +11,7 @@ import {
   tap,
   distinctUntilChanged,
   take,
-  switchMap,
+  switchMap
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -23,11 +23,12 @@ import { MapResponse, MapService } from 'src/app/views/services/map.service';
 import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
 import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-default',
   templateUrl: './default.component.html',
-  styleUrls: ['./default.component.scss'],
+  styleUrls: ['./default.component.scss']
 })
 export class DefaultComponent implements OnInit {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
@@ -60,15 +61,15 @@ export class DefaultComponent implements OnInit {
   ) {
     this.mqttService.actionExecution$
       .pipe(
-        map((actionData) => JSON.parse(actionData)),
-        tap((actionData) => {
+        map(actionData => JSON.parse(actionData)),
+        tap(actionData => {
           const { action } = actionData;
           if (action) {
             const { alias } = action;
             if (alias && alias.indexOf('BATTERY_CHARGE') > -1) {
               this.sharedService.response$.next({
                 type: 'normal',
-                message: 'taskActions.batteryChargeAction',
+                message: 'taskActions.batteryChargeAction'
               });
             }
           }
@@ -78,8 +79,8 @@ export class DefaultComponent implements OnInit {
 
     this.mqttService.arrival$
       .pipe(
-        map((arrival) => JSON.parse(arrival)),
-        switchMap((arrival) => {
+        map(arrival => JSON.parse(arrival)),
+        switchMap(arrival => {
           if (arrival) {
             const { movement } = arrival;
             if (movement) {
@@ -87,10 +88,10 @@ export class DefaultComponent implements OnInit {
               return this.translateService
                 .get('arrivedAtDestination', { waypointName })
                 .pipe(
-                  tap((msg) =>
+                  tap(msg =>
                     this.sharedService.response$.next({
                       type: 'normal',
-                      message: msg,
+                      message: msg
                     })
                   )
                 );
@@ -105,19 +106,19 @@ export class DefaultComponent implements OnInit {
 
     this.mqttService.completion$
       .pipe(
-        map((feedback) => JSON.parse(feedback)),
-        mergeMap((data) =>
+        map(feedback => JSON.parse(feedback)),
+        mergeMap(data =>
           this.translateService
             .get('completedTask')
-            .pipe(map((completedTask) => ({ ...data, completedTask })))
+            .pipe(map(completedTask => ({ ...data, completedTask })))
         ),
-        mergeMap((data) =>
+        mergeMap(data =>
           this.translateService
             .get('cancelledTask')
-            .pipe(map((cancelledTask) => ({ ...data, cancelledTask })))
+            .pipe(map(cancelledTask => ({ ...data, cancelledTask })))
         )
       )
-      .subscribe((data) => {
+      .subscribe(data => {
         if (data) {
           const { completed, cancelled, completedTask, cancelledTask } = data;
           let message = '';
@@ -152,7 +153,7 @@ export class DefaultComponent implements OnInit {
         }
       });
 
-    this.mqttService.dockingChargingFeedback$.subscribe((feedback) => {
+    this.mqttService.dockingChargingFeedback$.subscribe(feedback => {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
         if (chargingStatus === 'CHARGING') {
@@ -179,8 +180,8 @@ export class DefaultComponent implements OnInit {
 
     this.mqttService.departure$
       .pipe(
-        map((departure) => JSON.parse(departure)),
-        tap((departure) => this.getTaskWaypointPointer(departure))
+        map(departure => JSON.parse(departure)),
+        tap(departure => this.getTaskWaypointPointer(departure))
       )
       .subscribe();
 
@@ -197,7 +198,7 @@ export class DefaultComponent implements OnInit {
     });
 
     this.mqttService.state$
-      .pipe(map((state) => JSON.parse(state)))
+      .pipe(map(state => JSON.parse(state)))
       .subscribe((response: any) => {
         if (response) {
           const { state, manual } = response;
@@ -218,7 +219,7 @@ export class DefaultComponent implements OnInit {
           modalHeader,
           isDisableClose,
           metaData,
-          closeAfterRefresh,
+          closeAfterRefresh
         } = response;
         if (modal) {
           this.modal = modal;
@@ -250,7 +251,7 @@ export class DefaultComponent implements OnInit {
                 return of(
                   this.sharedService.response$.next({
                     type: 'normal',
-                    message: 'refreshTokenFail',
+                    message: 'refreshTokenFail'
                   })
                 ).pipe(
                   tap(() => setTimeout(() => this.redirectToHome(), 5000))
@@ -265,11 +266,11 @@ export class DefaultComponent implements OnInit {
 
     this.sharedService.departureWaypoint$
       .pipe(
-        tap((data) => {
+        tap(data => {
           if (data) {
             const { name } = data;
             this.router.navigate(['/waypoint/destination'], {
-              queryParams: { waypointName: name },
+              queryParams: { waypointName: name }
             });
           }
         })
@@ -344,7 +345,7 @@ export class DefaultComponent implements OnInit {
 
     this.routerSub = this.router.events
       .pipe(
-        filter((event) => event instanceof NavigationEnd),
+        filter(event => event instanceof NavigationEnd),
         distinctUntilChanged((prev, curr) => this.router.url === this.prevUrl),
         tap(() => (this.prevUrl = this.router.url)),
         tap(() => this.getCurrentMode()),
@@ -390,7 +391,7 @@ export class DefaultComponent implements OnInit {
     this.modeService
       .getPairingStatus()
       .pipe(
-        tap((data) => {
+        tap(data => {
           this.sharedService.currentPairingStatus$.next(data);
         })
       )
@@ -403,16 +404,17 @@ export class DefaultComponent implements OnInit {
       this.sharedService.currentMapBehaviorSubject$
         .pipe(
           take(1),
-          mergeMap((mapName) =>
-            this.waypointService.getWaypoint(mapName).pipe(
-              map((waypoints) => {
+          mergeMap(mapName => {
+            const filter = _.pickBy({ mapName }, _.identity);
+            return this.waypointService.getWaypoint({ filter }).pipe(
+              map(waypoints => {
                 for (let waypoint of waypoints) {
                   if (waypoint.name.indexOf(waypointName) > -1) {
                     return waypoint;
                   }
                 }
               }),
-              tap((waypoint) => {
+              tap(waypoint => {
                 if (waypoint) {
                   const { name, x, y } = waypoint;
                   this.sharedService.departureWaypoint$.next({ x, y, name });
@@ -420,19 +422,19 @@ export class DefaultComponent implements OnInit {
                   this.translateService
                     .get('destinationNotFoundError', {
                       mapName,
-                      waypointName,
+                      waypointName
                     })
-                    .subscribe((msg) => {
+                    .subscribe(msg => {
                       this.sharedService.response$.next({
                         type: 'warning',
                         message: msg,
-                        closeAfterRefresh: true,
+                        closeAfterRefresh: true
                       });
                     });
                 }
               })
-            )
-          )
+            );
+          })
         )
 
         .subscribe();
@@ -443,7 +445,7 @@ export class DefaultComponent implements OnInit {
     this.taskService
       .getTaskStatus()
       .pipe(
-        mergeMap((data) => {
+        mergeMap(data => {
           if (
             data.taskDepartureDTO !== null &&
             data.taskCompletionDTO === null
@@ -492,7 +494,7 @@ export class DefaultComponent implements OnInit {
             case 300002:
               this.translateService
                 .get(`error.httpErrorCode.${errors.errorCode}`)
-                .subscribe((translate) => {
+                .subscribe(translate => {
                   errorMsg = translate;
                 });
               break;
@@ -534,8 +536,8 @@ export class DefaultComponent implements OnInit {
       this.router
         .navigate([path], {
           queryParams: {
-            payload,
-          },
+            payload
+          }
         })
         .then(() => location.reload());
     } else {

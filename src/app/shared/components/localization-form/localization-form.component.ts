@@ -4,13 +4,13 @@ import { Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import {
   LocalizationType,
-  SharedService,
+  SharedService
 } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapService } from 'src/app/views/services/map.service';
 import {
   Waypoint,
-  WaypointService,
+  WaypointService
 } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ export interface Metadata {
 @Component({
   selector: 'app-localization-form',
   templateUrl: './localization-form.component.html',
-  styleUrls: ['./localization-form.component.scss'],
+  styleUrls: ['./localization-form.component.scss']
 })
 export class LocalizationFormComponent implements OnInit {
   sub = new Subscription();
@@ -33,29 +33,34 @@ export class LocalizationFormComponent implements OnInit {
   message: any;
   type: string;
 
-  waypointLists$: Observable<any> =
-    this.sharedService.currentMapBehaviorSubject$.pipe(
-      mergeMap((map) => {
-        if (map && map?.length > 0) {
-          return this.waypointService.getWaypoint(map);
-        } else {
-          return of(null).pipe(tap(() => this.router.navigate(['/'])));
+  waypointLists$: Observable<
+    any
+  > = this.sharedService.currentMapBehaviorSubject$.pipe(
+    mergeMap(map => {
+      if (map && map?.length > 0) {
+        const filter = _.pickBy(
+          { mapName: map, initialLocalization: 'true' },
+          _.identity
+        );
+        return this.waypointService.getWaypoint({ filter });
+      } else {
+        return of(null).pipe(tap(() => this.router.navigate(['/'])));
+      }
+    }),
+    map(data => {
+      const dataTransfor = [];
+      if (data?.length > 0) {
+        for (let i of data) {
+          const splitName = i.name.split('%');
+          dataTransfor.push({
+            ...i,
+            waypointName: splitName[1] ?? splitName[0]
+          });
         }
-      }),
-      map((data) => {
-        const dataTransfor = [];
-        if (data?.length > 0) {
-          for (let i of data) {
-            const splitName = i.name.split('%');
-            dataTransfor.push({
-              ...i,
-              waypointName: splitName[1] ?? splitName[0],
-            });
-          }
-        }
-        return _.orderBy(dataTransfor, 'waypointName', 'asc');
-      })
-    );
+      }
+      return _.orderBy(dataTransfor, 'waypointName', 'asc');
+    })
+  );
   selectedWaypoint: Waypoint;
 
   constructor(
@@ -69,19 +74,19 @@ export class LocalizationFormComponent implements OnInit {
 
   ngOnInit() {
     this.setMessage();
-    this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
+    this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
       if (currentMap) {
         this.mapService
           .getMapImage(currentMap)
           .pipe(
-            mergeMap(async (data) => {
+            mergeMap(async data => {
               const img: string = URL.createObjectURL(data);
               return (this.floorPlanImg = ''), (this.rosMapImage = img);
             }),
             mergeMap(() =>
               this.mapService
                 .getMapMetaData(currentMap)
-                .pipe(tap((metaData) => (this.metaData = metaData)))
+                .pipe(tap(metaData => (this.metaData = metaData)))
             )
           )
           .subscribe();
@@ -90,7 +95,7 @@ export class LocalizationFormComponent implements OnInit {
 
     this.sub.add(
       this.sharedService.localizationType$
-        .pipe(tap((type) => (this.type = LocalizationType[type])))
+        .pipe(tap(type => (this.type = LocalizationType[type])))
         .subscribe()
     );
   }
@@ -99,10 +104,10 @@ export class LocalizationFormComponent implements OnInit {
     this.translateService
       .get('localizationDialog.successMessage')
       .pipe(
-        map((msg) => {
+        map(msg => {
           return {
             type: 'normal',
-            message: msg,
+            message: msg
           };
         })
       )
@@ -114,10 +119,10 @@ export class LocalizationFormComponent implements OnInit {
     this.translateService
       .get('localizationDialog.failedMessage')
       .pipe(
-        map((msg) => {
+        map(msg => {
           return {
             type: 'normal',
-            message: msg,
+            message: msg
           };
         })
       )
@@ -132,12 +137,12 @@ export class LocalizationFormComponent implements OnInit {
     if (status === 'success') {
       this.sharedService.response$.next({
         type: this.message.success.type,
-        message: this.message.success.message,
+        message: this.message.success.message
       });
     } else if (status === 'failed') {
       this.sharedService.response$.next({
         type: this.message.fail.type,
-        message: `${this.message.fail.message} \n ${error.message}`,
+        message: `${this.message.fail.message} \n ${error.message}`
       });
     }
   }
@@ -148,12 +153,12 @@ export class LocalizationFormComponent implements OnInit {
 
   onSubmitLocalizationPoint(point) {
     this.waypointService.localize(point).subscribe(
-      (result) => {
+      result => {
         const { success, message } = result;
 
         if (success) {
           this.isLocalizedLocation({
-            status: 'success',
+            status: 'success'
           });
 
           setTimeout(() => {
@@ -163,15 +168,15 @@ export class LocalizationFormComponent implements OnInit {
           this.isLocalizedLocation({
             status: 'failed',
             error: {
-              message,
-            },
+              message
+            }
           });
         }
       },
-      (error) => {
+      error => {
         this.isLocalizedLocation({
           status: 'failed',
-          error,
+          error
         });
       }
     );

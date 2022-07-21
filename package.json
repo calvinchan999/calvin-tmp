@@ -1,6 +1,6 @@
 {
   "name": "mobile-chair-frontend",
-  "version": "1.3.7",
+  "version": "1.3.8",
   "scripts": {
     "ng": "ng",
     "start": "ng serve  --host 0.0.0.0 --port 8989",
@@ -30,6 +30,7 @@
     "angular2-uuid": "^1.1.1",
     "bootstrap": "^5.1.3",
     "hammerjs": "^2.0.8",
+    "js-query-builder": "^0.2.1",
     "konva": "^8.3.4",
     "moment": "^2.29.3",
     "moment-timezone": "^0.5.34",
