@@ -13,6 +13,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  map: string;
   mode: string;
   role: string;
   user: string;
@@ -31,6 +32,10 @@ export class HomeComponent implements OnInit {
     this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
+    });
+
+    this.sharedService.currentMap$.pipe(take(1)).subscribe((map: string) => {
+      this.map = map;
     });
 
     this.sharedService.currentPairingStatus$

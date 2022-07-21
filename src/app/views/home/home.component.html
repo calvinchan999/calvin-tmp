@@ -8,7 +8,7 @@
         <app-card
           title="waypoint"
           icon="map-marker-distance"
-          [disable]="mode !== 'NAVIGATION' ? true : false"
+          [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
           (eventTrigger)="onSubmitWaypont()"
         ></app-card>
       </div>
@@ -47,7 +47,7 @@
         <app-card
           title="localization"
           icon="map-marker-radius-outline"
-          [disable]="mode !== 'NAVIGATION' ? true : false"
+          [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
           (eventTrigger)="onSubmitLocalization()"
         ></app-card>
       </div>

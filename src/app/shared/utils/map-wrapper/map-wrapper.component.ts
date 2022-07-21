@@ -128,9 +128,9 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
             y: 0,
           });
 
-          if (this.platform !== 'ios') {
-            // rosMap.cache({ pixelRatio: 0.5});
-          }
+          // if (this.platform !== 'ios') {
+          // rosMap.cache({ pixelRatio: 0.5});
+          // }
           rosMapLayer.add(rosMap);
 
           this.rosMap = rosMap;
@@ -402,7 +402,7 @@ export class MapWrapperComponent implements OnInit, OnChanges, OnDestroy {
 
   createTargetPosition(): Observable<any> {
     if (this.targetWaypoints && this.metaData) {
-      const { targetX, targetY, targetAngle } = this.targetWaypoints;
+      const { targetX, targetY } = this.targetWaypoints;
       const { x, y, height, resolution }: any = this.metaData;
       const img = new Image();
       img.src = './assets/images/location.png';

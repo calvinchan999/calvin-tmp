@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import {
   LocalizationType,
@@ -35,15 +35,23 @@ export class LocalizationFormComponent implements OnInit {
 
   waypointLists$: Observable<any> =
     this.sharedService.currentMapBehaviorSubject$.pipe(
-      mergeMap((map) => this.waypointService.getWaypoint(map)),
+      mergeMap((map) => {
+        if (map && map?.length > 0) {
+          return this.waypointService.getWaypoint(map);
+        } else {
+          return of(null).pipe(tap(() => this.router.navigate(['/'])));
+        }
+      }),
       map((data) => {
         const dataTransfor = [];
-        for (let i of data) {
-          const splitName = i.name.split('%');
-          dataTransfor.push({
-            ...i,
-            waypointName: splitName[1] ?? splitName[0],
-          });
+        if (data?.length > 0) {
+          for (let i of data) {
+            const splitName = i.name.split('%');
+            dataTransfor.push({
+              ...i,
+              waypointName: splitName[1] ?? splitName[0],
+            });
+          }
         }
         return _.orderBy(dataTransfor, 'waypointName', 'asc');
       })
@@ -140,14 +148,25 @@ export class LocalizationFormComponent implements OnInit {
 
   onSubmitLocalizationPoint(point) {
     this.waypointService.localize(point).subscribe(
-      () => {
-        this.isLocalizedLocation({
-          status: 'success',
-        });
+      (result) => {
+        const { success, message } = result;
 
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 3000);
+        if (success) {
+          this.isLocalizedLocation({
+            status: 'success',
+          });
+
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 3000);
+        } else {
+          this.isLocalizedLocation({
+            status: 'failed',
+            error: {
+              message,
+            },
+          });
+        }
       },
       (error) => {
         this.isLocalizedLocation({
