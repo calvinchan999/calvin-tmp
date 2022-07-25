@@ -448,7 +448,8 @@ export class DefaultComponent implements OnInit {
         mergeMap(data => {
           if (
             data.taskDepartureDTO !== null &&
-            data.taskCompletionDTO === null
+            data.taskCompletionDTO === null &&
+            !data.actionExecuting
           ) {
             return of(this.getTaskWaypointPointer(data.taskDepartureDTO));
           } else {
