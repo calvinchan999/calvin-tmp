@@ -62,7 +62,7 @@ export class LocalizationFormComponent implements OnInit {
     })
   );
   selectedWaypoint: Waypoint;
-  localizationCorrectBgmPath: string = `/assets/musics/correct.mp3`;
+  localizationCorrectBgmPath: string = `./assets/musics/correct.mp3`;
 
   constructor(
     private modalComponent: ModalComponent,
@@ -76,7 +76,6 @@ export class LocalizationFormComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
       if (currentMap) {
         this.mapService
