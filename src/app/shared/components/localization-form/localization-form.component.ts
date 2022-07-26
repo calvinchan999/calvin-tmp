@@ -62,6 +62,7 @@ export class LocalizationFormComponent implements OnInit {
     })
   );
   selectedWaypoint: Waypoint;
+  localizationCorrectBgmPath: string = `/assets/musics/correct.mp3`;
 
   constructor(
     private modalComponent: ModalComponent,
@@ -70,10 +71,12 @@ export class LocalizationFormComponent implements OnInit {
     private mapService: MapService,
     private waypointService: WaypointService,
     private router: Router
-  ) {}
+  ) {
+
+  }
 
   ngOnInit() {
-    this.setMessage();
+
     this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
       if (currentMap) {
         this.mapService
@@ -161,9 +164,13 @@ export class LocalizationFormComponent implements OnInit {
             status: 'success'
           });
 
+          let audio = new Audio();
+          audio.src = this.localizationCorrectBgmPath;
+          audio.play();
+
           setTimeout(() => {
             this.router.navigate(['/']);
-          }, 3000);
+          }, 5000);
         } else {
           this.isLocalizedLocation({
             status: 'failed',
