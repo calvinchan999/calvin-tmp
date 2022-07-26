@@ -156,7 +156,7 @@ export class DefaultComponent implements OnInit {
     this.mqttService.dockingChargingFeedback$.subscribe(feedback => {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
-        if (chargingStatus === 'CHARGING') {
+        if (chargingStatus === 'PRE_CHARGING') {
           this.translateService
             .get('dockingDialog.tips2')
             .pipe(
