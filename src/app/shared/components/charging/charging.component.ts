@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { of, Subscription } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
+import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { ToastrService } from 'src/app/services/toastr.service';
 import { DockingService } from 'src/app/views/services/docking.service';
@@ -11,24 +12,34 @@ import { DockingService } from 'src/app/views/services/docking.service';
 @Component({
   selector: 'app-charging',
   templateUrl: './charging.component.html',
-  styleUrls: ['./charging.component.scss'],
+  styleUrls: ['./charging.component.scss']
 })
 export class ChargingComponent implements OnInit {
   sub = new Subscription();
+  batterySub = new Subscription();
+  batteryPercentage: number = 0;
   constructor(
     private dockingService: DockingService,
     private sharedService: SharedService,
     private authService: AuthService,
     private translateService: TranslateService,
-    private toastrService: ToastrService
-  ) {}
+    private toastrService: ToastrService,
+    private mqttService: MqttService
+  ) {
+    this.batterySub = this.mqttService.battery$
+      .pipe(map(battery => JSON.parse(battery)))
+      .subscribe(battery => {
+        const { percentage } = battery;
+        this.batteryPercentage = Math.round(percentage * 100);
+      });
+  }
 
   ngOnInit(): void {}
 
   onClickCancelCharging() {
     this.sub = this.authService.isAuthenticatedSubject
       .pipe(
-        mergeMap((auth) => {
+        mergeMap(auth => {
           if (auth) {
             return this.dockingService.cancelDocking().pipe(
               mergeMap(() =>
@@ -47,7 +58,7 @@ export class ChargingComponent implements OnInit {
               this.sharedService.isOpenModal$.next({
                 modal: 'sign-in-dialog',
                 modalHeader: 'signIn',
-                isDisableClose: true,
+                isDisableClose: true
               })
             );
           }
