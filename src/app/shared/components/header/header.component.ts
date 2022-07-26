@@ -34,7 +34,7 @@ export class HeaderComponent implements OnInit {
 
   currentUrl: string = '';
   currentPageTitle: string = '';
-  showBatteryPercentage: boolean = false;
+  showBatteryPercentage: boolean = true;
   blockPreviousButton: boolean = false;
 
   sub = new Subscription();
