@@ -72,7 +72,7 @@ export class LocalizationFormComponent implements OnInit {
     private waypointService: WaypointService,
     private router: Router
   ) {
-
+    this.setMessage();
   }
 
   ngOnInit() {
@@ -139,13 +139,13 @@ export class LocalizationFormComponent implements OnInit {
     const { status, error } = event;
     if (status === 'success') {
       this.sharedService.response$.next({
-        type: this.message.success.type,
-        message: this.message.success.message
+        type: this.message?.success.type,
+        message: this.message?.success.message
       });
     } else if (status === 'failed') {
       this.sharedService.response$.next({
-        type: this.message.fail.type,
-        message: `${this.message.fail.message} \n ${error.message}`
+        type: this.message?.fail.type,
+        message: `${this.message?.fail.message} \n ${error.message}`
       });
     }
   }
@@ -153,12 +153,10 @@ export class LocalizationFormComponent implements OnInit {
   onSelectedWaypoint(waypoint: Waypoint) {
     this.selectedWaypoint = waypoint;
   }
-
   onSubmitLocalizationPoint(point) {
     this.waypointService.localize(point).subscribe(
       result => {
         const { success, message } = result;
-
         if (success) {
           this.isLocalizedLocation({
             status: 'success'
