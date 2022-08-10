@@ -5,7 +5,7 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpErrorResponse,
-  HttpResponse,
+  HttpResponse
 } from '@angular/common/http';
 import { empty, Observable, of, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -48,10 +48,10 @@ export class HttpStatusInterceptor implements HttpInterceptor {
           .handle(req)
           .pipe(
             timeout(this.DEFAULTTIMEOUT),
-            catchError((err) => {
+            catchError(err => {
               if (err instanceof TimeoutError) {
                 console.error('Timeout has occurred', req.url);
-                return this.timeoutHandler();
+                return this.timeoutHandler(req);
               } else {
                 return this.errorHandler(err);
               }
@@ -62,13 +62,13 @@ export class HttpStatusInterceptor implements HttpInterceptor {
             // })
           )
           .subscribe(
-            (event) => {
+            event => {
               if (event instanceof HttpResponse) {
                 this.removeRequest(req);
                 observer.next(event);
               }
             },
-            (err) => {
+            err => {
               this.removeRequest(req);
               observer.error(err);
             },
@@ -83,17 +83,23 @@ export class HttpStatusInterceptor implements HttpInterceptor {
     );
   }
 
-  private timeoutHandler(): Observable<[]> {
+  private timeoutHandler(request): Observable<[]> {
     this.indexedDbService.addlogs({
       type: 'httpRequestTimeout',
       errorCode: null,
       statusCode: null,
-      description: 'Http Request Timeout',
+      description:
+        'Http Request Timeout' + request.url ? ' - ' + request.url : '',
       created_at: moment(new Date())
         .tz('Asia/Hong_Kong')
-        .format('YYYY-MM-DD HH:mm:ss'),
+        .format('YYYY-MM-DD HH:mm:ss')
     });
-    this.status.setHttpStatus(true, null, null, `HTTP Request Timeout`);
+    this.status.setHttpStatus(
+      true,
+      null,
+      null,
+      `HTTP Request Timeout ${request.url ? ' - ' + request.url : ''}`
+    );
     throw null;
   }
 
@@ -117,7 +123,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
       description: httpErrorText,
       created_at: moment(new Date())
         .tz('Asia/Hong_Kong')
-        .format('YYYY-MM-DD HH:mm:ss'),
+        .format('YYYY-MM-DD HH:mm:ss')
     });
 
     switch (httpStatusCode) {
