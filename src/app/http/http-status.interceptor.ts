@@ -16,7 +16,7 @@ import * as moment from 'moment-timezone';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
-  DEFAULTTIMEOUT: number = 30000;
+  DEFAULTTIMEOUT: number = 60000;
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
