@@ -185,15 +185,18 @@ export class DefaultComponent implements OnInit {
       )
       .subscribe();
 
-    this.sharedService.response$.subscribe((response: any) => {
+    this.sharedService.response$.subscribe(response => {
       if (response) {
         this.response = response;
         this.closeDialogAfterRefresh = response?.closeAfterRefresh
           ? true
           : false;
-        setTimeout(() => {
-          this.responseDialog.open();
-        }, 1000);
+        this.responseDialog.open();
+        if (this.response.type === 'normal') {
+          setTimeout(() => {
+            this.responseDialog.close();
+          }, 5000);
+        }
       }
     });
 
@@ -268,10 +271,11 @@ export class DefaultComponent implements OnInit {
       .pipe(
         tap(data => {
           if (data) {
-            const { name } = data;
-            this.router.navigate(['/waypoint/destination'], {
-              queryParams: { waypointName: name }
-            });
+            // const { name } = data;
+            // this.router.navigate(['/waypoint/destination'], {
+            //   queryParams: { waypointName: name }
+            // });
+            this.router.navigate(['/waypoint/destination']);
           }
         })
       )
