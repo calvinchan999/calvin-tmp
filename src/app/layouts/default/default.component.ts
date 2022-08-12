@@ -194,7 +194,7 @@ export class DefaultComponent implements OnInit {
         this.responseDialog.open();
         if (this.response.type === 'normal') {
           setTimeout(() => {
-            this.responseDialog.close();
+            this.responseDialog.onCloseWithoutRefresh();
           }, 5000);
         }
       }
