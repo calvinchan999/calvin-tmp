@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
@@ -11,6 +11,7 @@ import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import {
+  LocalizationType,
   SharedService,
   WaypointPageCategory
 } from 'src/app/services/shared.service';
@@ -23,23 +24,26 @@ import { Auth, AuthService } from 'src/app/services/auth.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentLang: string = '';
   powerSupplyStatus: string = '';
   percentage: number = 0;
   robotId: string = '';
   mode: string = '';
+  manual: boolean = undefined;
   modeTranslation: string = '';
 
   currentUrl: string = '';
   currentPageTitle: string = '';
-  showBatteryPercentage: boolean = false;
+  showBatteryPercentage: boolean = true;
   blockPreviousButton: boolean = false;
 
   sub = new Subscription();
   user: string;
+  waypointName: string;
+  localizationType: string;
+  waypointListPageType: string;
 
-  waypointListPageType: WaypointPageCategory;
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
@@ -55,15 +59,15 @@ export class HeaderComponent implements OnInit {
         .pipe(
           filter(event => event instanceof NavigationEnd),
           map(() => this.route.snapshot),
-          map(route => {
-            while (route.firstChild) {
-              route = route.firstChild;
+          map((params: any) => {
+            while (params.firstChild) {
+              params = params.firstChild;
             }
-            return route;
+            return params;
           })
         )
-        .subscribe((route: ActivatedRouteSnapshot) => {
-          const { title } = route.data;
+        .subscribe((res: ActivatedRouteSnapshot) => {
+          const { title } = res.data;
           this.currentPageTitle = title;
         })
     );
@@ -73,12 +77,20 @@ export class HeaderComponent implements OnInit {
         if (event instanceof NavigationEnd) {
           // event is an instance of NavigationEnd, get url!
           this.currentUrl = event.urlAfterRedirects;
+          if (
+            this.currentUrl.indexOf('/waypoint/destination?waypointName') > -1
+          ) {
+            this.currentUrl = '/waypoint/destination';
+          }
           const backToPreviousButtonBackLists = [
             {
               backlist: '/charging/charging-mqtt'
             },
             {
               backlist: '/charging/charging-dialog'
+            },
+            {
+              backlist: '/waypoint/destination'
             }
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [
@@ -98,9 +110,8 @@ export class HeaderComponent implements OnInit {
     this.sub.add(
       this.sharedService.currentMode$
         .pipe(
-          tap((response: any) => {
-            this.mode = response;
-            return response;
+          tap(mode => {
+            this.mode = mode;
           }),
           mergeMap(() => this.getTranlateModeMessage$())
         )
@@ -108,10 +119,37 @@ export class HeaderComponent implements OnInit {
     );
 
     this.sub.add(
+      this.sharedService.currentManualStatus$
+        .pipe(
+          tap((manual: any) => {
+            this.manual = manual;
+          })
+        )
+        .subscribe()
+    );
+
+    this.sub.add(
+      this.route.queryParams.subscribe((params: any) => {
+        const { waypointName } = params;
+        this.waypointName = waypointName;
+      })
+    );
+
+    this.sub.add(
+      this.sharedService.localizationType$
+        .pipe(
+          tap((type: number) => {
+            this.localizationType = LocalizationType[type];
+          })
+        )
+        .subscribe()
+    );
+
+    this.sub.add(
       this.sharedService.waypointListPageMode$
         .pipe(
-          tap(type => {
-            this.waypointListPageType = type;
+          tap((type: number) => {
+            this.waypointListPageType = WaypointPageCategory[type];
           })
         )
         .subscribe()
@@ -143,7 +181,7 @@ export class HeaderComponent implements OnInit {
 
   getBattery() {
     // @todo check connection
-    this.mqttService.$battery
+    this.mqttService.battery$
       .pipe(tap(() => this.sharedService.reset$.next(0)))
       .subscribe(battery => {
         if (battery) {
@@ -152,6 +190,14 @@ export class HeaderComponent implements OnInit {
           this.percentage = Math.round(percentage * 100);
         }
       });
+  }
+
+  localizationByMap() {
+    this.sharedService.localizationType$.next(LocalizationType.MAP);
+  }
+
+  localizationByList() {
+    this.sharedService.localizationType$.next(LocalizationType.LIST);
   }
 
   useLanguage() {
@@ -166,7 +212,6 @@ export class HeaderComponent implements OnInit {
       localStorage.setItem('language', 'tc');
     }
   }
-
   goToLogin() {
     this.router.navigate(['/login']);
   }
@@ -175,7 +220,8 @@ export class HeaderComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'signout',
       modalHeader: 'signout',
-      isDisableClose: true
+      isDisableClose: true,
+      closeAfterRefresh: true
     });
   }
 
@@ -220,20 +266,18 @@ export class HeaderComponent implements OnInit {
   }
 
   goToDashboard() {
-    // this.router.navigate(['/']);
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/']);
     });
   }
 
   useMap() {
-    this.sharedService.waypointListPageMode$.next('map');
+    this.sharedService.waypointListPageMode$.next(WaypointPageCategory.MAP);
   }
 
   useList() {
-    this.sharedService.waypointListPageMode$.next('list');
+    this.sharedService.waypointListPageMode$.next(WaypointPageCategory.LIST);
   }
-
   ngOnDestroy() {
     this.sub.unsubscribe();
   }

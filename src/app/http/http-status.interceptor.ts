@@ -5,17 +5,18 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpErrorResponse,
-  HttpResponse,
+  HttpResponse
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { empty, Observable, of, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, timeout } from 'rxjs/operators';
 import { IndexedDbService } from '../services/indexed-db.service';
-import  * as moment  from 'moment-timezone';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
+  DEFAULTTIMEOUT: number = 60000; // 60000
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
@@ -37,7 +38,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     this.requests.push(req);
     this.sharedService.loading$.next(true);
-    return Observable.create(
+    return new Observable(
       (observer: {
         next: (arg0: HttpEvent<any>) => void;
         error: (arg0: any) => void;
@@ -46,20 +47,28 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         const subscription = next
           .handle(req)
           .pipe(
-            catchError((err) => this.errorHandler(err)),
-            finalize(() => {
-              // request completes, errors, or is cancelled
-              this.sharedService.loading$.next(false);
+            timeout(this.DEFAULTTIMEOUT),
+            catchError(err => {
+              if (err instanceof TimeoutError) {
+                console.error('Timeout has occurred', req.url);
+                return this.timeoutHandler(req);
+              } else {
+                return this.errorHandler(err);
+              }
             })
+            // finalize(() => {
+            //   // request completes, errors, or is cancelled
+            //   this.sharedService.loading$.next(false);
+            // })
           )
           .subscribe(
-            (event) => {
+            event => {
               if (event instanceof HttpResponse) {
                 this.removeRequest(req);
                 observer.next(event);
               }
             },
-            (err) => {
+            err => {
               this.removeRequest(req);
               observer.error(err);
             },
@@ -74,11 +83,31 @@ export class HttpStatusInterceptor implements HttpInterceptor {
     );
   }
 
+  private timeoutHandler(request): Observable<[]> {
+    this.indexedDbService.addlogs({
+      type: 'httpRequestTimeout',
+      errorCode: null,
+      statusCode: null,
+      description:
+        'Http Request Timeout' + request.url ? ' - ' + request.url : '',
+      created_at: moment(new Date())
+        .tz('Asia/Hong_Kong')
+        .format('YYYY-MM-DD HH:mm:ss')
+    });
+    this.status.setHttpStatus(
+      true,
+      null,
+      null,
+      `HTTP Request Timeout ${request.url ? ' - ' + request.url : ''}`
+    );
+    throw null;
+  }
+
   private errorHandler(
     response: HttpErrorResponse
   ): Observable<HttpEvent<any>> {
     this.sharedService.loading$.next(false);
-    console.log('http-status-interceptor=>', response);
+    console.log('http-status-interceptor: ', response);
     const httpStatusCode = response.status;
     const httpErrorCode = response.error?.code;
     const httpErrorText = response.error
@@ -92,24 +121,52 @@ export class HttpStatusInterceptor implements HttpInterceptor {
       errorCode: httpErrorCode,
       statusCode: httpStatusCode,
       description: httpErrorText,
-      created_at:  moment(new Date()).tz('Asia/Hong_Kong').format('YYYY-MM-DD HH:mm:ss')
+      created_at: moment(new Date())
+        .tz('Asia/Hong_Kong')
+        .format('YYYY-MM-DD HH:mm:ss')
     });
+
     switch (httpStatusCode) {
       case 500:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
       case 400:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
       case 401:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
       case 403:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         setTimeout(() => this.sharedService.refresh$.next(true), 1000);
         break;
       default:
-        this.status.setHttpStatus(true, httpStatusCode, httpErrorText);
+        this.status.setHttpStatus(
+          true,
+          httpStatusCode,
+          httpErrorCode,
+          httpErrorText
+        );
         break;
     }
     throw null;

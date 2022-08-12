@@ -1,13 +1,15 @@
-<ng-container *ngIf="type === 'list'">
+<ng-container *ngIf="waypointPageCategory === 'LIST'">
   <div class="waypoint-items-container">
     <div class="waypoint-items">
       <div
         class="waypoint-item"
         *ngFor="let waypoint of waypointLists"
-        [ngClass]="{ selected: selectedWaypoint?.name === waypoint.name }"
+        [ngClass]="{
+          selected: selectedWaypoint?.floorPlanCode === waypoint.floorPlanCode
+        }"
         (click)="onSelectedWaypoint(waypoint)"
       >
-        {{ waypoint.name }}
+        {{ waypoint.floorPlanName }}
       </div>
     </div>
   </div>
@@ -26,21 +28,22 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="type === 'map'">
-  <div class="container-fluid" style="height: 100%;">
+<ng-container *ngIf="waypointPageCategory === 'MAP'">
+  <div class="container-fluid waypoint-selector-container">
+    <!-- [floorPlanData]="floorPlanSubject$ | async" -->
     <app-map-wrapper
-      *ngIf="waypointLists"
+      *ngIf="waypointLists && floorPlanImage"
       class="map"
-      [toolType]="toolType"
-      [floorPlanData]="floorPlanSubject$ | async"
+      [mapEditingType]="mapEditingType"
+      [floorPlanImage]="floorPlanImage"
+      [floorPlanData]="floorPlanPayload"
       [pointLists]="waypointLists"
       (selectedWaypoint)="onSelectedWaypoint($event)"
     ></app-map-wrapper>
   </div>
   <div class="waypoint-selected-container">
     <div class="waypoint-selected-title">
-      <!-- {{ "waypointDialog.tips1" | translate }}  -->
-      {{ selectedWaypoint?.name }}
+      {{ selectedWaypoint?.floorPlanName }}
     </div>
   </div>
   <div class="waypoint-btn-container d-flex justify-content-around">

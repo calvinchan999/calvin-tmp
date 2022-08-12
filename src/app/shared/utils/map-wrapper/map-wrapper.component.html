@@ -1,4 +1,4 @@
-<div class="map-container" *ngIf="toolType">
+<div class="map-container" *ngIf="mapEditingType">
   <!-- <label class="degrees-label">Degrees: {{ degrees }}</label> -->
   <div class="button-wrapper">
     <button
@@ -32,7 +32,7 @@
     ></div>
     <div
       class="localization-btn-container d-flex justify-content-around"
-      *ngIf="toolType === category.LOCALIZATIONEDITER"
+      *ngIf="mapEditingType === category.LOCALIZATIONEDITER"
     >
       <button
         class="btn localization-edit-button"

@@ -11,8 +11,13 @@ export class HttpStatusService {
     this.requestInFlight$ = new BehaviorSubject(false);
   }
 
-  setHttpStatus(inFlight: boolean, errorCode?: any, errorMsg?: string) {
-    this.requestInFlight$.next({ inFlight, errorCode, errorMsg });
+  setHttpStatus(
+    inFlight: boolean,
+    statusCode,
+    errorCode?: any,
+    errorMsg?: string
+  ) {
+    this.requestInFlight$.next({ inFlight, statusCode, errorCode, errorMsg });
   }
 
   getHttpStatus(): Observable<boolean> {

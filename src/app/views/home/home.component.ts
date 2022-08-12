@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs/internal/Observable';
+import { map, mergeMap, tap, take } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
@@ -9,14 +10,17 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  map: string;
   mode: string;
   role: string;
   user: string;
   features;
   pairingState;
+  followMePairingState$: Observable<boolean>;
+  followMeUnPairingState$: Observable<boolean>;
   constructor(
     public router: Router,
     private sharedService: SharedService,
@@ -25,23 +29,48 @@ export class HomeComponent implements OnInit {
     private appConfigService: AppConfigService
   ) {
     this.features = this.appConfigService.getConfig().feature;
-
-    this.sharedService.currentMode$.subscribe((mode: string) => {
-      console.log(mode);
+    this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
       this.mode = mode;
+      console.log(`mode: ${mode}`);
+    });
+
+    this.sharedService.currentMap$.pipe(take(1)).subscribe((currentMap: string) => {
+      this.map = currentMap;
     });
 
     this.sharedService.currentPairingStatus$
-      .pipe(map(data => (data instanceof Object ? data : JSON.parse(data))))
-      .subscribe(data => {
-        console.log(data);
+      .pipe(map((data) => (data instanceof Object ? data : JSON.parse(data))))
+      .subscribe((data) => {
         if (data?.pairingState) {
           const { pairingState } = data;
-          this.pairingState = pairingState;
+          if (pairingState === 'UNPAIRED') {
+            this.followMePairingState$ = new Observable((observer) =>
+              observer.next(true)
+            );
+            this.followMeUnPairingState$ = new Observable((observer) =>
+              observer.next(false)
+            );
+          } else if (pairingState !== 'UNPAIRED') {
+            this.followMePairingState$ = new Observable((observer) =>
+              observer.next(false)
+            );
+            this.followMeUnPairingState$ = new Observable((observer) =>
+              observer.next(true)
+            );
+          }
         } else {
-          this.pairingState = null;
+          this.followMePairingState$ = new Observable((observer) =>
+            observer.next(false)
+          );
+          this.followMeUnPairingState$ = new Observable((observer) =>
+            observer.next(false)
+          );
         }
       });
+
+    // this.sharedService.isProcessingTask$.subscribe((task: boolean) => {
+    //   this.isProcessingTask = task;
+    // })
   }
 
   ngOnInit() {
@@ -51,7 +80,7 @@ export class HomeComponent implements OnInit {
   isAuthenticated() {
     this.authService.isAuthenticatedSubject
       .pipe(
-        map(payload => {
+        map((payload) => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
@@ -79,13 +108,12 @@ export class HomeComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'sos',
       modalHeader: 'sos',
-      isDisableClose: false
+      isDisableClose: false,
     });
   }
 
   onChangeMap() {
-    console.log(this.mode);
-    if (this.mode !== 'UNDEFINED') {
+    if (this.mode && this.mode !== 'UNDEFINED') {
       this.router.navigate(['/map']);
     }
   }
@@ -113,7 +141,8 @@ export class HomeComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'pair',
       modalHeader: 'pair',
-      isDisableClose: true
+      isDisableClose: true,
+      closeAfterRefresh: false,
     });
   }
 
@@ -121,7 +150,8 @@ export class HomeComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'unpair',
       modalHeader: 'unpair',
-      isDisableClose: true
+      isDisableClose: true,
+      closeAfterRefresh: false,
     });
   }
 }

@@ -14,7 +14,7 @@
   },
   "feature": {
     "waypoint": true,
-    "docking": true,
+    "docking": false,
     "sos": false,
     "map": true,
     "localization": true,

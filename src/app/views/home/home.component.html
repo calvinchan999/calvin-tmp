@@ -8,11 +8,11 @@
         <app-card
           title="waypoint"
           icon="map-marker-distance"
-          [disable]="mode !== 'NAVIGATION' ? true : false"
+          [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
           (eventTrigger)="onSubmitWaypont()"
         ></app-card>
       </div>
-      <div
+      <!-- <div
         class="col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.docking"
       >
@@ -21,7 +21,7 @@
           icon="battery-charging"
           (eventTrigger)="onDockToStation()"
         ></app-card>
-      </div>
+      </div> -->
       <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.sos">
         <app-card
           title="sos"
@@ -36,7 +36,7 @@
         <app-card
           title="map"
           icon="map"
-          [disable]="(!mode || mode ==='UNDEFINED' ) ? true : false"
+          [disable]="!mode || mode === 'UNDEFINED' ? true : false"
           (eventTrigger)="onChangeMap()"
         ></app-card>
       </div>
@@ -47,40 +47,34 @@
         <app-card
           title="localization"
           icon="map-marker-radius-outline"
-          [disable]="mode !== 'NAVIGATION' ? true : false"
+          [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
           (eventTrigger)="onSubmitLocalization()"
         ></app-card>
       </div>
-      <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="
-          user?.length > 0 &&
-          mode === 'FOLLOW_ME' &&
-          features.pairing &&
-          pairingState === 'UNPAIRED'
-        "
-      >
-        <app-card
-          title="pair"
-          icon="gesture-tap"
-          (eventTrigger)="onClickPairing()"
-        ></app-card>
-      </div>
-      <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
-        *ngIf="
-          user?.length > 0 &&
-          mode === 'FOLLOW_ME' &&
-          features.pairing &&
-          pairingState !== 'UNPAIRED'
-        "
-      >
-        <app-card
-          title="unpair"
-          icon="gesture-tap"
-          (eventTrigger)="onClickUnPairing()"
-        ></app-card>
-      </div>
+      <ng-container *ngIf="user?.length > 0">
+        <div
+          class="col-md-12 col-xs-12 col-md-offset-2"
+          *ngIf="followMePairingState$ | async"
+        >
+          <app-card
+            title="pair"
+            icon="gesture-tap"
+            (eventTrigger)="onClickPairing()"
+          ></app-card>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="user?.length > 0">
+        <div
+          class="col-md-12 col-xs-12 col-md-offset-2"
+          *ngIf="followMeUnPairingState$ | async"
+        >
+          <app-card
+            title="unpair"
+            icon="gesture-tap"
+            (eventTrigger)="onClickUnPairing()"
+          ></app-card>
+        </div>
+      </ng-container>
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.mode"

@@ -21,6 +21,9 @@ import { TextboxComponent } from './components/textbox/textbox.component';
 import { SignOutFormComponent } from './components/sign-out-form/sign-out-form.component';
 import { PairingPairComponent } from './components/pairing-pair/pairing-pair.component';
 import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpair.component';
+import { FollowMeInspectorDialogComponent } from './components/follow-me-inspector-dialog/follow-me-inspector-dialog.component';
+import { FinalDestinationDialogComponent } from './components/waypoint-form/final-destination-dialog/final-destination-dialog.component';
+import { SignInFormComponent } from './components/sign-in-form/sign-in-form.component';
 
 @NgModule({
   imports: [
@@ -29,7 +32,7 @@ import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpa
     FlexLayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
   ],
   declarations: [
     HeaderComponent,
@@ -48,7 +51,10 @@ import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpa
     TextboxComponent,
     SignOutFormComponent,
     PairingPairComponent,
-    PairingUnpairComponent
+    PairingUnpairComponent,
+    FollowMeInspectorDialogComponent,
+    FinalDestinationDialogComponent,
+    SignInFormComponent,
   ],
   exports: [
     HeaderComponent,
@@ -67,8 +73,11 @@ import { PairingUnpairComponent } from './components/pairing-unpair/pairing-unpa
     TextboxComponent,
     SignOutFormComponent,
     PairingPairComponent,
-    PairingUnpairComponent
+    PairingUnpairComponent,
+    FollowMeInspectorDialogComponent,
+    FinalDestinationDialogComponent,
+    SignInFormComponent
   ],
-  providers: [ModalComponent]
+  providers: [ModalComponent],
 })
 export class SharedModule {}

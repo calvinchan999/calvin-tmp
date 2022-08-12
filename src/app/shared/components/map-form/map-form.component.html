@@ -3,15 +3,17 @@
     <div class="map-items">
       <div
         class="map-item"
-        *ngFor="let floorplanMap of mapLists$ | async"
-        [ngClass]="{ selected: selectedMap?.id === floorplanMap?.id }"
-        (click)="onSelectedMap(floorplanMap)"
+        *ngFor="let map of mapLists$ | async"
+        [ngClass]="{ selected: selectedMap === map.name }"
+        (click)="onSelectedMap(map.name)"
       >
-        {{ floorplanMap.name }}
+        {{ map.name }}
       </div>
     </div>
   </div>
   <div class="map-btn-container d-flex justify-content-around">
+    <!-- <button class="btn map-cancel-button" (click)="onCloseModel()">{{ "cancel" | translate }}</button> -->
+
     <button class="btn map-confirm-button" (click)="onSubmitModel(selectedMap)" *ngIf="selectedMap">
       <i class="mdi mdi-chevron-right map-confirm-button-icon"></i>
       <label class="map-confirm-button-title">{{

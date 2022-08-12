@@ -14,12 +14,12 @@
   },
   "feature": {
     "waypoint": true,
-    "docking": true,
-    "sos": true,
+    "docking": false,
+    "sos": false,
     "map": true,
     "localization": true,
     "mode": true,
-    "logs": true,
+    "logs": false,
     "pairing": true
   }
 }

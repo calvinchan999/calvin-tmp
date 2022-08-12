@@ -4,8 +4,9 @@ import {
   ContentChild,
   ElementRef,
   Input,
+  OnDestroy,
   OnInit,
-  TemplateRef,
+  TemplateRef
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -13,20 +14,21 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
-  styleUrls: ['./modal.component.scss'],
+  styleUrls: ['./modal.component.scss']
 })
-export class ModalComponent implements OnInit {
+export class ModalComponent implements OnInit, OnDestroy {
   @ContentChild('modalHeader') header: TemplateRef<any>;
   @ContentChild('modalBody') body: TemplateRef<any>;
   @ContentChild('modalFooter') footer: TemplateRef<any>;
   @ContentChild('modalResponse') response: TemplateRef<any>;
   @Input() closeOnOutsideClick = true;
   @Input() disableClose = false;
-  @Input() localizationFormComponent = null;
+  @Input() closeAfterRefresh = false;
   public closeTrigger$ = new Subject<any>();
 
   visible = false;
   visibleAnimate = false;
+
   constructor(
     private elementRef: ElementRef,
     private changeDetectorRef: ChangeDetectorRef,
@@ -37,11 +39,9 @@ export class ModalComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 
   ngOnDestroy() {
-    // Prevent modal from not executing its closing actions if the user navigated away (for example,
-    // through a link).
     this.close();
   }
 
@@ -59,6 +59,7 @@ export class ModalComponent implements OnInit {
     setTimeout(() => {
       this.visible = false;
       this.changeDetectorRef.markForCheck();
+      // this.router.navigate([currentUrl]).then(() => location.reload());
       this.router.navigate(['']);
     }, 200);
   }

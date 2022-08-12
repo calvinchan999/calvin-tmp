@@ -1,7 +1,6 @@
-
 // VARIABLES // ============================== //
 $bg-color: #424242;
-$hl-color: #2196F3;
+$hl-color: #2196f3;
 $muted-color: mix(white, $bg-color, 70%);
 $trans-time: 300ms;
 $width: 80vw;
@@ -20,7 +19,7 @@ body {
 form {
   width: 100%;
   margin: 15px auto;
-  
+
   h1 {
     font-size: 3em;
     font-weight: 300;
@@ -80,7 +79,7 @@ textarea {
   }
 }
 
-input[type="password"] {
+input[type='password'] {
   letter-spacing: 0.3em;
 }
 

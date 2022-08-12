@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { Subscription, forkJoin } from 'rxjs';
+import { map, tap, switchMap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -12,63 +13,47 @@ import { Metadata } from '../localization-form/localization-form.component';
 @Component({
   selector: 'app-destination',
   templateUrl: './destination.component.html',
-  styleUrls: ['./destination.component.scss'],
+  styleUrls: ['./destination.component.scss']
 })
-export class DestinationComponent implements OnInit {
-  @Input() payload: any;
+export class DestinationComponent implements OnInit, OnDestroy {
   type = Category.POSITIONLISTNER;
   floorPlanData: any = null;
   rosMapData: any = null;
   metaData: Metadata;
   currentRobotPose: any;
-
+  targetWaypointData;
   sub = new Subscription();
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
     private mapService: MapService,
     private mqttService: MqttService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router
   ) {
-    this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
-      if (currentMap) {
-        const data = {
-          code: currentMap,
-          floorPlanIncluded: true,
-          mapIncluded: false
-        };
-        this.mapService
-          .getFloorPlanData(data)
-          .pipe(
-            mergeMap(async data => {
-              let floorPlan = {
-                code: data.code,
-                id: data.id,
-                imageData: data?.imageData,
-                name: data.name,
-                floorPlanPointList: data?.floorPlanPointList,
-                rosMapPointList: data?.rosMapPointList
-              };
-              let rosMap = {
-                map: data?.map
-              };
-
-              return (
-                (this.floorPlanData = floorPlan), (this.rosMapData = rosMap)
-              );
-            }),
-            mergeMap(() =>
-              this.mapService
-                .getMapMetaData(currentMap)
-                .pipe(tap(metaData => (this.metaData = metaData)))
-            )
-          )
-          .subscribe();
-      }
-    });
+    this.sub = this.sharedService.currentMap$
+      .pipe(
+        switchMap(currentMap =>
+          forkJoin([
+            this.mapService.getMapImage(currentMap).pipe(
+              tap(image => {
+                const reader = new FileReader();
+                reader.readAsDataURL(image);
+                reader.onloadend = () => {
+                  this.rosMapData = { map: reader.result };
+                };
+              })
+            ),
+            this.mapService
+              .getMapMetaData(currentMap)
+              .pipe(tap(metaData => (this.metaData = metaData)))
+          ])
+        )
+      )
+      .subscribe();
 
     this.sub.add(
-      this.mqttService.$pose
+      this.mqttService.pose$
         .pipe(
           map(pose => JSON.parse(pose)),
           tap(pose => (this.currentRobotPose = pose))
@@ -77,7 +62,7 @@ export class DestinationComponent implements OnInit {
     );
 
     this.sub.add(
-      this.mqttService.$pauseResume
+      this.mqttService.pauseResume$
         .pipe(
           map(pauseResume => {
             let data = JSON.parse(pauseResume);
@@ -96,6 +81,24 @@ export class DestinationComponent implements OnInit {
             this.sharedService.response$.next({ type: 'normal', message });
           });
         })
+    );
+
+    this.sub.add(
+      this.sharedService.departureWaypoint$.subscribe(data => {
+        console.log(data);
+        console.log(`departureWaypoint`);
+        if (data) {
+          const { x, y, name } = data;
+          this.targetWaypointData = {
+            targetX: x,
+            targetY: y,
+            targetAngle: 0,
+            targetName: name
+          };
+        } else {
+          this.router.navigate(['/']);
+        }
+      })
     );
   }
 

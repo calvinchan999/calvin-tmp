@@ -25,7 +25,7 @@
   "resume": "重新开始",
   "resumeMessage": "重新开始前往目的地",
   "pause": "暂停",
-  "pauseMessage":"暂停前往目的地",
+  "pauseMessage": "暂停前往目的地",
   "sosDialog": {
     "tips1": "你确定要执行SOS信号吗？",
     "tips2": "已经发出SOS信号"
@@ -35,7 +35,8 @@
     "tips2": "返回充电站中",
     "tips3": "机器人充电中...",
     "tips4": "请操作人员离开充电区",
-    "cancalCharging": "取消充电"
+    "cancalCharging": "取消充电",
+    "cancalChargingTips": "充电已被取消"
   },
   "mapDialog": {
     "tips1": "地图已更新"
@@ -43,7 +44,8 @@
   "modeDialog": {
     "tips1": "模式已更新"
   },
-  "arrivedAtDestination": "已到达目的地",
+  "arrivedAtDestination": "已到达目的地 {{waypointName}}",
+  "completedTask":"任务已完成",
   "cancelledTask": "任务已取消",
   "navigatingtoDestination": "导航至目的地",
   "localizationDialog": {
@@ -62,17 +64,48 @@
   "loginError": {
     "error1": "请输入有效用户的帐号和密码"
   },
+  "signIn": "登入",
   "signout": "登出",
-  "signoutDialog":{
+  "signoutDialog": {
     "tips1": "你确定你要登出吗？"
   },
-  "refreshTokenFail":"登录的证书已过期, 请重新登入或使用访客模式",
+  "refreshTokenFail": "登录的证书已过期, 请重新登入或使用访客模式",
   "pair": "跟随模式配对",
-  "pairDialog":{
+  "pairDialog": {
     "pair": "确认要进行跟随模式配对"
   },
   "unpair": "取消跟随模式配对",
-  "unpairDialog":{
+  "unpairDialog": {
     "unpair": "确认要取消配对？"
+  },
+  "followMeInspector": "跟随模式",
+  "followMeInspectorDialog": {
+    "title": "请确认您当前的地图状态"
+  },
+  "hasMap": "有地图",
+  "notMap": "没有地图",
+  "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图",
+  "destinationNotFoundError": "在地图({{mapName}})找不到目的地({{waypointName}})",
+  "finalDestination":"最终目的地",
+  "finalDestinationDialog": {
+    "title": "你确定这是最终目的地?"
+  },
+  "error": {
+    "httpStatue":"HTTP状态:",
+    "httpError": "- HTTP错误:",
+    "httpErrorCode":{
+      "20001": "找不到任務",
+      "20002": "任务错误",
+      "20003": "任务错误",
+      "20004": "执行任务出现错误",
+      "100003": "登录失败",
+      "200013": "旧密码不正确",
+      "300002": "验证码错误"
+    }
+  },
+  "yes": "是",
+  "no": "不是",
+  "taskActions": {
+    "batteryChargeAction": "将会执行电池充电动作"
   }
 }

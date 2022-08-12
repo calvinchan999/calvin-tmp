@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subject } from 'rxjs';
 import { Config, MqttService } from './services/mqtt.service';
@@ -13,7 +13,7 @@ import { mergeMap } from 'rxjs/operators';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   point: number = 0;
   db: any;
@@ -36,10 +36,7 @@ export class AppComponent implements OnInit {
       .createDatabase()
       .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
       .subscribe();
-      // this.indexedDbService.addlogs({ type: 'testggggg', description: 'tasdest' });
-    // for (let i = 0; i < 100000; i++) {
-    //   this.indexedDbService.addlogs({ type: 'testg', description: 'test' });
-    // }
+
     this.sharedService.loading$.subscribe((status) => {
       if (status) {
         this.spinner.show();

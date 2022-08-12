@@ -4,14 +4,15 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-waypoint-destination',
   templateUrl: './waypoint-destination.component.html',
-  styleUrls: ['./waypoint-destination.component.scss'],
+  styleUrls: ['./waypoint-destination.component.scss']
 })
 export class WaypointDestinationComponent implements OnInit {
-  payload: any;
+  // payload: any;
   constructor(private router: ActivatedRoute) {
-    this.router.queryParams.subscribe((params: any) => {
-      this.payload = JSON.parse(params.payload);
-    });
+    // this.router.queryParams.subscribe((params: any) => {
+    //   console.log(params);
+    //   this.payload = JSON.parse(params.payload);
+    // });
   }
 
   ngOnInit(): void {}

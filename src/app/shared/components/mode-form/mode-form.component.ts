@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { ModeService, Mode } from 'src/app/views/services/mode.service';
@@ -41,17 +39,21 @@ export class ModeFormComponent implements OnInit {
   }
 
   onSubmitModel(selectedMode: Mode) {
-    if (selectedMode) {
-      this.modeService
-        .changeMode(selectedMode)
-        // .pipe(mergeMap(() => this.translateService.get('modeDialog.tips1')))
-        .subscribe(() => {
-          this.modalComponent.closeTrigger$.next();
-          this.sharedService.response$.next({
-            type: 'normal',
-            message: 'modeDialog.tips1',
-          });
+    if (selectedMode === Mode.NAVIGATION) {
+      this.modeService.changeMode(selectedMode).subscribe(() => {
+        this.modalComponent.closeTrigger$.next();
+        this.sharedService.response$.next({
+          type: 'normal',
+          message: 'modeDialog.tips1',
         });
+      });
+    } else if (selectedMode === Mode.FOLLOW_ME) {
+      this.sharedService.isOpenModal$.next({
+        modal: 'follow-me-inspector',
+        modalHeader: 'followMeInspector',
+        isDisableClose: true,
+        closeAfterRefresh: false
+      });
     }
   }
 

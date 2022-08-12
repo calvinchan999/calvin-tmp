@@ -8,20 +8,24 @@ const routes: Routes = [
     path: '',
     data: { title: 'charging' },
     children: [
+      // {
+      //   path: '',
+      //   redirectTo: 'charging-dialog',
+      // },
+      // {
+      //   path: 'charging-dialog',
+      //   data: { title: 'chargingDialog' },
+      //   component: DockingComponent,
+      // },
       {
         path: '',
-        redirectTo: 'charging-dialog',
-      },
-      {
-        path: 'charging-dialog',
-        data: { title: 'chargingDialog' },
-        component: DockingComponent,
+        redirectTo: 'charging-mqtt',
       },
       {
         path: 'charging-mqtt',
         data: { title: 'chargingMqtt' },
         component: ChargingMqttComponent,
-      }
+      },
     ],
   },
 ];

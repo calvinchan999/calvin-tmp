@@ -7,6 +7,9 @@ export const environment = {
     auth: '/api/authentication/v1/login',
     refreshAuth: '/api/authentication/v1/refresh',
     task: '/api/task/v1/move',
+    taskHold: '/api/task/v1/hold',
+    taskRelease: '/api/task/v1/release',
+    taskStatus: '/api/task/v1/status',
     followMe: '/api/mode/v1/followMe',
     navigation: '/api/mode/v1/navigation',
     mode: '/api/mode/v1',
@@ -23,8 +26,9 @@ export const environment = {
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
     mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
     lidar: '/api/lidar/v1',
+    pairing: '/api/followMe/v1/pairing',
     floorPlans: '/api/floorPlan/v1',
-    floorPlanByMapCode: (code: string) => `/api/floorPlan/v1/mapCode/${code}`,
-    pairing: '/api/followMe/v1/pairing'
+    floorPlanByMapCode: (code: string) => `/api/floorPlan/v1/${code}`,
+    floorPlanImage: (code: string) => `/api/floorPlan/v1/${code}/image`
   },
 };

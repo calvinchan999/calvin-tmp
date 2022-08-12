@@ -8,6 +8,7 @@ import { Text } from 'konva/lib/shapes/Text';
 import { Group } from 'konva/lib/Group';
 import { forkJoin, Observable, of } from 'rxjs';
 import { Line } from 'konva/lib/shapes/Line';
+import { Animation } from 'konva/lib/Animation';
 import { tap } from 'rxjs/operators';
 
 @Injectable({
@@ -102,12 +103,19 @@ export class MapWrapperService {
   createRosMapImg$(data): Observable<KonvaImage> {
     this.rosMap = new KonvaImage(data);
     this.rosMap.cache({ pixelRatio: 0.5 }); // handle large image
-    return of( this.rosMap);
+    return of(this.rosMap);
+  }
+
+  updateRosMapLayerPixelRatio(pixelRatio): Observable<any> {
+    return of(this.rosMapLayer.getCanvas().setPixelRatio(pixelRatio));
+  }
+
+  updateFloorPlanLayerPixelRatio(pixelRatio): Observable<any> {
+    return of(this.floorPlanLayer.getCanvas().setPixelRatio(pixelRatio));
   }
 
   updateRosMapLayerPosition(point) {
     this.stage.position(point);
-
     return null;
   }
 
@@ -116,13 +124,13 @@ export class MapWrapperService {
   }
 
   // test
-  updateRosMapPosition(data): Observable<any>{
-    // offsetX: 79.03,
-    // offsetY: 224.34,
-    // x: 197.33,
-    // y: 272.95
-    return of(this.rosMap.position({x: 197.33, y:272.95}));
-  }
+  // updateRosMapPosition(data): Observable<any> {
+  //   // offsetX: 79.03,
+  //   // offsetY: 224.34,
+  //   // x: 197.33,
+  //   // y: 272.95
+  //   return of(this.rosMap.position({ x: 197.33, y: 272.95 }));
+  // }
 
   // updateRosMapLayerOffset$(offset): Observable<Layer> {
   //   return of(this.rosMapLayer.offset({ x: offset.x, y: offset.y }));
@@ -134,7 +142,7 @@ export class MapWrapperService {
 
   createFloorPlanImg$(data): Observable<KonvaImage> {
     this.floorPlan = new KonvaImage(data);
-    this.floorPlan.cache({ pixelRatio: 1 }); // handle large image 
+    this.floorPlan.cache({ pixelRatio: 1 }); // handle large image
     return of(this.floorPlan);
   }
 
@@ -170,30 +178,13 @@ export class MapWrapperService {
     return of(this.stage.scale({ x: scale, y: scale }));
   }
 
-  // updateRosTargetPosition$(data): Observable<any> {
-  //   const callback = imgData => {
-  //     this.targetWaypoint = new KonvaImage(imgData);
-  //     return of(this.rosMapLayer.add(this.targetWaypoint));
-  //   };
-
-  //   if (this.rosMapLayer.find('.targetWaypoint').length <= 0) {
-  //     return callback(data);
-  //   } else {
-  //     return this.destroyTarget$().pipe(
-  //       tap(() => {
-  //         callback(data);
-  //       })
-  //     );
-  //   }
-  // }
-
-  updateFloorPlanTargetPosition$(data): Observable<any> {
+  updateRosTargetPosition$(data): Observable<any> {
     const callback = imgData => {
       this.targetWaypoint = new KonvaImage(imgData);
-      return of(this.floorPlanLayer.add(this.targetWaypoint));
+      return of(this.rosMapLayer.add(this.targetWaypoint));
     };
 
-    if (this.floorPlanLayer.find('.targetWaypoint').length <= 0) {
+    if (this.rosMapLayer.find('.targetWaypoint').length <= 0) {
       return callback(data);
     } else {
       return this.destroyTarget$().pipe(
@@ -204,9 +195,31 @@ export class MapWrapperService {
     }
   }
 
+  // updateFloorPlanTargetPosition$(data): Observable<any> {
+  //   const callback = imgData => {
+  //     this.targetWaypoint = new KonvaImage(imgData);
+  //     return of(this.floorPlanLayer.add(this.targetWaypoint));
+  //   };
+  //   console.log(this.floorPlanLayer.find('.targetWaypoint'));
+  //   if (this.floorPlanLayer.find('.targetWaypoint').length <= 0) {
+  //     return callback(data);
+  //   } else {
+  //     return this.destroyTarget$().pipe(
+  //       tap(() => {
+  //         callback(data);
+  //       })
+  //     );
+  //   }
+  // }
+
   updateRobotCurrentPosition(point) {
-    console.log(point);
     this.robotCurrentPositionPointer.setAttrs(point);
+    // floorplan
+    // if ((this.floorPlanLayer.find('.currentPosition').length as number) <= 0) {
+    //   this.floorPlanLayer.add(this.robotCurrentPositionPointer);
+    // }
+
+    // ros
     if ((this.rosMapLayer.find('.currentPosition').length as number) <= 0) {
       this.rosMapLayer.add(this.robotCurrentPositionPointer);
     }
@@ -219,7 +232,6 @@ export class MapWrapperService {
   updateRosLayerDraggable$(status: boolean): Observable<Layer> {
     return of(this.rosMapLayer.draggable(status));
   }
-  
 
   createLidarRedpoint$(point): Observable<Circle> {
     const liderPoint = new Circle(point);
@@ -256,24 +268,25 @@ export class MapWrapperService {
     ]);
   }
 
-  destroyStage() {
-    if (this.rosMap) this.rosMap.destroy(); // Shape
-    if (this.floorPlan) this.floorPlan.destroy(); // Shape
-    if (this.targetWaypoint) this.targetWaypoint.destroy(); // Shape
-    if (this.line) this.line.destroy(); // Shape
-    if (this.angleLabel) this.angleLabel.destroy(); // Shape
-    if (this.localizationPoint) this.localizationPoint.destroy(); // Shape
-    if (this.centerOfWaypoint) this.centerOfWaypoint.destroy(); // Shape
-    if (this.robotCurrentPositionPointer)
-      this.robotCurrentPositionPointer.destroy(); // Shape
+  destroyStage(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.rosMap?.remove(); // Shape
+      this.floorPlan?.remove(); // Shape
+      this.targetWaypoint?.remove(); // Shape
+      this.line?.remove(); // Shape
+      this.angleLabel?.remove(); // Shape
+      this.localizationPoint?.remove(); // Shape
+      this.centerOfWaypoint?.remove(); // Shape
+      this.robotCurrentPositionPointer?.remove(); // Shape
 
-    this.localizationToolsGroup.destroy(); // Group
-    this.lidarPointsGroup.destroy(); // Group
-    this.waypoints.destroy(); // Group
+      this.localizationToolsGroup?.destroy(); // Group
+      this.lidarPointsGroup?.destroy(); // Group
+      this.waypoints?.destroy(); // Group
 
-    this.rosMapLayer.destroy(); // Layer
-    this.floorPlanLayer.destroy(); // Layer
-
-    // this.stage.destroy();
+      this.rosMapLayer?.destroy(); // Layer
+      this.floorPlanLayer?.destroy(); // Layer
+      this.stage?.destroy();
+      resolve(true);
+    });
   }
 }
