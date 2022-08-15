@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService as NgxMqttService } from 'ngx-mqtt';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
 import { IndexedDbService } from './indexed-db.service';
 import * as moment from 'moment-timezone';
@@ -17,7 +17,7 @@ export interface Config {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MqttService {
   private client: any;
@@ -59,15 +59,14 @@ export class MqttService {
         port: Number(config.mqtt.port_no),
         path: '/mqtt',
         clientId: this.clientId,
-        protocol: config.mqtt.protocol,
+        protocol: config.mqtt.protocol
       });
 
-      this._mqttService.onConnect.subscribe((connack) => {
+      this._mqttService.onConnect.subscribe(connect => {
         console.log('CONNECTED');
-        // console.log(connack);
       });
 
-      this._mqttService.onError.subscribe((err) => {
+      this._mqttService.onError.subscribe(err => {
         console.log(`onError`);
         console.log(err);
 
@@ -76,15 +75,13 @@ export class MqttService {
           description: JSON.stringify({ ...err, ...{ event: 'onError' } }),
           created_at: moment(new Date())
             .tz('Asia/Hong_Kong')
-            .format('YYYY-MM-DD HH:mm:ss'),
+            .format('YYYY-MM-DD HH:mm:ss')
         });
       });
 
       this._mqttService
         .observe('rvautotech/fobo/battery')
         .subscribe((message: IMqttMessage) => {
-          // console.log('rvautotech/fobo/battery');
-          // console.log(new TextDecoder('utf-8').decode(message.payload));
           this.battery$.next(new TextDecoder('utf-8').decode(message.payload));
         });
 
@@ -108,24 +105,6 @@ export class MqttService {
           );
         });
 
-      // this._mqttService
-      //   .observe('rvautotech/fobo/map/active')
-      //   .subscribe((message: IMqttMessage) => {
-      //     console.log('rvautotech/fobo/map/active');
-      //     console.log(new TextDecoder('utf-8').decode(message.payload));
-      //     this.$mapActive.next(
-      //       new TextDecoder('utf-8').decode(message.payload)
-      //     );
-      //   });
-
-      // this._mqttService
-      //   .observe('rvautotech/fobo/state')
-      //   .subscribe((message: IMqttMessage) => {
-      //     console.log('rvautotech/fobo/state');
-      //     console.log(new TextDecoder('utf-8').decode(message.payload));
-      //     this.$state.next(new TextDecoder('utf-8').decode(message.payload));
-      //   });
-
       this._mqttService
         .observe('rvautotech/fobo/pose')
         .subscribe((message: IMqttMessage) => {
@@ -144,16 +123,6 @@ export class MqttService {
           );
         });
 
-      // this._mqttService
-      // .observe('rvautotech/fobo/obstacle/detection')
-      // .subscribe((message: IMqttMessage) => {
-      //   console.log('rvautotech/fobo/obstacle/detection');
-      //   console.log(new TextDecoder('utf-8').decode(message.payload));
-      //   this.$obstacleDetction.next(
-      //     new TextDecoder('utf-8').decode(message.payload)
-      //   );
-      // });
-
       this._mqttService
         .observe('rvautotech/fobo/followme/pairing')
         .subscribe((message: IMqttMessage) => {
@@ -164,21 +133,9 @@ export class MqttService {
           );
         });
 
-      //   this._mqttService
-      //     .observe('rvautotech/fobo/execution')
-      //     .subscribe((message: IMqttMessage) => {
-      //       console.log('rvautotech/fobo/execution');
-      //       console.log(new TextDecoder('utf-8').decode(message.payload));
-      //       this.execution$.next(
-      //         new TextDecoder('utf-8').decode(message.payload)
-      //       );
-      //     });
-
       this._mqttService
         .observe('rvautotech/fobo/departure')
         .subscribe((message: IMqttMessage) => {
-          // console.log('rvautotech/fobo/departure');
-          // console.log(new TextDecoder('utf-8').decode(message.payload));
           this.departure$.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
@@ -209,7 +166,7 @@ export class MqttService {
 
   public unsafePublish(topic: string, payload: string): Observable<void> {
     return of(
-      this._mqttService.unsafePublish(topic, payload, { qos: 1, retain: true })
+      this._mqttService.unsafePublish(topic, payload, { qos: 2, retain: true })
     );
   }
 }
