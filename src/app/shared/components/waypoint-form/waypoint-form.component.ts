@@ -76,26 +76,27 @@ export class WaypointFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 map(data => {
                   const { pointList, mapList } = data;
-
-                  return mapList[0]['pointList'].map(ros => {
-                    let splitName = null;
-                    const floorPlanPointer = pointList.filter(
-                      s => s.pointCode === ros.pointCode
-                    )[0];
-                    if (floorPlanPointer) {
-                      splitName = floorPlanPointer.pointCode.split('%');
-                    }
-
-                    return {
-                      ...ros,
-                      ...{
-                        floorPlanX: floorPlanPointer.guiX,
-                        floorPlanY: floorPlanPointer.guiY,
-                        floorPlanName: splitName[1] ?? splitName[0],
-                        floorPlanCode: floorPlanPointer.pointCode
+                  if (mapList[0]['pointList']?.length > 0) {
+                    return mapList[0]['pointList'].map(ros => {
+                      let splitName = null;
+                      const floorPlanPointer = pointList.filter(
+                        s => s.pointCode === ros.pointCode
+                      )[0];
+                      if (floorPlanPointer) {
+                        splitName = floorPlanPointer.pointCode.split('%');
                       }
-                    };
-                  });
+
+                      return {
+                        ...ros,
+                        ...{
+                          floorPlanX: floorPlanPointer.guiX,
+                          floorPlanY: floorPlanPointer.guiY,
+                          floorPlanName: splitName[1] ?? splitName[0],
+                          floorPlanCode: floorPlanPointer.pointCode
+                        }
+                      };
+                    });
+                  }
                 })
               ),
             of(null)
