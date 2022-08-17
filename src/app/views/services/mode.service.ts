@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 // export  type Mode = 'FOLLOW_ME' | 'NAVIGATION';
 export enum Mode {
   FOLLOW_ME = 'FOLLOW_ME',
-  NAVIGATION = 'NAVIGATION',
+  NAVIGATION = 'NAVIGATION'
 }
 export interface ModeResponse {
   followMeStandalone: string;
@@ -24,7 +24,7 @@ export interface PairingResponse {
 export type PairingState = 'UNPAIRED' | 'PAIRED' | 'PAIRING' | 'REPAIRING';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ModeService {
   constructor(
@@ -50,10 +50,8 @@ export class ModeService {
 
   followMeWithMap(map: string): Observable<any> {
     return this.http.post<any>(
-      `${
-        this.appConfigService.getConfig().server.endpoint +
-        environment.api.followMe
-      }/${map}`,
+      `${this.appConfigService.getConfig().server.endpoint +
+        environment.api.followMe}/${map}`,
       {}
     );
   }
