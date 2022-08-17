@@ -14,36 +14,32 @@ const routes: Routes = [
       {
         path: 'dashboard',
         data: { title: 'dashboard' },
-        component: HomeComponent,
+        component: HomeComponent
       },
       {
         path: 'map',
         data: { title: 'currentMap' },
         canActivateChild: [AuthGuard],
         loadChildren: () =>
-          import('./views/map/map.module').then((m) => m.MapModule),
+          import('./views/map/map.module').then(m => m.MapModule)
       },
       {
         path: 'mode',
         data: { title: 'mode' },
         canActivateChild: [AuthGuard],
         loadChildren: () =>
-          import('./views/mode/mode.module').then((m) => m.ModeModule),
+          import('./views/mode/mode.module').then(m => m.ModeModule)
       },
       {
         path: 'waypoint',
         loadChildren: () =>
-          import('./views/waypoint/waypoint.module').then(
-            (m) => m.WaypointModule
-          ),
+          import('./views/waypoint/waypoint.module').then(m => m.WaypointModule)
       },
       {
         path: 'charging',
         // canActivateChild: [AuthGuard],
         loadChildren: () =>
-          import('./views/charging/charging.module').then(
-            (m) => m.ChargingModule
-          ),
+          import('./views/charging/charging.module').then(m => m.ChargingModule)
       },
       {
         path: 'localization',
@@ -51,24 +47,24 @@ const routes: Routes = [
         data: { title: 'localization' },
         loadChildren: () =>
           import('./views/localization/localization.module').then(
-            (m) => m.LocalizationModule
-          ),
+            m => m.LocalizationModule
+          )
       },
       {
         path: 'login',
         data: { title: 'signIn' },
-        component: SignInComponent,
-      },
-    ],
-  },
+        component: SignInComponent
+      }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
-      scrollPositionRestoration: 'top',
-    }),
+      scrollPositionRestoration: 'top'
+    })
   ],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {}

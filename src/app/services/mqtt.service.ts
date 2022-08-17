@@ -17,7 +17,7 @@ export interface Config {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MqttService {
   private client: any;
@@ -59,15 +59,14 @@ export class MqttService {
         port: Number(config.mqtt.port_no),
         path: '/mqtt',
         clientId: this.clientId,
-        protocol: config.mqtt.protocol,
+        protocol: config.mqtt.protocol
       });
 
-      this._mqttService.onConnect.subscribe((connack) => {
+      this._mqttService.onConnect.subscribe(connect => {
         console.log('CONNECTED');
-        // console.log(connack);
       });
 
-      this._mqttService.onError.subscribe((err) => {
+      this._mqttService.onError.subscribe(err => {
         console.log(`onError`);
         console.log(err);
 
@@ -76,7 +75,7 @@ export class MqttService {
           description: JSON.stringify({ ...err, ...{ event: 'onError' } }),
           created_at: moment(new Date())
             .tz('Asia/Hong_Kong')
-            .format('YYYY-MM-DD HH:mm:ss'),
+            .format('YYYY-MM-DD HH:mm:ss')
         });
       });
 
@@ -209,7 +208,7 @@ export class MqttService {
 
   public unsafePublish(topic: string, payload: string): Observable<void> {
     return of(
-      this._mqttService.unsafePublish(topic, payload, { qos: 1, retain: true })
+      this._mqttService.unsafePublish(topic, payload, { qos: 2, retain: true })
     );
   }
 }

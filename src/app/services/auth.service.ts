@@ -12,15 +12,15 @@ export interface Auth {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   public isAuthenticatedSubject: BehaviorSubject<any> = new BehaviorSubject(
     this.isAuthenticated()
   );
-  public currentPayloadSubject: BehaviorSubject<any> = new BehaviorSubject(
-    this.payload()
-  );
+  // public currentPayloadSubject: BehaviorSubject<any> = new BehaviorSubject(
+  //   this.payload()
+  // );
 
   constructor(
     private http: HttpClient,
@@ -31,32 +31,30 @@ export class AuthService {
     return sessionStorage.getItem('payload');
   }
 
-  // isAuthenticated$(): Observable<boolean> {
-  //   return this.isAuthenticatedSubject.asObservable();
-  // }
-
   private payload(): any {
     const payload: any = sessionStorage.getItem('payload');
     return payload;
   }
 
-  payload$() {
-    return this.currentPayloadSubject.asObservable();
-  }
+  // payload$() {
+  //   return this.currentPayloadSubject.asObservable();
+  // }
 
   login(userId: string, password: string): Observable<any> {
     const loginUrl = `${this.appConfigService.getConfig().server.endpoint}${
       environment.api.auth
     }`;
 
-    return this.http.post<Auth>(loginUrl, { userId, password }).pipe(
-      tap((res) => this.storeToken(res)),
-      catchError((err) => {
-        this.removeToken();
-        return throwError(err);
-      }),
-      finalize(() => this.isAuthenticatedSubject.next(this.isAuthenticated()))
-    );
+    return this.http
+      .post<Auth>(loginUrl, { userId, password })
+      .pipe(
+        tap(res => this.storeToken(res)),
+        catchError(err => {
+          this.removeToken();
+          return throwError(err);
+        }),
+        finalize(() => this.isAuthenticatedSubject.next(this.isAuthenticated()))
+      );
   }
 
   logout(): Observable<any> {
@@ -72,7 +70,7 @@ export class AuthService {
       const payload = {
         userId: oldPayload.userId,
         accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
+        refreshToken: data.refreshToken
       };
 
       return sessionStorage.setItem('payload', JSON.stringify(payload));
@@ -104,8 +102,8 @@ export class AuthService {
         { refreshToken, userId }
       )
       .pipe(
-        tap((res) => this.storeToken(res)),
-        catchError((err) => {
+        tap(res => this.storeToken(res)),
+        catchError(err => {
           this.removeToken();
           return throwError(err);
         }),

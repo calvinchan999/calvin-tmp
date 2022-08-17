@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 import { map, mergeMap, tap, take } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
