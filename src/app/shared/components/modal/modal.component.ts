@@ -4,6 +4,7 @@ import {
   ContentChild,
   ElementRef,
   Input,
+  OnDestroy,
   OnInit,
   TemplateRef,
 } from '@angular/core';
@@ -15,7 +16,7 @@ import { Subject } from 'rxjs';
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss'],
 })
-export class ModalComponent implements OnInit {
+export class ModalComponent implements OnInit, OnDestroy {
   @ContentChild('modalHeader') header: TemplateRef<any>;
   @ContentChild('modalBody') body: TemplateRef<any>;
   @ContentChild('modalFooter') footer: TemplateRef<any>;
@@ -39,8 +40,6 @@ export class ModalComponent implements OnInit {
   }
 
   ngOnInit() {}
-
-  ngOnChanges() {}
 
   ngOnDestroy() {
     this.close();

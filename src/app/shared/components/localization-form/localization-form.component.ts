@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
@@ -14,6 +14,7 @@ import {
 } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
+import { MapEditorType } from '../../utils/map-wrapper/map-wrapper.component';
 
 export interface Metadata {
   x: number;
@@ -25,21 +26,21 @@ export interface Metadata {
   templateUrl: './localization-form.component.html',
   styleUrls: ['./localization-form.component.scss']
 })
-export class LocalizationFormComponent implements OnInit {
+export class LocalizationFormComponent implements OnInit, OnDestroy {
   sub = new Subscription();
   floorPlanImg: string;
   rosMapImage: string;
   metaData: Metadata;
   message: any;
   type: string;
-
+  mapEditorType = MapEditorType['LOCALIZATIONEDITOR'];
   waypointLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
-    mergeMap(map => {
-      if (map && map?.length > 0) {
+    mergeMap(mapResult => {
+      if (mapResult && mapResult?.length > 0) {
         const filter = _.pickBy(
-          { mapName: map, initialLocalization: 'true' },
+          { mapName: mapResult, initialLocalization: 'true' },
           _.identity
         );
         return this.waypointService.getWaypoint({ filter });
@@ -50,7 +51,7 @@ export class LocalizationFormComponent implements OnInit {
     map(data => {
       const dataTransfor = [];
       if (data?.length > 0) {
-        for (let i of data) {
+        for (const i of data) {
           const splitName = i.name.split('%');
           dataTransfor.push({
             ...i,
@@ -161,7 +162,7 @@ export class LocalizationFormComponent implements OnInit {
             status: 'success'
           });
 
-          let audio = new Audio();
+          const audio = new Audio();
           audio.src = this.localizationCorrectBgmPath;
           audio.play();
 
@@ -191,6 +192,8 @@ export class LocalizationFormComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.sub) this.sub.unsubscribe();
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }

@@ -2,7 +2,7 @@
   <div class="localization-map-wrapper" *ngIf="rosMapImage">
     <div class="container-fluid localization-map-container">
       <app-map-wrapper
-        type="localizationEditor"
+        [type]="mapEditorType"
         [floorPlan]="floorPlanImg"
         [mapImage]="rosMapImage"
         [metaData]="metaData"

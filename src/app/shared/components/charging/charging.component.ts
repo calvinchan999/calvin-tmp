@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { of, Subscription } from 'rxjs';
@@ -14,7 +14,7 @@ import { DockingService } from 'src/app/views/services/docking.service';
   templateUrl: './charging.component.html',
   styleUrls: ['./charging.component.scss']
 })
-export class ChargingComponent implements OnInit {
+export class ChargingComponent implements OnInit, OnDestroy {
   sub = new Subscription();
   batterySub = new Subscription();
   batteryPercentage: number = 0;

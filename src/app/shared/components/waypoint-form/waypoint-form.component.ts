@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap, take } from 'rxjs/operators';
@@ -15,21 +15,18 @@ import { SharedService } from 'src/app/services/shared.service';
   templateUrl: './waypoint-form.component.html',
   styleUrls: ['./waypoint-form.component.scss']
 })
-export class WaypointFormComponent implements OnInit {
+export class WaypointFormComponent implements OnInit, OnDestroy {
   waypointLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
     take(1),
     mergeMap((currentMap: string) => {
       if (currentMap) {
-        const filter = _.pickBy(
-          { mapName: currentMap },
-          _.identity
-        );
-        return this.waypointService.getWaypoint({filter}).pipe(
+        const filter = _.pickBy({ mapName: currentMap }, _.identity);
+        return this.waypointService.getWaypoint({ filter }).pipe(
           map(data => {
             const dataTransfor = [];
-            for (let i of data) {
+            for (const i of data) {
               const splitName = i.name.split('%');
               dataTransfor.push({
                 ...i,
@@ -96,6 +93,8 @@ export class WaypointFormComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.sub) this.sub.unsubscribe();
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -7,6 +7,7 @@ import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
+import { MapEditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { Metadata } from '../localization-form/localization-form.component';
 
 @Component({
@@ -14,7 +15,7 @@ import { Metadata } from '../localization-form/localization-form.component';
   templateUrl: './destination.component.html',
   styleUrls: ['./destination.component.scss'],
 })
-export class DestinationComponent implements OnInit {
+export class DestinationComponent implements OnInit, OnDestroy {
   // @Input() payload: any;
   rosMapImage: string;
   metaData: Metadata;
@@ -22,6 +23,7 @@ export class DestinationComponent implements OnInit {
 
   sub = new Subscription();
   targetWaypointData;
+  mapEditorType = MapEditorType['POSITIONLISTENER'];
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,

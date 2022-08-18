@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModeService, Mode } from 'src/app/views/services/mode.service';
 import { ModalComponent } from '../modal/modal.component';
@@ -11,7 +11,7 @@ import { of, Subscription } from 'rxjs';
   templateUrl: './follow-me-inspector-dialog.component.html',
   styleUrls: ['./follow-me-inspector-dialog.component.scss'],
 })
-export class FollowMeInspectorDialogComponent implements OnInit {
+export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
   sub = new Subscription();
   constructor(
     private modeService: ModeService,

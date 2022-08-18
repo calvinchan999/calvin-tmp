@@ -34,8 +34,8 @@ export class HomeComponent implements OnInit {
       console.log(`mode: ${mode}`);
     });
 
-    this.sharedService.currentMap$.pipe(take(1)).subscribe((map: string) => {
-      this.map = map;
+    this.sharedService.currentMap$.pipe(take(1)).subscribe((currentMap: string) => {
+      this.map = currentMap;
     });
 
     this.sharedService.currentPairingStatus$

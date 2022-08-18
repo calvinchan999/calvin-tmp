@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
@@ -23,7 +23,7 @@ import { Auth, AuthService } from 'src/app/services/auth.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentLang: string = '';
   powerSupplyStatus: string = '';
   percentage: number = 0;
@@ -57,15 +57,15 @@ export class HeaderComponent implements OnInit {
         .pipe(
           filter((event) => event instanceof NavigationEnd),
           map(() => this.route.snapshot),
-          map((route) => {
-            while (route.firstChild) {
-              route = route.firstChild;
+          map((parm) => {
+            while (parm.firstChild) {
+              parm = parm.firstChild;
             }
-            return route;
+            return parm;
           })
         )
-        .subscribe((route: ActivatedRouteSnapshot) => {
-          const { title } = route.data;
+        .subscribe((res: ActivatedRouteSnapshot) => {
+          const { title } = res.data;
           this.currentPageTitle = title;
         })
     );

@@ -2,7 +2,7 @@
   <div class="card ">
     <app-map-wrapper
       class="map"
-      type="positionListener"
+      [type]="mapEditorType"
       [mapImage]="rosMapImage"
       [currentRobotPose]="currentRobotPose"
       [metaData]="metaData"

@@ -7,7 +7,7 @@ import {
   HttpErrorResponse,
   HttpResponse
 } from '@angular/common/http';
-import { empty, Observable, of, TimeoutError } from 'rxjs';
+import { Observable, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, timeout } from 'rxjs/operators';

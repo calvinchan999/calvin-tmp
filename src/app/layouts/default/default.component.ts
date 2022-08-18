@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { iif, of, Subject, Subscription } from 'rxjs';
@@ -30,7 +30,7 @@ import * as _ from 'lodash';
   templateUrl: './default.component.html',
   styleUrls: ['./default.component.scss']
 })
-export class DefaultComponent implements OnInit {
+export class DefaultComponent implements OnInit, OnDestroy {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   private ngUnsubscribe = new Subject();
@@ -409,10 +409,10 @@ export class DefaultComponent implements OnInit {
         .pipe(
           take(1),
           mergeMap(mapName => {
-            const filter = _.pickBy({ mapName }, _.identity);
-            return this.waypointService.getWaypoint({ filter }).pipe(
+            const mapfilter = _.pickBy({ mapName }, _.identity);
+            return this.waypointService.getWaypoint({ mapfilter }).pipe(
               map(waypoints => {
-                for (let waypoint of waypoints) {
+                for (const waypoint of waypoints) {
                   if (waypoint.name.indexOf(waypointName) > -1) {
                     return waypoint;
                   }
