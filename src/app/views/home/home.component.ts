@@ -67,10 +67,6 @@ export class HomeComponent implements OnInit {
           );
         }
       });
-
-    // this.sharedService.isProcessingTask$.subscribe((task: boolean) => {
-    //   this.isProcessingTask = task;
-    // })
   }
 
   ngOnInit() {

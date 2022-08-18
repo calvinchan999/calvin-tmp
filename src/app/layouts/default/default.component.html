@@ -16,10 +16,6 @@
   disableClose="true"
   [closeAfterRefresh]="closeDialogAfterRefresh"
 >
-  <!-- <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
-    ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
-  > -->
-
   <ng-template #modalHeader
     ><h2 class="modal-title">{{ response.type | translate }}</h2></ng-template
   >

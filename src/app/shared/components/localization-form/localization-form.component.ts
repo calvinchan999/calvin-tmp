@@ -21,6 +21,7 @@ export interface Metadata {
   y: number;
   resolution: number;
 }
+
 @Component({
   selector: 'app-localization-form',
   templateUrl: './localization-form.component.html',
@@ -33,7 +34,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   metaData: Metadata;
   message: any;
   type: string;
-  mapEditingType = Category.LOCALIZATIONEDITER;
+  mapEditingType = Category.LOCALIZATIONEDITOR;
   waypointLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
@@ -83,8 +84,6 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
           .getMapImage(currentMap)
           .pipe(
             mergeMap(async data => {
-              // const img: string = URL.createObjectURL(data);
-              // return (this.rosMapData = { map: img });
               const reader = new FileReader();
               reader.readAsDataURL(data);
               reader.onloadend = () => {

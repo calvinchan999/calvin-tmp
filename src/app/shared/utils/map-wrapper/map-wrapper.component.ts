@@ -55,7 +55,7 @@ export class MapWrapperComponent
   floorPlanScale: number = 1;
   scaleMultiplier: number = 0.9; // 0.99
   rosMap;
-  rosMapPixelRatio: number = 1;
+  rosMapPixelRatio: number = 0.7;
   floorPlanMap;
 
   isReset: boolean = false;
@@ -70,24 +70,9 @@ export class MapWrapperComponent
     private waypointService: WaypointService,
     private mapService: MapService,
     private mapWrapperService: MapWrapperService
-  ) {
-    console.log(this.floorPlanImage);
-  }
+  ) {}
 
-  ngOnInit() {
-    // console.log(`--------------------`);
-    // console.log(this.mapWrapperService.getStage());
-    // console.log(this.mapWrapperService.getLocalizationPoint());
-    // console.log(this.pointLists);
-    // console.log(this.mapEditingType);
-    // console.log(this.floorPlanImage);
-    // console.log(this.floorPlanData);
-    // console.log(this.rosMapData);
-    // console.log(this.currentRobotPose);
-    // console.log(this.metaData);
-    // console.log(this.targetWaypoints);
-    // console.log(`--------------------`);
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     if (this.rosMapData?.map) {
@@ -107,9 +92,6 @@ export class MapWrapperComponent
         rosImage.onerror = err => {
           observer.error(err);
         };
-        console.log(`debug`);
-        console.log(this.rosMapData?.map);
-        console.log(this.rosMapData);
         rosImage.src = this.rosMapData?.map ? this.rosMapData.map : '';
       });
 
@@ -151,9 +133,11 @@ export class MapWrapperComponent
               const rosScale = this.rosScale;
               const rosLayer = this.mapWrapperService.getRosMapLayer();
               const floorPlanLayer = this.mapWrapperService.getFloorPlanLayer();
-              if (this.mapEditingType === Category.LOCALIZATIONEDITER) {
+              if (this.mapEditingType === Category.LOCALIZATIONEDITOR) {
                 if (img[0]) {
                   const rosMap = img[0];
+                  console.log(`width: ${rosMap.width}`);
+                  console.log(`height: ${rosMap.height}`);
                   const data = {
                     image: rosMap,
                     width: rosMap.width,
@@ -197,7 +181,7 @@ export class MapWrapperComponent
                     )
                     .subscribe();
                 }
-              } else if (this.mapEditingType === Category.POSITIONLISTNER) {
+              } else if (this.mapEditingType === Category.POSITIONLISTENER) {
                 const floorPlanPromise = floorPlan =>
                   new Promise((resolve, reject) => {
                     if (floorPlan) {
@@ -399,7 +383,7 @@ export class MapWrapperComponent
                 }
               });
 
-              if (this.mapEditingType === Category.LOCALIZATIONEDITER) {
+              if (this.mapEditingType === Category.LOCALIZATIONEDITOR) {
                 rosMapLayer.on('mousedown touchstart', async (event: any) => {
                   if (this.isReset) {
                     if (rosMapLayer.find('.waypoint').length <= 0) {
@@ -585,14 +569,14 @@ export class MapWrapperComponent
               }
             }),
             mergeMap(() => {
-              if (this.mapEditingType === Category.LOCALIZATIONEDITER) {
+              if (this.mapEditingType === Category.LOCALIZATIONEDITOR) {
                 return this.getRobotCurrentPosition$();
               } else {
                 return of(null);
               }
             }),
             mergeMap(() => {
-              if (this.mapEditingType === Category.LOCALIZATIONEDITER) {
+              if (this.mapEditingType === Category.LOCALIZATIONEDITOR) {
                 return this.getLidarData$();
               } else {
                 return of(null);
@@ -629,12 +613,12 @@ export class MapWrapperComponent
     // handle 2 cases "localizationEditor" & "positionListener"
     // localizationEditor
     // user can monitior the robot currnet position in positionListener mode
-    if (this.mapEditingType === Category.LOCALIZATIONEDITER) {
+    if (this.mapEditingType === Category.LOCALIZATIONEDITOR) {
       forkJoin([
         this.createRobotCurrentPosition(),
         this.createLidarRedpoints()
       ]).subscribe();
-    } else if (this.mapEditingType === Category.POSITIONLISTNER) {
+    } else if (this.mapEditingType === Category.POSITIONLISTENER) {
       forkJoin([
         this.createTargetPoint(),
         this.createRobotCurrentPosition()

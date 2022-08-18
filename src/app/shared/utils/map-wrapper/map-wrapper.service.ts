@@ -102,7 +102,7 @@ export class MapWrapperService {
 
   createRosMapImg$(data): Observable<KonvaImage> {
     this.rosMap = new KonvaImage(data);
-    this.rosMap.cache({ pixelRatio: 0.5 }); // handle large image
+    // this.rosMap.cache({ pixelRatio: 0.5 }); // handle large image
     return of(this.rosMap);
   }
 

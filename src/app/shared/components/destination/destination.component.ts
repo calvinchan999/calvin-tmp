@@ -16,7 +16,7 @@ import { Metadata } from '../localization-form/localization-form.component';
   styleUrls: ['./destination.component.scss']
 })
 export class DestinationComponent implements OnInit, OnDestroy {
-  type = Category.POSITIONLISTNER;
+  type = Category.POSITIONLISTENER;
   floorPlanData: any = null;
   rosMapData: any = null;
   metaData: Metadata;
