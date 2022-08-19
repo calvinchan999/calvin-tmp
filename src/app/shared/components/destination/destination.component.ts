@@ -39,7 +39,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
             tap(mapImage => {
               const img: string = URL.createObjectURL(mapImage);
               return (this.rosMapImage = img);
-            })
+            }),
+            map(() => currentMap)
           )
         ),
         switchMap(currentMap =>
@@ -54,25 +55,6 @@ export class DestinationComponent implements OnInit, OnDestroy {
           setTimeout(() => this.router.navigate(['/']), 5000);
         }
       );
-    // this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
-    //   console.log('currentMap: ', currentMap);
-    //   if (currentMap) {
-    //     this.mapService
-    //       .getMapImage(currentMap)
-    //       .pipe(
-    //         mergeMap(async (data) => {
-    //           const img: string = URL.createObjectURL(data);
-    //           return (this.rosMapImage = img);
-    //         }),
-    //         mergeMap(() =>
-    //           this.mapService
-    //             .getMapMetaData(currentMap)
-    //             .pipe(tap((metaData) => (this.metaData = metaData)))
-    //         )
-    //       )
-    //       .subscribe();
-    //   }
-    // });
 
     this.sub.add(
       this.mqttService.pose$

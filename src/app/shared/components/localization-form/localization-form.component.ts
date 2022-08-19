@@ -33,7 +33,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   metaData: Metadata;
   message: any;
   type: string;
-  mapEditorType = MapEditorType['LOCALIZATIONEDITOR'];
+  mapEditorType = MapEditorType.LOCALIZATIONEDITOR;
   waypointLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
