@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { map, mergeMap, tap, finalize, delay } from 'rxjs/operators';
+import { map, mergeMap, tap, finalize, delay, switchMap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -13,7 +13,7 @@ import { Metadata } from '../localization-form/localization-form.component';
 @Component({
   selector: 'app-destination',
   templateUrl: './destination.component.html',
-  styleUrls: ['./destination.component.scss'],
+  styleUrls: ['./destination.component.scss']
 })
 export class DestinationComponent implements OnInit, OnDestroy {
   // @Input() payload: any;
@@ -32,31 +32,53 @@ export class DestinationComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private router: Router
   ) {
-    this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
-      console.log('currentMap: ', currentMap);
-      if (currentMap) {
-        this.mapService
-          .getMapImage(currentMap)
-          .pipe(
-            mergeMap(async (data) => {
-              const img: string = URL.createObjectURL(data);
+    this.sub = this.sharedService.currentMap$
+      .pipe(
+        switchMap(currentMap =>
+          this.mapService.getMapImage(currentMap).pipe(
+            tap(mapImage => {
+              const img: string = URL.createObjectURL(mapImage);
               return (this.rosMapImage = img);
-            }),
-            mergeMap(() =>
-              this.mapService
-                .getMapMetaData(currentMap)
-                .pipe(tap((metaData) => (this.metaData = metaData)))
-            )
+            })
           )
-          .subscribe();
-      }
-    });
+        ),
+        switchMap(currentMap =>
+          this.mapService
+            .getMapMetaData(currentMap)
+            .pipe(tap(metaData => (this.metaData = metaData)))
+        )
+      )
+      .subscribe(
+        () => {},
+        error => {
+          setTimeout(() => this.router.navigate(['/']), 5000);
+        }
+      );
+    // this.sub = this.sharedService.currentMap$.subscribe((currentMap) => {
+    //   console.log('currentMap: ', currentMap);
+    //   if (currentMap) {
+    //     this.mapService
+    //       .getMapImage(currentMap)
+    //       .pipe(
+    //         mergeMap(async (data) => {
+    //           const img: string = URL.createObjectURL(data);
+    //           return (this.rosMapImage = img);
+    //         }),
+    //         mergeMap(() =>
+    //           this.mapService
+    //             .getMapMetaData(currentMap)
+    //             .pipe(tap((metaData) => (this.metaData = metaData)))
+    //         )
+    //       )
+    //       .subscribe();
+    //   }
+    // });
 
     this.sub.add(
       this.mqttService.pose$
         .pipe(
-          map((pose) => JSON.parse(pose)),
-          tap((pose) => (this.currentRobotPose = pose))
+          map(pose => JSON.parse(pose)),
+          tap(pose => (this.currentRobotPose = pose))
         )
         .subscribe()
     );
@@ -64,7 +86,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.mqttService.pauseResume$
         .pipe(
-          map((pauseResume) => {
+          map(pauseResume => {
             let data = JSON.parse(pauseResume);
             const { pauseResumeState } = data;
             if (pauseResumeState === 'RESUME') {
@@ -75,23 +97,23 @@ export class DestinationComponent implements OnInit, OnDestroy {
             return data;
           })
         )
-        .subscribe((data) => {
+        .subscribe(data => {
           const { tranlateMessageKey } = data;
-          this.translateService.get(tranlateMessageKey).subscribe((message) => {
+          this.translateService.get(tranlateMessageKey).subscribe(message => {
             this.sharedService.response$.next({ type: 'normal', message });
           });
         })
     );
 
     this.sub.add(
-      this.sharedService.departureWaypoint$.subscribe((data) => {
+      this.sharedService.departureWaypoint$.subscribe(data => {
         if (data) {
           const { x, y, name } = data;
           this.targetWaypointData = {
             targetX: x,
             targetY: y,
             targetAngle: 0,
-            targetName: name,
+            targetName: name
           };
         }
       })
