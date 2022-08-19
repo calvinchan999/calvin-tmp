@@ -9,7 +9,7 @@ import { of, Subscription } from 'rxjs';
 @Component({
   selector: 'app-follow-me-inspector-dialog',
   templateUrl: './follow-me-inspector-dialog.component.html',
-  styleUrls: ['./follow-me-inspector-dialog.component.scss'],
+  styleUrls: ['./follow-me-inspector-dialog.component.scss']
 })
 export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
   sub = new Subscription();
@@ -23,10 +23,9 @@ export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   onSubmitMap() {
-    this.sub = this.sharedService
-      .currentMapBehaviorSubject$
+    this.sub = this.sharedService.currentMapBehaviorSubject$
       .pipe(
-        switchMap((mapName) => {
+        switchMap(mapName => {
           if (mapName) {
             if (mapName !== 'UNDEFINED' && mapName.length > 0) {
               return this.modeService.followMeWithMap(mapName).pipe(
@@ -34,7 +33,7 @@ export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
                   of(
                     this.sharedService.response$.next({
                       type: 'normal',
-                      message: 'modeDialog.tips1',
+                      message: 'modeDialog.tips1'
                     })
                   )
                 ),
@@ -44,7 +43,7 @@ export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
               return of(
                 this.sharedService.response$.next({
                   type: 'warning',
-                  message: 'mapNotFoundError',
+                  message: 'mapNotFoundError'
                 })
               );
             }
@@ -54,39 +53,6 @@ export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-
-    // this.mapService
-    //   .getActiveMap()
-    //   .pipe(
-    //     switchMap((map) => {
-    //       if (map) {
-    //         const { name } = map;
-    //         return iif(
-    //           () => name !== 'UNDEFINED',
-    //           this.modeService.followMeWithMap(name).pipe(
-    //             mergeMap(() =>
-    //               of(
-    //                 this.sharedService.response$.next({
-    //                   type: 'normal',
-    //                   message: 'modeDialog.tips1',
-    //                 })
-    //               )
-    //             ),
-    //             mergeMap(() => of(this.modalComponent.closeTrigger$.next()))
-    //           ),
-    //           of(
-    //             this.sharedService.response$.next({
-    //               type: 'warning',
-    //               message: 'mapNotFoundError',
-    //             })
-    //           )
-    //         );
-    //       } else {
-    //         return of(null);
-    //       }
-    //     })
-    //   )
-    //   .subscribe();
   }
 
   onSubmitWithoutMap() {
@@ -94,7 +60,7 @@ export class FollowMeInspectorDialogComponent implements OnInit, OnDestroy {
       this.modalComponent.closeTrigger$.next();
       this.sharedService.response$.next({
         type: 'normal',
-        message: 'modeDialog.tips1',
+        message: 'modeDialog.tips1'
       });
     });
   }

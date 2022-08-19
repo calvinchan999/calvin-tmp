@@ -36,7 +36,7 @@ import * as _ from 'lodash';
 export class MapWrapperComponent
   implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @ViewChild('canvas') canvas: ElementRef;
-  @Input() mapEditingType; // todo
+  @Input() mapEditingType;
   @Input() currentRobotPose: any; // todo
   @Input() targetWaypoints: any; // todo
   @Input() floorPlanData: any;

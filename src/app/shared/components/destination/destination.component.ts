@@ -1,7 +1,7 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription, forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { map, tap, switchMap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -34,23 +34,29 @@ export class DestinationComponent implements OnInit, OnDestroy {
     this.sub = this.sharedService.currentMap$
       .pipe(
         switchMap(currentMap =>
-          forkJoin([
-            this.mapService.getMapImage(currentMap).pipe(
-              tap(image => {
-                const reader = new FileReader();
-                reader.readAsDataURL(image);
-                reader.onloadend = () => {
-                  this.rosMapData = { map: reader.result };
-                };
-              })
-            ),
-            this.mapService
-              .getMapMetaData(currentMap)
-              .pipe(tap(metaData => (this.metaData = metaData)))
-          ])
+          this.mapService.getMapImage(currentMap).pipe(
+            tap(image => {
+              const reader = new FileReader();
+              reader.readAsDataURL(image);
+              reader.onloadend = () => {
+                this.rosMapData = { map: reader.result };
+              };
+            }),
+            map(() => currentMap)
+          )
+        ),
+        switchMap(currentMap =>
+          this.mapService
+            .getMapMetaData(currentMap)
+            .pipe(tap(metaData => (this.metaData = metaData)))
         )
       )
-      .subscribe();
+      .subscribe(
+        () => {},
+        error => {
+          setTimeout(() => this.router.navigate(['/']), 5000);
+        }
+      );
 
     this.sub.add(
       this.mqttService.pose$
@@ -85,8 +91,6 @@ export class DestinationComponent implements OnInit, OnDestroy {
 
     this.sub.add(
       this.sharedService.departureWaypoint$.subscribe(data => {
-        console.log(data);
-        console.log(`departureWaypoint`);
         if (data) {
           const { x, y, name } = data;
           this.targetWaypointData = {

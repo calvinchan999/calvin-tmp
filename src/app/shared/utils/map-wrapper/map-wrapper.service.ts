@@ -8,8 +8,8 @@ import { Text } from 'konva/lib/shapes/Text';
 import { Group } from 'konva/lib/Group';
 import { forkJoin, Observable, of } from 'rxjs';
 import { Line } from 'konva/lib/shapes/Line';
-import { Animation } from 'konva/lib/Animation';
 import { tap } from 'rxjs/operators';
+// import Konva from 'konva/lib';
 
 @Injectable({
   providedIn: 'root'
