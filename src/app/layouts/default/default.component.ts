@@ -409,8 +409,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
         .pipe(
           take(1),
           mergeMap(mapName => {
-            const mapfilter = _.pickBy({ mapName }, _.identity);
-            return this.waypointService.getWaypoint({ mapfilter }).pipe(
+            const filter = _.pickBy({ mapName }, _.identity);
+            return this.waypointService.getWaypoint({ filter }).pipe(
               map(waypoints => {
                 for (const waypoint of waypoints) {
                   if (waypoint.name.indexOf(waypointName) > -1) {
