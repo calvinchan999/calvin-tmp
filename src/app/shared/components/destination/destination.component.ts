@@ -34,7 +34,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
   ) {
     this.sub = this.sharedService.currentMap$
       .pipe(
-        switchMap(currentMap =>
+        mergeMap(currentMap =>
           this.mapService.getMapImage(currentMap).pipe(
             tap(mapImage => {
               const img: string = URL.createObjectURL(mapImage);
@@ -43,7 +43,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
             map(() => currentMap)
           )
         ),
-        switchMap(currentMap =>
+        mergeMap(currentMap =>
           this.mapService
             .getMapMetaData(currentMap)
             .pipe(tap(metaData => (this.metaData = metaData)))
