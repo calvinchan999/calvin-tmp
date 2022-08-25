@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { map, tap, switchMap } from 'rxjs/operators';
+import { map, tap, mergeMap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -33,7 +33,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
   ) {
     this.sub = this.sharedService.currentMap$
       .pipe(
-        switchMap(currentMap =>
+        mergeMap(currentMap =>
           this.mapService.getMapImage(currentMap).pipe(
             tap(image => {
               const reader = new FileReader();
@@ -45,7 +45,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
             map(() => currentMap)
           )
         ),
-        switchMap(currentMap =>
+        mergeMap(currentMap =>
           this.mapService
             .getMapMetaData(currentMap)
             .pipe(tap(metaData => (this.metaData = metaData)))
