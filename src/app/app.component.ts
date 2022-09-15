@@ -11,9 +11,9 @@ import { mergeMap } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit , OnDestroy {
+export class AppComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
   point: number = 0;
   db: any;
@@ -37,7 +37,7 @@ export class AppComponent implements OnInit , OnDestroy {
       .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
       .subscribe();
 
-    this.sharedService.loading$.subscribe((status) => {
+    this.sharedService.loading$.subscribe(status => {
       if (status) {
         this.spinner.show();
       } else {
