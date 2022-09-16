@@ -32,10 +32,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.mqttService.connectMqtt(config);
     }
 
-    this.indexedDbService
-      .createDatabase()
-      .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
-      .subscribe();
+    // this.indexedDbService
+    //   .createDatabase()
+    //   .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
+    //   .subscribe();
 
     this.sharedService.loading$.subscribe(status => {
       if (status) {

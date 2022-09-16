@@ -129,12 +129,12 @@ export class HomeComponent implements OnInit {
   }
 
   onDownloadLogs() {
-    this.indexedDbService
-      .getLogs()
-      .pipe(
-        mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
-      )
-      .subscribe();
+    // this.indexedDbService
+    //   .getLogs()
+    //   .pipe(
+    //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
+    //   )
+    //   .subscribe();
   }
 
   onClickPairing() {

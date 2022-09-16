@@ -343,9 +343,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //   )
     //   .subscribe();
 
-    // this.mqttService.execution$.subscribe(() => {
-
-    // })
 
     this.routerSub = this.router.events
       .pipe(

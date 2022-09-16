@@ -84,16 +84,16 @@ export class HttpStatusInterceptor implements HttpInterceptor {
   }
 
   private timeoutHandler(request): Observable<[]> {
-    this.indexedDbService.addlogs({
-      type: 'httpRequestTimeout',
-      errorCode: null,
-      statusCode: null,
-      description:
-        'Http Request Timeout' + request.url ? ' - ' + request.url : '',
-      created_at: moment(new Date())
-        .tz('Asia/Hong_Kong')
-        .format('YYYY-MM-DD HH:mm:ss')
-    });
+    // this.indexedDbService.addlogs({
+    //   type: 'httpRequestTimeout',
+    //   errorCode: null,
+    //   statusCode: null,
+    //   description:
+    //     'Http Request Timeout' + request.url ? ' - ' + request.url : '',
+    //   created_at: moment(new Date())
+    //     .tz('Asia/Hong_Kong')
+    //     .format('YYYY-MM-DD HH:mm:ss')
+    // });
     this.status.setHttpStatus(
       true,
       null,

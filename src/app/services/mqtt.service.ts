@@ -70,13 +70,13 @@ export class MqttService {
         console.log(`onError`);
         console.log(err);
 
-        this.indexedDbService.addlogs({
-          type: 'mqtt',
-          description: JSON.stringify({ ...err, ...{ event: 'onError' } }),
-          created_at: moment(new Date())
-            .tz('Asia/Hong_Kong')
-            .format('YYYY-MM-DD HH:mm:ss')
-        });
+        // this.indexedDbService.addlogs({
+        //   type: 'mqtt',
+        //   description: JSON.stringify({ ...err, ...{ event: 'onError' } }),
+        //   created_at: moment(new Date())
+        //     .tz('Asia/Hong_Kong')
+        //     .format('YYYY-MM-DD HH:mm:ss')
+        // });
       });
 
       this._mqttService
