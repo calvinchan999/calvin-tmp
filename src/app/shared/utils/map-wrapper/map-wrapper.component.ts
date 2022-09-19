@@ -95,9 +95,7 @@ export class MapWrapperComponent
     // }
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     const rosImg$ = new Observable<HTMLImageElement>(observer => {
@@ -153,6 +151,7 @@ export class MapWrapperComponent
               y: 0,
               name: 'lidarPointsGroup'
             });
+
             this.localizationToolsGroup = new Konva.Group({
               x: 0,
               y: 0,
@@ -333,30 +332,23 @@ export class MapWrapperComponent
           }
         }),
         // handle 2 cases "localizationEditor" & "positionListener"
-        mergeMap(
-          () =>
-            iif(
-              () => this.type === MapEditorType.LOCALIZATIONEDITOR,
-              this.getRobotCurrentPosition$(),
-              of(null)
-            )
+        mergeMap(() =>
+          iif(
+            () => this.type === MapEditorType.LOCALIZATIONEDITOR,
+            this.getRobotCurrentPosition$(),
+            of(null)
+          )
         ),
-        mergeMap(
-          () =>
-            iif(
-              () => this.type === MapEditorType.LOCALIZATIONEDITOR,
-              this.getLidarData$(),
-              of(null)
-            )
+        mergeMap(() =>
+          iif(
+            () => this.type === MapEditorType.LOCALIZATIONEDITOR,
+            this.getLidarData$(),
+            of(null)
+          )
         )
       )
       .subscribe(() => {
-        if (
-          this.rosMapLayer &&
-          this.metaData &&
-          this.type &&
-          this.mapImage
-        ) {
+        if (this.rosMapLayer && this.metaData && this.type && this.mapImage) {
           this.init();
         }
       });
@@ -367,7 +359,7 @@ export class MapWrapperComponent
       // (this.currentRobotPose || this.targetWaypoints) &&
       this.rosMapLayer &&
       this.metaData &&
-      this.type  &&
+      this.type &&
       this.mapImage
     ) {
       this.init();
@@ -650,18 +642,26 @@ export class MapWrapperComponent
   onPinchin(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
-      this.stage.draggable(false);
-      this.zoomOut(scaleMultiplier);
-      this.stage.draggable(true);
+      // this.stage.draggable(false);
+      // this.zoomOut(scaleMultiplier);
+      // this.stage.draggable(true);
+       of(this.stage.draggable(false)).pipe(
+        tap(() => this.zoomOut(scaleMultiplier)),
+        tap(() => this.stage.draggable(true))
+      ).subscribe();
     }
   }
 
   onPinchout(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
-      this.stage.draggable(false);
-      this.zoomIn(scaleMultiplier);
-      this.stage.draggable(true);
+      // this.stage.draggable(false);
+      // this.zoomIn(scaleMultiplier);
+      // this.stage.draggable(true);
+       of(this.stage.draggable(false)).pipe(
+        tap(() => this.zoomIn(scaleMultiplier)),
+        tap(() => this.stage.draggable(true))
+      ).subscribe();
     }
   }
 

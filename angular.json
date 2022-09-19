@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "hong-chi-smart-wheelchair-frontend": {
+    "mobile-chair-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
@@ -26,7 +26,7 @@
               "pdfmake/build/pdfmake.min",
               "js-query-builder"
             ],
-            "outputPath": "dist/hong-chi-smart-wheelchair-frontend",
+            "outputPath": "dist/mobile-chair-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -78,10 +78,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "hong-chi-smart-wheelchair-frontend:build:production"
+              "browserTarget": "mobile-chair-frontend:build:production"
             },
             "development": {
-              "browserTarget": "hong-chi-smart-wheelchair-frontend:build:development"
+              "browserTarget": "mobile-chair-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -89,7 +89,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "hong-chi-smart-wheelchair-frontend:build"
+            "browserTarget": "mobile-chair-frontend:build"
           }
         },
         "test": {
@@ -114,5 +114,5 @@
       }
     }
   },
-  "defaultProject": "hong-chi-smart-wheelchair-frontend"
+  "defaultProject": "mobile-chair-frontend"
 }
