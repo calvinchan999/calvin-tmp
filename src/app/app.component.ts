@@ -5,8 +5,7 @@ import { Config, MqttService } from './services/mqtt.service';
 import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
-import { IndexedDbService } from './services/indexed-db.service';
-import { mergeMap } from 'rxjs/operators';
+// import { IndexedDbService } from './services/indexed-db.service';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private spinner: NgxSpinnerService,
     private languageService: LanguageService,
-    private indexedDbService: IndexedDbService
+    // private indexedDbService: IndexedDbService
   ) {
     this.languageService.setInitState();
 

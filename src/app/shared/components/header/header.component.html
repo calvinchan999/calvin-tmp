@@ -58,10 +58,10 @@
 
         <!-- manual -->
         <li class="nav-item admin-container" *ngIf="manual">
-          <i class="mdi mdi-microsoft-xbox-controller icon"></i>
+          <i class="mdi mdi-hand-back-right-outline icon"></i>
         </li>
         <li class="nav-item admin-container" *ngIf="!manual">
-          <i class="mdi mdi-microsoft-xbox-controller-off icon"></i>
+          <i class="mdi mdi-hand-back-right-off-outline icon"></i>
         </li>
 
         <!-- login -->
@@ -70,7 +70,6 @@
           (click)="goToLogin()"
           *ngIf="currentUrl === '/dashboard' && user?.length <= 0"
         >
-          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
 
@@ -80,7 +79,6 @@
           (click)="goToLogout()"
           *ngIf="currentUrl === '/dashboard' && user?.length > 0"
         >
-          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
         <li
@@ -97,15 +95,6 @@
       </ul>
     </div>
   </div>
-  <!-- <div class="container-fluid">
-    <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}</label
-      >
-    </div>
-  </div> -->
   <div
     class="container-fluid"
     *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
@@ -180,14 +169,4 @@
     </div>
   </div>
 </nav>
-<!-- <nav class="navbar navbar-expand flex-sm-nowrap flex-wrap">
-  <div class="container">
-    <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}testtesttesttest</label
-      >
-    </div>
-  </div>
-</nav> -->
+

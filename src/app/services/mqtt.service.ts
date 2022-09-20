@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService as NgxMqttService } from 'ngx-mqtt';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
-import { IndexedDbService } from './indexed-db.service';
-import * as moment from 'moment-timezone';
+// import { IndexedDbService } from './indexed-db.service';
 import { SharedService } from './shared.service';
 
 export interface Mqtt {
@@ -40,7 +39,7 @@ export class MqttService {
   public clientId: string = '';
   constructor(
     private _mqttService: NgxMqttService,
-    private indexedDbService: IndexedDbService,
+    // private indexedDbService: IndexedDbService,
     private sharedService: SharedService
   ) {}
 

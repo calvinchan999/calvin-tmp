@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
     public router: Router,
     private sharedService: SharedService,
     private authService: AuthService,
-    private indexedDbService: IndexedDbService,
+    // private indexedDbService: IndexedDbService,
     private appConfigService: AppConfigService
   ) {
     this.features = this.appConfigService.getConfig().feature;

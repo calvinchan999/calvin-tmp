@@ -11,8 +11,7 @@ import { Observable, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, timeout } from 'rxjs/operators';
-import { IndexedDbService } from '../services/indexed-db.service';
-import * as moment from 'moment-timezone';
+// import { IndexedDbService } from '../services/indexed-db.service';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
@@ -21,7 +20,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
   constructor(
     private status: HttpStatusService,
     private sharedService: SharedService,
-    private indexedDbService: IndexedDbService
+    // private indexedDbService: IndexedDbService
   ) {}
 
   removeRequest(req: HttpRequest<any>) {
@@ -116,15 +115,15 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         : response.message
       : response.message;
 
-    this.indexedDbService.addlogs({
-      type: 'http',
-      errorCode: httpErrorCode,
-      statusCode: httpStatusCode,
-      description: httpErrorText,
-      created_at: moment(new Date())
-        .tz('Asia/Hong_Kong')
-        .format('YYYY-MM-DD HH:mm:ss')
-    });
+    // this.indexedDbService.addlogs({
+    //   type: 'http',
+    //   errorCode: httpErrorCode,
+    //   statusCode: httpStatusCode,
+    //   description: httpErrorText,
+    //   created_at: moment(new Date())
+    //     .tz('Asia/Hong_Kong')
+    //     .format('YYYY-MM-DD HH:mm:ss')
+    // });
 
     switch (httpStatusCode) {
       case 500:

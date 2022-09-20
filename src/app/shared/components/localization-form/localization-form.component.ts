@@ -153,6 +153,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   onSelectedWaypoint(waypoint: Waypoint) {
     this.selectedWaypoint = waypoint;
   }
+
   onSubmitLocalizationPoint(point) {
     this.waypointService.localize(point).subscribe(
       result => {
