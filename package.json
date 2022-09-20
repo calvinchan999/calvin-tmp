@@ -1,6 +1,6 @@
 {
   "name": "mobile-chair-frontend",
-  "version": "1.3.19",
+  "version": "1.3.20",
   "scripts": {
     "ng": "ng",
     "start": "ng serve  --host 0.0.0.0 --port 8989",
