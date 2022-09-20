@@ -22,6 +22,7 @@
   "mapChanged": "The map has been updated with ",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "start":"Start",
   "resume": "Resume",
   "resumeMessage": "Restart to the destination",
   "pause": "Pause",
@@ -86,6 +87,7 @@
   "notMap": "not map",
   "mapNotFoundError": "Please select the follow me mode without map as the active map not found",
   "destinationNotFoundError": "The destination({{waypointName}}) has not found on the map({{mapName}})",
+  "destinationReminding": "Please ensure passenger's seatbelt is fasten",
   "finalDestination": "Final Destination",
   "finalDestinationDialog": {
     "title": "Are you sure this is the final destination?"

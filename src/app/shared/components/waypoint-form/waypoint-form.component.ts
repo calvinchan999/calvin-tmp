@@ -59,7 +59,12 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
     // );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.sharedService.response$.next({
+      type: 'normal',
+      message: 'destinationReminding'
+    });
+  }
 
   onSelectedWaypoint(waypoint: Waypoint) {
     this.selectedWaypoint = waypoint;
