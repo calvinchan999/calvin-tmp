@@ -37,7 +37,25 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
           })
         );
       } else {
-        return of(null).pipe(tap(() => this.router.navigate(['/'])));
+        return of(null).pipe(
+          tap(() => {
+            const ob$: Observable<any> = this.sharedService.isOpenModal$; // hot to cold obserable
+            ob$
+              .pipe(
+                take(1),
+                tap(data => {
+                  const { modal } = data;
+                  if (modal === 'confirmation-dialog') {
+                    this.sharedService.isOpenModal$.next({
+                      modal: null,
+                      modalHeader: null
+                    });
+                  }
+                })
+              )
+              .subscribe(() => this.router.navigate(['/']));
+          })
+        );
       }
     })
   );
@@ -48,22 +66,24 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
     private waypointService: WaypointService,
     private sharedService: SharedService,
     private router: Router
-  ) {
-    // this.sub = this.sharedService.currentMode$.subscribe((mode) =>
-    //   console.log(mode)
-    // );
-    // this.sub.add(
-    //   this.sharedService.currentManualStatus$.subscribe((manual) =>
-    //     console.log(manual)
-    //   )
-    // );
-  }
+  ) {}
 
   ngOnInit() {
-    this.sharedService.response$.next({
-      type: 'normal',
-      message: 'destinationReminding'
-    });
+    // this.sharedService.response$.next({
+    //   type: 'normal',
+    //   message: 'destinationReminding'
+    // });
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.sharedService.isOpenModal$.next({
+        modal: 'confirmation-dialog',
+        modalHeader: '',
+        isDisableClose: true,
+        metaData: { message: 'destinationReminding', submitButtonName: 'start' }
+      });
+    }, 0);
   }
 
   onSelectedWaypoint(waypoint: Waypoint) {

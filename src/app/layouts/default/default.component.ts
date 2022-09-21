@@ -216,6 +216,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       });
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
+      if (!this.dialog) return;
       if (response) {
         const {
           modal,
@@ -342,7 +343,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //     })
     //   )
     //   .subscribe();
-
 
     this.routerSub = this.router.events
       .pipe(
