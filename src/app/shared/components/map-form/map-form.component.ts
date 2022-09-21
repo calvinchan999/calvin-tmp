@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapService, Map } from 'src/app/views/services/map.service';

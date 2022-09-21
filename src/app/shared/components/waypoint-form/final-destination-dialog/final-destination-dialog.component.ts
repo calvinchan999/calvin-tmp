@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { WaypointService } from 'src/app/views/services/waypoint.service';
 })
 export class FinalDestinationDialogComponent implements OnInit {
   @Input() metaData;
+  @Output() onClose =new EventEmitter(false);
   taskItemList: any;
   constructor(
     private waypointService: WaypointService,
@@ -26,11 +27,12 @@ export class FinalDestinationDialogComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onClose() {
-    this.sharedService.isOpenModal$.next({
-      modal: null,
-      modalHeader: null
-    });
+  onCloseDialog() {
+    // this.sharedService.isOpenModal$.next({
+    //   modal: null,
+    //   modalHeader: null
+    // });
+    this.onClose.emit(true);
   }
 
   task$(): Observable<any> {
@@ -41,7 +43,7 @@ export class FinalDestinationDialogComponent implements OnInit {
   onClickYes() {
     this.task$()
       .pipe(
-        tap(() => this.onClose()),
+        tap(() => this.onCloseDialog()),
         tap(() =>
           this.sharedService.taskCompletionType$.next(
             TaskCompletionType.RELEASE
@@ -55,7 +57,7 @@ export class FinalDestinationDialogComponent implements OnInit {
   onClickNo() {
     this.task$()
       .pipe(
-        tap(() => this.onClose()),
+        tap(() => this.onCloseDialog()),
         tap(() =>
           this.sharedService.taskCompletionType$.next(TaskCompletionType.HOLD)
         ),

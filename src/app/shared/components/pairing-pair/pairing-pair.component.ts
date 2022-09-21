@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 import { ModeService } from 'src/app/views/services/mode.service';
 import { tap } from 'rxjs/operators';
@@ -9,6 +9,7 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./pairing-pair.component.scss'],
 })
 export class PairingPairComponent implements OnInit {
+  @Output() onClose= new EventEmitter(false);
   constructor(
     private sharedService: SharedService,
     private modeService: ModeService
@@ -17,10 +18,11 @@ export class PairingPairComponent implements OnInit {
   ngOnInit() {}
 
   onCancel() {
-    this.sharedService.isOpenModal$.next({
-      modal: null,
-      modalHeader: null,
-    });
+    // this.sharedService.isOpenModal$.next({
+    //   modal: null,
+    //   modalHeader: null,
+    // });
+    this.onClose.emit(true);
   }
 
   onSubmit() {

@@ -25,6 +25,7 @@ import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 
+
 @Component({
   selector: 'app-default',
   templateUrl: './default.component.html',
@@ -550,6 +551,15 @@ export class DefaultComponent implements OnInit, OnDestroy {
   redirectToHome() {
     this.authService.isAuthenticatedSubject.next(null);
     this.router.navigate(['/']).then(() => location.reload());
+  }
+
+  onCloseDialog(event?: boolean) {
+    // @ts-ignore
+    Promise.all([this.dialog.onCloseWithoutRefresh()]).then(() => {
+      const dialogName = this.modal;
+      this.sharedService.isClosedModal$.next(dialogName);
+    });
+
   }
 
   ngOnDestroy() {

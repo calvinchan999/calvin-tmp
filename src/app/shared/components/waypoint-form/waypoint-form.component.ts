@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
 import { map, mergeMap, tap, take } from 'rxjs/operators';
@@ -16,6 +22,7 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./waypoint-form.component.scss']
 })
 export class WaypointFormComponent implements OnInit, OnDestroy {
+  @Output() onClose = new EventEmitter(false);
   waypointLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
@@ -37,25 +44,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
           })
         );
       } else {
-        return of(null).pipe(
-          tap(() => {
-            const ob$: Observable<any> = this.sharedService.isOpenModal$; // hot to cold obserable
-            ob$
-              .pipe(
-                take(1),
-                tap(data => {
-                  const { modal } = data;
-                  if (modal === 'confirmation-dialog') {
-                    this.sharedService.isOpenModal$.next({
-                      modal: null,
-                      modalHeader: null
-                    });
-                  }
-                })
-              )
-              .subscribe(() => this.router.navigate(['/']));
-          })
-        );
+        return of(null).pipe(tap(() => this.router.navigate(['/'])));
       }
     })
   );
@@ -66,7 +55,26 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
     private waypointService: WaypointService,
     private sharedService: SharedService,
     private router: Router
-  ) {}
+  ) {
+    this.sub = this.sharedService.isClosedModal$.subscribe(name => {
+      if (name === 'confirmation-dialog') {
+        const data: TaskConfig = {
+          taskItemList: [
+            {
+              movement: {
+                waypointName: this.selectedWaypoint.name
+              }
+            }
+          ]
+        };
+        this.waypointService.sendTask(data).subscribe(() =>
+          this.router.navigate(['/waypoint/destination'], {
+            queryParams: { waypointName: this.selectedWaypoint.name }
+          })
+        );
+      }
+    });
+  }
 
   ngOnInit() {
     // this.sharedService.response$.next({
@@ -75,32 +83,21 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
     // });
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.sharedService.isOpenModal$.next({
-        modal: 'confirmation-dialog',
-        modalHeader: '',
-        isDisableClose: true,
-        metaData: { message: 'destinationReminding', submitButtonName: 'start' }
-      });
-    }, 0);
-  }
-
   onSelectedWaypoint(waypoint: Waypoint) {
     this.selectedWaypoint = waypoint;
   }
 
   onSubmitModel(selectedWaypoint: Waypoint) {
     if (selectedWaypoint) {
-      const data: TaskConfig = {
-        taskItemList: [
-          {
-            movement: {
-              waypointName: selectedWaypoint
-            }
-          }
-        ]
-      };
+      // const data: TaskConfig = {
+      //   taskItemList: [
+      //     {
+      //       movement: {
+      //         waypointName: selectedWaypoint
+      //       }
+      //     }
+      //   ]
+      // };
       // this.sharedService.isOpenModal$.next({
       //   modal: 'final-destination-dialog',
       //   modalHeader: 'finalDestination',
@@ -109,11 +106,18 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
       //   closeAfterRefresh: false,
       // });
 
-      this.waypointService.sendTask(data).subscribe(() =>
-        this.router.navigate(['/waypoint/destination'], {
-          queryParams: { waypointName: selectedWaypoint }
-        })
-      );
+      this.sharedService.isOpenModal$.next({
+        modal: 'confirmation-dialog',
+        modalHeader: '',
+        isDisableClose: true,
+        metaData: { message: 'destinationReminding', submitButtonName: 'start' }
+      });
+
+      //   this.waypointService.sendTask(data).subscribe(() =>
+      //     this.router.navigate(['/waypoint/destination'], {
+      //       queryParams: { waypointName: selectedWaypoint }
+      //     })
+      //   );
     }
   }
 

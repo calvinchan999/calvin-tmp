@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 
 export interface ModalAction {
@@ -59,6 +59,7 @@ export class SharedService {
   public loading$ = new Subject<boolean>();
   public response$ = new Subject<Response>();
   public isOpenModal$ = new Subject<Modal>();
+  public isClosedModal$ = new Subject<String>();
 
   public departureWaypoint$ = new BehaviorSubject<DepartureWaypoint>(null);
   public taskCompletionType$ = new BehaviorSubject<any>(null);
