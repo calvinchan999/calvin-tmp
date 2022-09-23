@@ -15,7 +15,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'charging-mqtt',
+        redirectTo: 'charging-dialog',
       },
       {
         path: 'charging-mqtt',

@@ -11,9 +11,7 @@ export class ConfirmationDialogComponent implements OnInit {
   @Output() onClose = new EventEmitter(false);
   confirmButtonName: string;
   message: string;
-  constructor(
-    private _sharedService: SharedService
-  ) {}
+  constructor(private _sharedService: SharedService) {}
 
   ngOnInit(): void {}
 
@@ -29,9 +27,5 @@ export class ConfirmationDialogComponent implements OnInit {
 
   onCancel() {
     this.onClose.emit(true);
-    // this._sharedService.isOpenModal$.next({
-    //   modal: null,
-    //   modalHeader: null
-    // });
   }
 }
