@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SharedService } from 'src/app/services/shared.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-confirmation-dialog',
@@ -10,15 +10,15 @@ export class ConfirmationDialogComponent implements OnInit {
   @Input() metaData;
   @Output() onClose = new EventEmitter(false);
   confirmButtonName: string;
-  message: string;
-  constructor(private _sharedService: SharedService) {}
+  message;
+  constructor(private _translateService: TranslateService) {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit() {
     setTimeout(() => {
       const { message, submitButtonName } = this.metaData;
-      this.message = message;
+      this.message = this._translateService.instant(message);
       if (submitButtonName) {
         this.confirmButtonName = submitButtonName;
       }
