@@ -7,6 +7,7 @@ export const environment = {
   remoteConfig: true,
   remoteConfigUrl: 'assets/config/dashboard-config.json',
   api_token: 'f05914ea33124ba7a6cab301627c8adf',
+  // appVersion: require('../../package.json').version,
   api: {
     auth: '/api/authentication/v1/login',
     refreshAuth: '/api/authentication/v1/refresh',
@@ -19,7 +20,7 @@ export const environment = {
     mode: '/api/mode/v1',
     map: '/api/map/v1',
     activeMap: '/api/map/v1/activeMap',
-    changeMap: '/api/map/v1/change/',
+    changeMap: '/api/map/v1/change',
     waypoint: '/api/waypoint/v1',
     pause: '/api/baseControl/v1/pause',
     resume: '/api/baseControl/v1/resume',

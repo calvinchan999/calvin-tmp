@@ -67,11 +67,12 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
             }
           ]
         };
-        this.waypointService.sendTask(data).subscribe(() =>
-          this.router.navigate(['/waypoint/destination'], {
-            queryParams: { waypointName: this.selectedWaypoint.name }
-          })
-        );
+        this.waypointService.sendTask(data).subscribe(() => {
+          this.router.navigate(['/waypoint/destination']);
+          // this.router.navigate(['/waypoint/destination'], {
+          //   queryParams: { waypointName: this.selectedWaypoint.name }
+          // })
+        });
       }
     });
   }

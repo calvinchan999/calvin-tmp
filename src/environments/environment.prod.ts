@@ -15,7 +15,7 @@ export const environment = {
     mode: '/api/mode/v1',
     map: '/api/map/v1',
     activeMap: '/api/map/v1/activeMap',
-    changeMap: '/api/map/v1/change/',
+    changeMap: '/api/map/v1/change',
     waypoint: '/api/waypoint/v1',
     pause: '/api/baseControl/v1/pause',
     resume: '/api/baseControl/v1/resume',
