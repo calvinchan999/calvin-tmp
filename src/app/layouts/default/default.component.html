@@ -48,27 +48,27 @@
     ><h2 class="modal-title">{{ modalTitle | translate }}</h2></ng-template
   >
   <ng-template #modalBody [ngSwitch]="modal">
-    <div *ngSwitchCase="'waypoint'">
-      <app-waypoint-form></app-waypoint-form>
-    </div>
-    <div *ngSwitchCase="'sos'">
+    <!-- <div *ngSwitchCase="'waypoint'">
+      <app-waypoint-form (onClose)="onCloseDialog($event)"></app-waypoint-form>
+    </div> -->
+    <!-- <div *ngSwitchCase="'sos'">
       <app-sos-form></app-sos-form>
-    </div>
-    <div *ngSwitchCase="'map'">
+    </div> -->
+    <!-- <div *ngSwitchCase="'map'">
       <app-map-form></app-map-form>
-    </div>
-    <div *ngSwitchCase="'localization'">
+    </div> -->
+    <!-- <div *ngSwitchCase="'localization'">
       <app-localization-form></app-localization-form>
-    </div>
-    <div *ngSwitchCase="'docking'">
+    </div> -->
+    <!-- <div *ngSwitchCase="'docking'">
       <app-docking-form></app-docking-form>
-    </div>
-    <div *ngSwitchCase="'mode'">
+    </div> -->
+    <!-- <div *ngSwitchCase="'mode'">
       <app-mode-form></app-mode-form>
-    </div>
-    <div *ngSwitchCase="'destination'">
+    </div> -->
+    <!-- <div *ngSwitchCase="'destination'">
       <app-destination></app-destination>
-    </div>
+    </div> -->
     <div *ngSwitchCase="'signout'">
       <app-sign-out-form (onClose)="onCloseDialog($event)"></app-sign-out-form>
     </div>
@@ -81,11 +81,12 @@
     <div *ngSwitchCase="'follow-me-inspector'">
       <app-follow-me-inspector-dialog></app-follow-me-inspector-dialog>
     </div>
-    <div *ngSwitchCase="'final-destination-dialog'">
+    <!-- <div *ngSwitchCase="'final-destination-dialog'">
       <app-final-destination-dialog
         [metaData]="metaData"
+        (onClose)="onCloseDialog($event)"
       ></app-final-destination-dialog>
-    </div>
+    </div> -->
     <div *ngSwitchCase="'sign-in-dialog'">
       <app-sign-in-form></app-sign-in-form>
     </div>

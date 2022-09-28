@@ -25,7 +25,11 @@ export class ConfirmationDialogComponent implements OnInit {
     }, 0);
   }
 
-  onCancel() {
+  onConfirm() {
     this.onClose.emit(true);
+  }
+
+  onCancel() {
+    this.onClose.emit(false);
   }
 }

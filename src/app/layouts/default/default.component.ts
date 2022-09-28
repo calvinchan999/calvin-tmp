@@ -25,7 +25,6 @@ import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 
-
 @Component({
   selector: 'app-default',
   templateUrl: './default.component.html',
@@ -137,16 +136,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
             setTimeout(() => {
-              // if (
-              //   completed &&
-              //   !cancelled &&
-              //   taskId &&
-              //   taskId.indexOf('Charge') > -1
-              // ) {
-              //   this.router.navigate(['/charging/charging-mqtt']);
-              // } else {
-              //   this.router.navigate(['/']);
-              // }
               this.sharedService.loading$.next(false);
               this.router.navigate(['/']);
             }, 3000);
@@ -350,6 +339,12 @@ export class DefaultComponent implements OnInit, OnDestroy {
         filter(event => event instanceof NavigationEnd),
         distinctUntilChanged((prev, curr) => this.router.url === this.prevUrl),
         tap(() => (this.prevUrl = this.router.url)),
+        tap(() =>
+          console.table({
+            routerUrl: this.router.url,
+            prevUrl: this.prevUrl
+          })
+        ),
         tap(() => this.getCurrentMode()),
         tap(() => this.getCurrentMap()),
         tap(() => this.getTaskStatus())
@@ -553,13 +548,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']).then(() => location.reload());
   }
 
-  onCloseDialog(event?: boolean) {
+  onCloseDialog(status?: boolean) {
     // @ts-ignore
     Promise.all([this.dialog.onCloseWithoutRefresh()]).then(() => {
-      const dialogName = this.modal;
-      this.sharedService.isClosedModal$.next(dialogName);
+      if (status) {
+        const dialogName = this.modal;
+        this.sharedService.isClosedModal$.next(dialogName);
+      }
     });
-
   }
 
   ngOnDestroy() {

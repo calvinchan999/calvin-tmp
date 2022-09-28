@@ -9,7 +9,8 @@
   .confirmation-dialog-title {
     text-align: center;
     width: 100%;
-    height: 150px;
+    height: 100%;
+    margin: 45px;
   }
 
   .confirmation-dialog-title > label {
@@ -37,6 +38,16 @@
     background-color: transparent;
     border-radius: 10px;
     align-items: center;
+  }
+
+  .cancel-btn {
+    color: #ff0000;
+    border: 1px solid #ff0000;
+  }
+
+  .cancel-btn:active {
+    background-color: #ff0000;
+    color: #fff;
   }
   
   .confirm-btn {
