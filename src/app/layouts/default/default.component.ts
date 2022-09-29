@@ -31,6 +31,8 @@ import * as _ from 'lodash';
   styleUrls: ['./default.component.scss']
 })
 export class DefaultComponent implements OnInit, OnDestroy {
+  @ViewChild('disconnectResponseDialog')
+  disconnectResponseDialog: ModalComponent;
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   private ngUnsubscribe = new Subject();
@@ -59,6 +61,21 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private taskService: TaskService,
     private waypointService: WaypointService
   ) {
+    this.sharedService.timer$.subscribe(i => {
+      if (i > 0) {
+        this.response = {
+          type: 'warning',
+          message: 'error.disconnect'
+        };
+        this.closeDialogAfterRefresh = false;
+        if (!this.disconnectResponseDialog.isExist()) {
+          this.disconnectResponseDialog.open();
+        }
+      } else {
+        this.disconnectResponseDialog.onCloseWithoutRefresh();
+      }
+    });
+
     this.mqttService.actionExecution$
       .pipe(
         map(actionData => JSON.parse(actionData)),

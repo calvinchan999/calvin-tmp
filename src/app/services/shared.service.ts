@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 
 export interface ModalAction {
@@ -79,5 +79,10 @@ export class SharedService {
         })
       )
       .subscribe();
+
+      this.timer$ = this.reset$.pipe(
+        startWith(0),
+        switchMap(() => timer(0, 5000)) //  5000 Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
+      );
   }
 }

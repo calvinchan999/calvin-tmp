@@ -16,10 +16,6 @@
   disableClose="true"
   [closeAfterRefresh]="closeDialogAfterRefresh"
 >
-  <!-- <ng-template #modalHeader *ngIf="response?.type !== 'warning'"
-    ><h2 class="modal-title">{{ "information" | translate }}</h2></ng-template
-  > -->
-
   <ng-template #modalHeader
     ><h2 class="modal-title">{{ response.type | translate }}</h2></ng-template
   >
@@ -94,4 +90,19 @@
       <app-confirmation-dialog [metaData]="metaData" (onClose)="onCloseDialog($event)"></app-confirmation-dialog>
     </div>
   </ng-template>
+</app-modal>
+
+<app-modal
+  #disconnectResponseDialog
+  disableClose="true"
+  [closeAfterRefresh]="closeDialogAfterRefresh"
+>
+  <ng-template #modalHeader
+    ><h2 class="modal-title">{{ response.type | translate }}</h2></ng-template
+  >
+  <ng-template #modalResponse
+    ><label class="modal-body">{{
+      response?.message | translate
+    }}</label></ng-template
+  >
 </app-modal>

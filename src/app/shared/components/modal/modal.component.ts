@@ -68,10 +68,6 @@ export class ModalComponent implements OnInit, OnDestroy {
     document.body.classList.remove('modal-open');
     this.visibleAnimate = false;
     this.visible = false;
-    // setTimeout(() => {
-    //   this.visible = false;
-    //   this.changeDetectorRef.markForCheck();
-    // }, 200);
   }
 
   // @HostListener('click', ['$event'])
@@ -96,5 +92,9 @@ export class ModalComponent implements OnInit, OnDestroy {
     return !this.elementRef.nativeElement.querySelector(
       ':scope modal > .modal'
     );
+  }
+
+  isExist(): boolean {
+    return !!this.elementRef.nativeElement.querySelector('.modal');
   }
 }

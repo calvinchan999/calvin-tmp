@@ -103,7 +103,8 @@
       "100003": "Login failed",
       "200013": "Password not matched",
       "300002": "Door pin code not available"
-    }
+    },
+    "disconnect": "Connection Failed"
   },
   "yes": "Yes",
   "no": "No",
