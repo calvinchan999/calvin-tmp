@@ -266,6 +266,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
             // this.router.navigate(['/waypoint/destination'], {
             //   queryParams: { waypointName: name }
             // });
+            this.dialog.onCloseWithoutRefresh();
             this.router.navigate(['/waypoint/destination']);
           }
         })
