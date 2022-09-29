@@ -82,7 +82,7 @@ export class SharedService {
 
       this.timer$ = this.reset$.pipe(
         startWith(0),
-        switchMap(() => timer(0, 5000)) //  5000 Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
+        switchMap(() => timer(0, 15000)) //  5000 Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
       );
   }
 }
