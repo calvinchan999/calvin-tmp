@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -11,14 +12,14 @@ export class ConfirmationDialogComponent implements OnInit {
   @Output() onClose = new EventEmitter(false);
   confirmButtonName: string;
   message;
-  constructor(private _translateService: TranslateService) {}
+  constructor(private _translateService: TranslateService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit() {
     setTimeout(() => {
       const { message, submitButtonName } = this.metaData;
-      this.message = this._translateService.instant(message);
+      this.message =  this.sanitizer.bypassSecurityTrustHtml(this._translateService.instant(message));
       if (submitButtonName) {
         this.confirmButtonName = submitButtonName;
       }
