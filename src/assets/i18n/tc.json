@@ -87,7 +87,7 @@
   "notMap": "沒有地圖",
   "mapNotFoundError": "請選擇無地圖跟隨模式，因為沒有找到已激活地圖",
   "destinationNotFoundError": "在地圖({{mapName}})找不到目的地({{waypointName}})",
-  "destinationReminding": "請確保乘客的安全帶已經扣上，\n開車時請勿站近輪椅旁邊",
+  "destinationReminding": "請於輪椅啟動前確保以下事項:\n1) 乘客的安全帶已經扣上\n2) 輪椅附近位置需保持空曠",
   "finalDestination": "最終目的地",
   "finalDestinationDialog": {
     "title": "你確定這是最終目的地?"
