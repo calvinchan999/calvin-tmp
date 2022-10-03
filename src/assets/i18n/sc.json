@@ -87,7 +87,7 @@
   "notMap": "没有地图",
   "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图",
   "destinationNotFoundError": "在地图({{mapName}})找不到目的地({{waypointName}})",
-  "destinationReminding": "请于轮椅启动前确保以下事项:<br />1) 乘客的<label style='color: red;text-decoration: underline;'>安全带</label>已经扣上<br />2) 轮椅附近位置需<label style='color: red;text-decoration: underline;'>保持空旷</label>",
+  "destinationReminding": "请于轮椅启动前确保以下事项:<br />1) 乘客的<span style='color: red;text-decoration: underline;'>安全带</span>已经扣上<br />2) 轮椅附近位置需<span style='color: red;text-decoration: underline;'>保持空旷</span>",
   "finalDestination":"最终目的地",
   "finalDestinationDialog": {
     "title": "你确定这是最终目的地?"

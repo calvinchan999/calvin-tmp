@@ -87,7 +87,7 @@
   "notMap": "not map",
   "mapNotFoundError": "Please select the follow me mode without map as the active map not found",
   "destinationNotFoundError": "The destination({{waypointName}}) has not found on the map({{mapName}})",
-  "destinationReminding": "Please ensure of the following before starting the mobility chair:<br />1) The passenger’s <label style='color: red;text-decoration: underline;'>seatbelt</label> has been fastened<br />2) Keep the surrounding of the mobility chair clear",
+  "destinationReminding": "Please ensure of the following before starting the mobility chair:<br />1) The passenger’s <span style='color: red;text-decoration: underline;'>seatbelt</span> has been fastened<br />2) <span style='color: red;text-decoration: underline;'>Keep the surrounding of the mobility chair clear</span>",
   "finalDestination": "Final Destination",
   "finalDestinationDialog": {
     "title": "Are you sure this is the final destination?"
