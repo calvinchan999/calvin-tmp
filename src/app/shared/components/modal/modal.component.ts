@@ -46,7 +46,7 @@ export class ModalComponent implements OnInit, OnDestroy {
   }
 
   open(): void {
-    document.body.classList.add('modal-open');
+    document.body.classList.add('modal-wrapper');
     this.visible = true;
     setTimeout(() => {
       this.visibleAnimate = true;
@@ -54,44 +54,19 @@ export class ModalComponent implements OnInit, OnDestroy {
   }
 
   close(): void {
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove('modal-wrapper');
     this.visibleAnimate = false;
     setTimeout(() => {
       this.visible = false;
       this.changeDetectorRef.markForCheck();
-      // this.router.navigate([currentUrl]).then(() => location.reload());
       this.router.navigate(['']);
     }, 200);
   }
 
   onCloseWithoutRefresh(): void {
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove('modal-wrapper');
     this.visibleAnimate = false;
     this.visible = false;
-  }
-
-  // @HostListener('click', ['$event'])
-  // onContainerClicked(event: MouseEvent): void {
-  //   if ((<HTMLElement>event.target).classList.contains('modal') && this.isTopMost() && this.closeOnOutsideClick) {
-  //     this.close();
-  //   }
-  // }
-
-  // @HostListener('document:keydown', ['$event'])
-  // onKeyDownHandler(event: KeyboardEvent) {
-  //   // If ESC key and TOP MOST modal, close it.
-  //   if (event.key === 'Escape' && this.isTopMost()) {
-  //     this.close();
-  //   }
-  // }
-
-  /**
-   * Returns true if this modal is the top most modal.
-   */
-  isTopMost(): boolean {
-    return !this.elementRef.nativeElement.querySelector(
-      ':scope modal > .modal'
-    );
   }
 
   isExist(): boolean {

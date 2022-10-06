@@ -94,7 +94,7 @@
 
 <app-modal
   #disconnectResponseDialog
-  disableClose="true"
+  [disableClose]="false"
   [closeAfterRefresh]="closeDialogAfterRefresh"
 >
   <ng-template #modalHeader

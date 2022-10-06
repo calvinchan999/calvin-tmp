@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-
 import { of, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
