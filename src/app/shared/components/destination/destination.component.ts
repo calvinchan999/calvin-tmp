@@ -69,7 +69,7 @@ export class DestinationComponent implements OnInit {
     });
 
     this.sub.add(
-      this.mqttService.$pose
+      this.mqttService.pose$
         .pipe(
           map(pose => JSON.parse(pose)),
           tap(pose => (this.currentRobotPose = pose))
@@ -78,7 +78,7 @@ export class DestinationComponent implements OnInit {
     );
 
     this.sub.add(
-      this.mqttService.$pauseResume
+      this.mqttService.pauseResume$
         .pipe(
           map(pauseResume => {
             let data = JSON.parse(pauseResume);

@@ -10,6 +10,7 @@ export interface Waypoint {
   x: number;
   y: number;
   angle: number;
+  code: string;
 }
 
 export interface TaskConfig {

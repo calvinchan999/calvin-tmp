@@ -21,7 +21,7 @@ import { Category } from '../../utils/map-wrapper/interface/map-wrapper';
   styleUrls: ['./waypoint-form.component.scss']
 })
 export class WaypointFormComponent implements OnInit {
-  type: WaypointPageCategory;
+  type: any;
   toolType = Category.WAYPOINTSELECTOR;
   floorPlanSubject$: BehaviorSubject<any> = new BehaviorSubject<string>('');
   waypointLists = null;
@@ -70,7 +70,7 @@ export class WaypointFormComponent implements OnInit {
     private modalComponent: ModalComponent,
     private router: Router
   ) {
-    this.sharedService.waypointListPageMode$
+    this.sharedService.waypointPageType$
       .pipe(
         tap(type => {
           this.type = type;

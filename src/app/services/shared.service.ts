@@ -46,6 +46,12 @@ export enum LocalizationType {
   'MAP',
 }
 
+export enum WaypointPageCategory {
+  'LIST',
+  'MAP',
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
@@ -69,6 +75,10 @@ export class SharedService {
 
   public localizationType$ = new BehaviorSubject<LocalizationType>(
     LocalizationType.LIST
+  );
+
+  public waypointPageType$ = new BehaviorSubject<WaypointPageCategory>(
+    WaypointPageCategory.LIST
   );
 
   constructor() {

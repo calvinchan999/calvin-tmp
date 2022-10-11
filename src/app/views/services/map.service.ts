@@ -116,7 +116,7 @@ export class MapService {
       floorPlanIncluded: JSON.stringify(floorPlanIncluded),
       mapIncluded: JSON.stringify(mapIncluded)
     };
-    const queries = {
+    const queries: any = {
       params
     };
     const url = generateQueryUrl(
