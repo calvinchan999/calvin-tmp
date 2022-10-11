@@ -1,0 +1,13 @@
+<div class="confirmation-dialog">
+  <div class="confirmation-dialog-title">
+    <label [innerHTML]="message"></label>
+  </div>
+  <div class="confirmation-dialog-btn-container">
+    <div class="btn cancel-btn" (click)="onCancel()">
+      {{ "cancel" | translate }}
+    </div>
+    <div class="btn confirm-btn" (click)="onConfirm()">
+      {{ confirmButtonName | translate }}
+    </div>
+  </div>
+</div>

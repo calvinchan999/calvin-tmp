@@ -25,7 +25,8 @@
   "resume": "重新開始",
   "resumeMessage": "重新開始前往目的地",
   "pause": "暫停",
-  "pauseMessage":"暫停前往目的地",
+  "start":"開始",
+  "pauseMessage": "暫停前往目的地",
   "sosDialog": {
     "tips1": "你確定要執行SOS信號嗎？",
     "tips2": "已經發出SOS信號"
@@ -35,7 +36,8 @@
     "tips2": "返回充電站中",
     "tips3": "機器人充電中...",
     "tips4": "請操作人員離開充電區",
-    "cancalCharging": "取消充電"
+    "cancalCharging": "取消充電",
+    "cancalChargingTips": "充電已被取消"
   },
   "mapDialog": {
     "tips1": "地圖已更新"
@@ -43,7 +45,8 @@
   "modeDialog": {
     "tips1": "模式已更新"
   },
-  "arrivedAtDestination": "已到達目的地",
+  "arrivedAtDestination": "已到達目的地 {{waypointName}}",
+  "completedTask":"任務已完成",
   "cancelledTask": "任務已取消",
   "navigatingtoDestination": "導航至目的地",
   "localizationDialog": {
@@ -62,12 +65,50 @@
   "loginError": {
     "error1": "請輸入有效的用戶帳號和密碼"
   },
+  "signIn": "登入",
   "signout": "登出",
-  "signoutDialog":{
+  "signoutDialog": {
     "tips1": "你確定你要登出嗎？"
   },
-  "refreshTokenFail":"登錄的證書已過期, 請重新登入或使用訪客模式",
-  "waypointDialog": {
-    "tips1":"你確定要選擇 "
+  "refreshTokenFail": "登錄的證書已過期, 請重新登入或使用訪客模式",
+  "pair": "跟隨模式配對",
+  "pairDialog": {
+    "pair": "確認要進行跟隨模式配對"
+  },
+  "unpair": "取消跟隨模式配對",
+  "unpairDialog": {
+    "unpair": "確認要取消配對？"
+  },
+  "followMeInspector": "跟隨模式",
+  "followMeInspectorDialog": {
+    "title": "請確認你當前地圖的狀態"
+  },
+  "hasMap": "有地圖",
+  "notMap": "沒有地圖",
+  "mapNotFoundError": "請選擇無地圖跟隨模式，因為沒有找到已激活地圖",
+  "destinationNotFoundError": "在地圖({{mapName}})找不到目的地({{waypointName}})",
+  "destinationReminding": "請於輪椅啟動前確保以下事項:<br />1) 乘客的<span style='color: red;text-decoration: underline;'>安全帶</span>已經扣上<br />2) 輪椅附近位置需<span style='color: red;text-decoration: underline;'>保持空曠</span>",
+  "finalDestination": "最終目的地",
+  "finalDestinationDialog": {
+    "title": "你確定這是最終目的地?"
+  },
+  "error": {
+    "httpStatue":"HTTP狀態:",
+    "httpError": "- HTTP錯誤:",
+    "httpErrorCode": {
+      "20001": "找不到任務",
+      "20002": "任務錯誤",
+      "20003": "任務錯誤",
+      "20004": "執行任務出現錯誤",
+      "100003": "登錄失敗",
+      "200013": "舊密碼不正確",
+      "300002": "驗證碼錯誤"
+    },
+    "disconnect": "系統斷開連接"
+  },
+  "yes": "是",
+  "no": "不是",
+  "taskActions": {
+    "batteryChargeAction": "將會執行電池充電動作"
   }
 }

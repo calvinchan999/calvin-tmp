@@ -11,6 +11,7 @@
     *ngIf="!loader"
     style="
       max-width: 550px;
+      width: 90%;
       position: absolute;
       top: 50%;
       -ms-transform: translateY(-50%);
@@ -25,7 +26,9 @@
         <i
           class="mdi mdi-close icon"
           *ngIf="disableClose"
-          (click)="close()"
+          (click)="
+            closeAfterRefresh ? close() : onCloseWithoutRefresh()
+          "
         ></i>
       </div>
       <div class="modal-body" *ngIf="body">
@@ -41,7 +44,7 @@
 
 <div
   class="modal fade"
-  style="z-index: 999"
+  style="z-index: 1000"
   role="dialog"
   tabindex="1"
   [class.in]="visibleAnimate"
@@ -54,10 +57,8 @@
     <div
       class="modal-content"
       style="
-        height: auto;
         display: flex;
         text-align: center;
-
         background-color: inherit;
       "
     >
@@ -67,7 +68,7 @@
           class="mdi mdi-close icon"
           *ngIf="disableClose"
           (click)="
-            !localizationFormComponent ? close() : onCloseWithoutRefresh()
+            closeAfterRefresh ? close() : onCloseWithoutRefresh()
           "
         ></i>
       </div>

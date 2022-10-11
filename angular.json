@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "hong-chi-smart-wheelchair-frontend": {
+    "mobile-chair-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
@@ -23,14 +23,15 @@
           "options": {
             "allowedCommonJsDependencies": [
               "moment-timezone",
-              "pdfmake/build/pdfMake"
+              "pdfmake/build/pdfmake.min",
+              "js-query-builder"
             ],
-            "outputPath": "dist/hong-chi-smart-wheelchair-frontend",
+            "outputPath": "dist/mobile-chair-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
             "styles": [
               "src/scss/styles.scss",
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
@@ -77,10 +78,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "hong-chi-smart-wheelchair-frontend:build:production"
+              "browserTarget": "mobile-chair-frontend:build:production"
             },
             "development": {
-              "browserTarget": "hong-chi-smart-wheelchair-frontend:build:development"
+              "browserTarget": "mobile-chair-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -88,7 +89,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "hong-chi-smart-wheelchair-frontend:build"
+            "browserTarget": "mobile-chair-frontend:build"
           }
         },
         "test": {
@@ -98,7 +99,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": ["src/favicon.ico", "src/assets", "src/manifest.json"],
             "styles": ["src/scss/styles.scss"],
             "scripts": []
           }
@@ -106,15 +107,12 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json"
-            ],
+            "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json"],
             "exclude": ["**/node_modules/**"]
           }
         }
       }
     }
   },
-  "defaultProject": "hong-chi-smart-wheelchair-frontend"
+  "defaultProject": "mobile-chair-frontend"
 }

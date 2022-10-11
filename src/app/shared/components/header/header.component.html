@@ -8,16 +8,9 @@
     >
       <label class="mode-title"> {{ modeTranslation }}</label>
     </div>
-    <!-- <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}testtesttesttest</label
-      >
-    </div> -->
 
     <div
-      class="navbar-collapse collapse flex-sm-grow-1  flex-shrink-1 justify-content-end align-self-center"
+      class="navbar-collapse collapse flex-sm-grow-1 flex-shrink-1 justify-content-end align-self-center"
       style="flex: 1"
     >
       <ul class="navbar-nav ms-auto" style="display: flex; gap: 5px">
@@ -62,13 +55,21 @@
             *ngIf="powerSupplyStatus === 'CHARGING'"
           ></i>
         </li>
+
+        <!-- manual -->
+        <li class="nav-item admin-container" *ngIf="manual">
+          <i class="mdi mdi-hand-back-right-outline icon"></i>
+        </li>
+        <li class="nav-item admin-container" *ngIf="!manual">
+          <i class="mdi mdi-hand-back-right-off-outline icon"></i>
+        </li>
+
         <!-- login -->
         <li
           class="nav-item admin-container"
           (click)="goToLogin()"
           *ngIf="currentUrl === '/dashboard' && user?.length <= 0"
         >
-          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
 
@@ -78,7 +79,6 @@
           (click)="goToLogout()"
           *ngIf="currentUrl === '/dashboard' && user?.length > 0"
         >
-          <!-- <i class="material-icons nav-link icon">account_circle</i> -->
           <i class="mdi mdi-account-circle icon"></i>
         </li>
         <li
@@ -95,28 +95,20 @@
       </ul>
     </div>
   </div>
-  <!-- <div class="container-fluid">
-    <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-start map"
-    >
-      <label class="map-title"
-        >{{ map ? map : mapTranslation }}</label
-      >
-    </div>
-  </div> -->
   <div
     class="container-fluid"
     *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    "
   >
     <div
-      class="navbar-collapse collapse flex-sm-grow-0 justify-content-start align-self-center"
-      style="flex-basis:0"
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center"
+      style="flex: 1"
     >
-      <!-- <label
-        style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap"
-      >
-        {{ modeTranslation }}</label
-      > -->
       <i
         class="mdi mdi-chevron-left icon"
         (click)="backToPreviousPage()"
@@ -125,41 +117,56 @@
       <!-- <mat-icon class="mdi mdi-{{ mode?.icon }} mode-item-icon"></mat-icon> -->
     </div>
     <div
-      class="navbar-collapse collapse flex-sm-grow-1 justify-content-center align-self-center path"
+      class="navbar-collapse collapse flex-sm-grow-auto justify-content-start align-self-center path"
     >
       <label
         style="
           overflow: hidden;
           text-overflow: ellipsis;
+          text-align: start;
           width: 100%;
           white-space: nowrap;
-          
         "
+        *ngIf="
+          currentUrl === '/waypoint/destination' && waypointName;
+          else regularCase
+        "
+        >{{ currentPageTitle | translate }} - {{ waypointName }}</label
+      >
+    </div>
+    <ng-template #regularCase>
+      <label
         [ngStyle]="
-          currentUrl !== '/waypoint/waypoint-list'
+          currentUrl !== '/localization'
             ? { 'text-align': 'start' }
             : { 'text-align': 'center' }
         "
+        style="
+          overflow: hidden;
+          text-overflow: ellipsis;
+          width: 100%;
+          white-space: nowrap;
+        "
         >{{ currentPageTitle | translate }}</label
       >
-    </div>
-
+    </ng-template>
     <div
-      class="navbar-collapse collapse flex-sm-grow-0 justify-content-end align-self-center"
-      style="flex-basis:0"
-      *ngIf="currentUrl === '/waypoint/waypoint-list'"
+      class="navbar-collapse collapse flex-sm-grow-1 justify-content-end align-self-center"
+      style="flex: 1"
+      *ngIf="currentUrl === '/localization'"
     >
       <i
         class="mdi mdi-map-legend icon"
-        (click)="useMap()"
-        *ngIf="waypointListPageType === 'list'"
+        (click)="localizationByMap()"
+        *ngIf="localizationType === 'LIST'"
       ></i>
 
       <i
         class="mdi mdi-format-list-bulleted icon"
-        (click)="useList()"
-        *ngIf="waypointListPageType === 'map'"
+        (click)="localizationByList()"
+        *ngIf="localizationType === 'MAP'"
       ></i>
     </div>
   </div>
 </nav>
+

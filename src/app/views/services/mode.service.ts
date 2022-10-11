@@ -4,10 +4,11 @@ import { Observable } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
 
-export interface Mode {
-  mode: string;
+// export  type Mode = 'FOLLOW_ME' | 'NAVIGATION';
+export enum Mode {
+  FOLLOW_ME = 'FOLLOW_ME',
+  NAVIGATION = 'NAVIGATION'
 }
-
 export interface ModeResponse {
   followMeStandalone: string;
   manual: boolean;
@@ -15,8 +16,15 @@ export interface ModeResponse {
   state: string;
 }
 
+export interface PairingResponse {
+  robotId: string;
+  pairingState: PairingState;
+}
+
+export type PairingState = 'UNPAIRED' | 'PAIRED' | 'PAIRING' | 'REPAIRING';
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ModeService {
   constructor(
@@ -37,13 +45,42 @@ export class ModeService {
     const url = `${
       this.appConfigService.getConfig().server.endpoint
     }${currentModeApi}`;
-    return this.http.post<any>(`${url}`, {});
+    return this.http.post<any>(url, {});
+  }
+
+  followMeWithMap(map: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.appConfigService.getConfig().server.endpoint +
+        environment.api.followMe}/${map}`,
+      {}
+    );
   }
 
   getMode(): Observable<ModeResponse> {
     const url = `${this.appConfigService.getConfig().server.endpoint}${
       environment.api.mode
     }`;
-    return this.http.get<ModeResponse>(`${url}`);
+    return this.http.get<ModeResponse>(url);
+  }
+
+  followMePairing(): Observable<any> {
+    const url = `${this.appConfigService.getConfig().server.endpoint}${
+      environment.api.pairing
+    }/pair`;
+    return this.http.post<any>(url, {});
+  }
+
+  followMeUnpairing(): Observable<any> {
+    const url = `${this.appConfigService.getConfig().server.endpoint}${
+      environment.api.pairing
+    }/unpair`;
+    return this.http.post<any>(url, {});
+  }
+
+  getPairingStatus(): Observable<PairingResponse> {
+    const url = `${this.appConfigService.getConfig().server.endpoint}${
+      environment.api.pairing
+    }`;
+    return this.http.get<PairingResponse>(url);
   }
 }

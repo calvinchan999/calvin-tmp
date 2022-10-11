@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, mergeMap, tap, take } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
 import { SharedService } from 'src/app/services/shared.service';
-// import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 
 @Component({
   selector: 'app-home',
@@ -13,22 +13,64 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
+  map: string;
   mode: string;
   role: string;
   user: string;
-  features: any;
+  features;
+  pairingState;
+  followMePairingState$: Observable<boolean>;
+  followMeUnPairingState$: Observable<boolean>;
   constructor(
     public router: Router,
     private sharedService: SharedService,
     private authService: AuthService,
-    private indexedDbService: IndexedDbService,
+    // private indexedDbService: IndexedDbService,
     private appConfigService: AppConfigService
   ) {
     this.features = this.appConfigService.getConfig().feature;
-
-    this.sharedService.currentMode$.subscribe((mode: string) => {
+    this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
       this.mode = mode;
+      console.log(`mode: ${mode}`);
     });
+
+    this.sharedService.currentMap$.pipe(take(1)).subscribe((currentMap: string) => {
+      this.map = currentMap;
+    });
+
+    this.sharedService.currentPairingStatus$
+      .pipe(map((data) => (data instanceof Object ? data : JSON.parse(data))))
+      .subscribe((data) => {
+        if (data?.pairingState) {
+          const { pairingState } = data;
+          if (pairingState === 'UNPAIRED') {
+            this.followMePairingState$ = new Observable((observer) =>
+              observer.next(true)
+            );
+            this.followMeUnPairingState$ = new Observable((observer) =>
+              observer.next(false)
+            );
+          } else if (pairingState !== 'UNPAIRED') {
+            this.followMePairingState$ = new Observable((observer) =>
+              observer.next(false)
+            );
+            this.followMeUnPairingState$ = new Observable((observer) =>
+              observer.next(true)
+            );
+          }
+        } else {
+          this.followMePairingState$ = new Observable((observer) =>
+            observer.next(false)
+          );
+          this.followMeUnPairingState$ = new Observable((observer) =>
+            observer.next(false)
+          );
+        }
+      });
+
+    // this.sharedService.isProcessingTask$.subscribe((task: boolean) => {
+    //   this.isProcessingTask = task;
+    // })
   }
 
   ngOnInit() {
@@ -71,7 +113,9 @@ export class HomeComponent implements OnInit {
   }
 
   onChangeMap() {
-    this.router.navigate(['/map']);
+    if (this.mode && this.mode !== 'UNDEFINED') {
+      this.router.navigate(['/map']);
+    }
   }
 
   onSubmitLocalization() {
@@ -85,11 +129,29 @@ export class HomeComponent implements OnInit {
   }
 
   onDownloadLogs() {
-    this.indexedDbService
-      .getLogs()
-      .pipe(
-        mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
-      )
-      .subscribe();
+    // this.indexedDbService
+    //   .getLogs()
+    //   .pipe(
+    //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
+    //   )
+    //   .subscribe();
+  }
+
+  onClickPairing() {
+    this.sharedService.isOpenModal$.next({
+      modal: 'pair',
+      modalHeader: 'pair',
+      isDisableClose: true,
+      closeAfterRefresh: false,
+    });
+  }
+
+  onClickUnPairing() {
+    this.sharedService.isOpenModal$.next({
+      modal: 'unpair',
+      modalHeader: 'unpair',
+      isDisableClose: true,
+      closeAfterRefresh: false,
+    });
   }
 }

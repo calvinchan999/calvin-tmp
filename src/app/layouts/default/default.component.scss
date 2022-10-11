@@ -28,9 +28,11 @@
 }
 
 .modal-body {
-  overflow: auto;
-  // max-height: calc(100vh - 300px);
+  overflow-y: auto;
   word-wrap: break-word;
+  height: auto;
+  max-height: 400px;
+  font-size: 25px;
 }
 
 .footer {
@@ -39,7 +41,7 @@
 
 @media only screen and (max-width: 900px) {
   .modal-title {
-    font-size: 25px !important;
+    font-size: 30px !important;
   }
 }
 

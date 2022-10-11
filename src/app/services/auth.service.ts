@@ -12,15 +12,15 @@ export interface Auth {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   public isAuthenticatedSubject: BehaviorSubject<any> = new BehaviorSubject(
     this.isAuthenticated()
   );
-  public currentPayloadSubject: BehaviorSubject<any> = new BehaviorSubject(
-    this.payload()
-  );
+  // public currentPayloadSubject: BehaviorSubject<any> = new BehaviorSubject(
+  //   this.payload()
+  // );
 
   constructor(
     private http: HttpClient,
@@ -31,18 +31,14 @@ export class AuthService {
     return sessionStorage.getItem('payload');
   }
 
-  // isAuthenticated$(): Observable<boolean> {
-  //   return this.isAuthenticatedSubject.asObservable();
-  // }
-
   private payload(): any {
     const payload: any = sessionStorage.getItem('payload');
     return payload;
   }
 
-  payload$() {
-    return this.currentPayloadSubject.asObservable();
-  }
+  // payload$() {
+  //   return this.currentPayloadSubject.asObservable();
+  // }
 
   login(userId: string, password: string): Observable<any> {
     const loginUrl = `${this.appConfigService.getConfig().server.endpoint}${
@@ -50,13 +46,10 @@ export class AuthService {
     }`;
 
     return this.http
-      .post<Auth>(
-        loginUrl,
-        { userId, password }
-      )
+      .post<Auth>(loginUrl, { userId, password })
       .pipe(
-        tap((res) => this.storeToken(res)),
-        catchError((err) => {
+        tap(res => this.storeToken(res)),
+        catchError(err => {
           this.removeToken();
           return throwError(err);
         }),
@@ -66,8 +59,6 @@ export class AuthService {
 
   logout(): Observable<any> {
     return of(this.removeToken());
-    // return await this.removeToken();
-    // location.reload();
   }
 
   private async storeToken(data: Auth): Promise<void> {
@@ -79,14 +70,14 @@ export class AuthService {
       const payload = {
         userId: oldPayload.userId,
         accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
+        refreshToken: data.refreshToken
       };
 
       return sessionStorage.setItem('payload', JSON.stringify(payload));
     }
 
     if (data.userId) {
-      console.log('if (data.userId)');
+      console.log('(data.userId)');
       return sessionStorage.setItem('payload', JSON.stringify(data));
     }
   }
@@ -96,6 +87,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
+    console.log('refreshToken');
     const refreshTokenUrl = `${
       this.appConfigService.getConfig().server.endpoint
     }${environment.api.refreshAuth}`;
@@ -110,23 +102,13 @@ export class AuthService {
         { refreshToken, userId }
       )
       .pipe(
-        tap((res) => this.storeToken(res)),
-        catchError((err) => {
+        tap(res => this.storeToken(res)),
+        catchError(err => {
           this.removeToken();
           return throwError(err);
         }),
         finalize(() => this.isAuthenticatedSubject.next(this.isAuthenticated()))
       );
   }
-
-  // resetPassword({ userId, oldPassword, newPassword }: any): Observable<any> {
-  //   const resetPassworUrl = `${
-  //     this.appConfigService.getConfig().server.endpoint
-  //   }${environment.api.resetPassword}`;
-  //   return this.http.put<{
-  //     userId: string;
-  //     oldPassword: string;
-  //     newPassword: string;
-  //   }>(resetPassworUrl, { userId, oldPassword, newPassword });
-  // }
 }
+ 

@@ -2,17 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
 
 export interface Waypoint {
   name: string;
   x: number;
   y: number;
-  code: string;
-  floorPlanX?: number;
-  floorPlanY?: number;
-  floorPlanName?: string;
-  floorPlanCode?: string;
+  angle: number;
 }
 
 export interface TaskConfig {
@@ -56,11 +53,12 @@ export class WaypointService {
     this.baseUrl = this.appConfigService.getConfig().server.endpoint;
   }
 
-  getWaypoint(mapName?: string): Observable<any> {
-    return this.http.get<any>(
-      `${this.baseUrl}${environment.api.waypoint}` +
-        (mapName ? `?mapName=${mapName}` : ``)
+  getWaypoint(queries): Observable<any> {
+    const url = generateQueryUrl(
+      `${this.baseUrl}${environment.api.waypoint}`,
+      queries
     );
+    return this.http.get<any>(url);
   }
 
   localize(waypoint: Waypoint): Observable<any> {

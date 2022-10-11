@@ -25,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/hong-chi-smart-wheelchair-frontend'),
+      dir: require('path').join(__dirname, './coverage/mobile-chair-frontend'),
       subdir: '.',
       reporters: [
         { type: 'html' },

@@ -16,16 +16,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'hong-chi-smart-wheelchair-frontend'`, () => {
+  it(`should have as title 'mobile-chair-frontend'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('hong-chi-smart-wheelchair-frontend');
+    expect(app.title).toEqual('mobile-chair-frontend');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('hong-chi-smart-wheelchair-frontend app is running!');
+    expect(compiled.querySelector('.content span')?.textContent).toContain('mobile-chair-frontend app is running!');
   });
 });
