@@ -1,6 +1,6 @@
 {
   "server": {
-    "endpoint": "http://52.175.230.39:8081",
+    "endpoint": "http://rv-dev.eastasia.cloudapp.azure.com:8081",
     "envirmonent": "development"
   },
   "mqtt": {
@@ -15,10 +15,11 @@
   "feature": {
     "waypoint": true,
     "docking": true,
-    "sos": true,
+    "sos": false,
     "map": true,
     "localization": true,
     "mode": true,
-    "logs": true
+    "logs": false,
+    "pairing": true
   }
 }
