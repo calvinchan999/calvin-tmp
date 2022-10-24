@@ -16,7 +16,7 @@ import {
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { MqttService } from 'src/app/services/mqtt.service';
-import { SharedService } from 'src/app/services/shared.service';
+import { SharedService, Response } from 'src/app/services/shared.service';
 import { ToastrService } from 'src/app/services/toastr.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapResponse, MapService } from 'src/app/views/services/map.service';
@@ -39,7 +39,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
   public sub = new Subscription();
   public routerSub = new Subscription();
   public option: string = '';
-  public response: any;
+  public response: Response;
+  public disconnectMessage: string;
 
   modal: string = '';
   modalTitle: string = '';
@@ -63,12 +64,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
   ) {
     this.sharedService.timer$.subscribe(i => {
       if (i > 0) {
-        this.response = {
-          type: 'warning',
-          message: 'error.disconnect'
-        };
+        // this.response = {
+        //   type: 'warning',
+        //   message: 'error.disconnect',
+        // };
+        
         this.closeDialogAfterRefresh = false;
         if (!this.disconnectResponseDialog.isExist()) {
+          this.disconnectMessage = 'error.disconnect'
           this.disconnectResponseDialog.open();
         }
       } else {

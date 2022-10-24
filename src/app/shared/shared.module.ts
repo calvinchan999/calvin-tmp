@@ -25,6 +25,7 @@ import { FollowMeInspectorDialogComponent } from './components/follow-me-inspect
 import { FinalDestinationDialogComponent } from './components/waypoint-form/final-destination-dialog/final-destination-dialog.component';
 import { SignInFormComponent } from './components/sign-in-form/sign-in-form.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
+    DragDropModule
   ],
   declarations: [
     HeaderComponent,
@@ -56,7 +58,7 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
     FollowMeInspectorDialogComponent,
     FinalDestinationDialogComponent,
     SignInFormComponent,
-    ConfirmationDialogComponent,
+    ConfirmationDialogComponent
   ],
   exports: [
     HeaderComponent,
@@ -81,6 +83,6 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
     SignInFormComponent,
     ConfirmationDialogComponent
   ],
-  providers: [ModalComponent],
+  providers: [ModalComponent]
 })
 export class SharedModule {}

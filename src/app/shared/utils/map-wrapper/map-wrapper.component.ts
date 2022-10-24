@@ -367,17 +367,14 @@ export class MapWrapperComponent
   }
 
   init() {
+    let obs: Observable<any>[] = [];
+    obs.push(this.createRobotCurrentPosition());
     if (this.type === MapEditorType.LOCALIZATIONEDITOR) {
-      forkJoin([
-        this.createRobotCurrentPosition(),
-        this.createLidarRedpoints()
-      ]).subscribe();
+      obs.push(this.createLidarRedpoints());
     } else if (this.type === MapEditorType.POSITIONLISTENER) {
-      forkJoin([
-        this.createRobotCurrentPosition(),
-        this.createTargetPosition()
-      ]).subscribe();
+      obs.push( this.createTargetPosition());
     }
+    forkJoin(obs).subscribe();
   }
 
   lidarData$(): Observable<any> {
@@ -439,16 +436,17 @@ export class MapWrapperComponent
           }
         }),
         tap(data => {
+          const scaleUpSize = 7;
           const locationImg = new Konva.Image({
             x:
               Math.abs((x - targetX) / resolution) -
-              data.img.width / 7 / this.scale / 2,
+              data.img.width / scaleUpSize / this.scale / 2,
             y:
               height -
               Math.abs((y - targetY) / resolution) -
-              data.img.height / 7 / this.scale,
-            width: data.img.width / 7 / this.scale,
-            height: data.img.height / 7 / this.scale,
+              data.img.height / scaleUpSize / this.scale,
+            width: data.img.width / scaleUpSize / this.scale,
+            height: data.img.height / scaleUpSize / this.scale,
             image: data.img,
             name: 'targetWaypoint'
           });
