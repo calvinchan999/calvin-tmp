@@ -4,17 +4,12 @@
   "display": "fullscreen",
   "scope": "/RV",
   "start_url": "/RV",
-  "name": "mobile-chair",
-  "short_name": "mobile-chair",
+  "name": "Mobile Chair User Interface",
+  "short_name": "Mobile Chair UI",
   "icons": [
     {
       "src": "assets/images/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/images/icon-256x256.png",
-      "sizes": "256x256",
       "type": "image/png"
     },
     {
