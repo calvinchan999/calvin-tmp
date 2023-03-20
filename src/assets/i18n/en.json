@@ -110,5 +110,8 @@
   "no": "No",
   "taskActions": {
     "batteryChargeAction": "Battery Charging Action will been executed"
+  },
+  "toast": {
+    "inconnectLocalization": "XY Deviation: {{translationDeviation}}, Angle Deviation: {{angleDeviation}}"
   }
 }

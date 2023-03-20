@@ -6,7 +6,7 @@ import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
 
 export interface Waypoint {
-  name: string;
+  name?: string;
   x: number;
   y: number;
   angle: number;

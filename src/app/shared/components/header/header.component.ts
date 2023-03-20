@@ -3,7 +3,7 @@ import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
   NavigationEnd,
-  Router,
+  Router
 } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import {
   LocalizationType,
-  SharedService,
+  SharedService
 } from 'src/app/services/shared.service';
 import { Location } from '@angular/common';
 import * as _ from 'lodash';
@@ -21,7 +21,7 @@ import { Auth, AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   currentLang: string = '';
@@ -55,9 +55,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.router.events
         .pipe(
-          filter((event) => event instanceof NavigationEnd),
+          filter(event => event instanceof NavigationEnd),
           map(() => this.route.snapshot),
-          map((parm) => {
+          map(parm => {
             while (parm.firstChild) {
               parm = parm.firstChild;
             }
@@ -71,7 +71,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     );
 
     this.sub.add(
-      this.router.events.subscribe((event) => {
+      this.router.events.subscribe(event => {
         if (event instanceof NavigationEnd) {
           // event is an instance of NavigationEnd, get url!
           this.currentUrl = event.urlAfterRedirects;
@@ -82,18 +82,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
           }
           const backToPreviousButtonBackLists = [
             {
-              backlist: '/charging/charging-mqtt',
+              backlist: '/charging/charging-mqtt'
             },
             {
-              backlist: '/charging/charging-dialog',
+              backlist: '/charging/charging-dialog'
             },
             {
-              backlist: '/waypoint/destination',
-            },
+              backlist: '/waypoint/destination'
+            }
           ];
           const data: any = _.find(backToPreviousButtonBackLists, [
             'backlist',
-            this.currentUrl,
+            this.currentUrl
           ]);
 
           if (data) {
@@ -108,7 +108,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.sharedService.currentMode$
         .pipe(
-          tap((mode) => {
+          tap(mode => {
             this.mode = mode;
           }),
           mergeMap(() => this.getTranlateModeMessage$())
@@ -136,7 +136,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.sub.add(
       this.sharedService.localizationType$
         .pipe(
-          tap((type) => {
+          tap(type => {
             this.localizationType = LocalizationType[type];
           })
         )
@@ -153,7 +153,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   getUserAuth() {
     this.authService.isAuthenticatedSubject
       .pipe(
-        map((payload) => {
+        map(payload => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
@@ -169,9 +169,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   getBattery() {
     // @todo check connection
-    this.mqttService.battery$
+    this.mqttService.batterySubject
       .pipe(tap(() => this.sharedService.reset$.next(0)))
-      .subscribe((battery) => {
+      .subscribe(battery => {
         if (battery) {
           const { powerSupplyStatus, percentage } = JSON.parse(battery);
           this.powerSupplyStatus = powerSupplyStatus;
@@ -209,19 +209,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
       modal: 'signout',
       modalHeader: 'signout',
       isDisableClose: true,
-      closeAfterRefresh: true,
+      closeAfterRefresh: true
     });
   }
 
   getLanguage() {
     this.languageService.language$
       .pipe(
-        mergeMap((data) =>
+        mergeMap(data =>
           this.getTranlateModeMessage$().pipe(
-            map((tranlateModeMessage) => ({ ...data, tranlateModeMessage }))
+            map(tranlateModeMessage => ({ ...data, tranlateModeMessage }))
           )
         ),
-        tap((language) => {
+        tap(language => {
           const { lang } = language;
           this.currentLang = lang;
         })
@@ -257,6 +257,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/']);
     });
+  }
+
+  getBatteryCssStyle(percentage: number): string {
+    let css: string;
+    if (percentage > 0) {
+      const val = Math.ceil(percentage / 10) * 10;
+      css =
+        val <= 90
+          ? `mdi mdi-battery-${val} battery-icon icon`
+          : `mdi mdi-battery battery-icon icon`;
+    } else {
+      css = `mdi mdi-battery-alert-variant-outline battery-icon icon`;
+    }
+    return css;
   }
 
   ngOnDestroy() {

@@ -68,10 +68,10 @@ export class DefaultComponent implements OnInit, OnDestroy {
         //   type: 'warning',
         //   message: 'error.disconnect',
         // };
-        
+
         this.closeDialogAfterRefresh = false;
         if (!this.disconnectResponseDialog.isExist()) {
-          this.disconnectMessage = 'error.disconnect'
+          this.disconnectMessage = 'error.disconnect';
           this.disconnectResponseDialog.open();
         }
       } else {
@@ -79,7 +79,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.mqttService.actionExecution$
+    this.mqttService.actionExecutionSubject
       .pipe(
         map(actionData => JSON.parse(actionData)),
         tap(actionData => {
@@ -97,7 +97,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.mqttService.arrival$
+    this.mqttService.arrivalSubject
       .pipe(
         map(arrival => JSON.parse(arrival)),
         switchMap(arrival => {
@@ -124,7 +124,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.mqttService.completion$
+    this.mqttService.completionSubject
       .pipe(
         map(feedback => JSON.parse(feedback)),
         mergeMap(data =>
@@ -163,7 +163,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.mqttService.dockingChargingFeedback$.subscribe(feedback => {
+    this.mqttService.dockingChargingFeedbackSubject.subscribe(feedback => {
       if (feedback) {
         const { chargingStatus } = JSON.parse(feedback);
         if (chargingStatus === 'PRE_CHARGING') {
@@ -188,7 +188,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.mqttService.departure$
+    this.mqttService.departureSubject
       .pipe(
         map(departure => JSON.parse(departure)),
         tap(departure => this.getTaskWaypointPointer(departure))
@@ -210,7 +210,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.mqttService.state$
+    this.mqttService.stateSubject
       .pipe(map(state => JSON.parse(state)))
       .subscribe((response: any) => {
         if (response) {
@@ -354,6 +354,25 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //     })
     //   )
     //   .subscribe();
+
+    this.mqttService.poseDeviationSubject
+      .pipe(
+        map(state => JSON.parse(state)),
+        tap(data => {
+          const { poseValid, translationDeviation, angleDeviation } = data;
+          if (!poseValid) {
+            const msg = this.translateService.instant(
+              'toast.inconnectLocalization',
+              {
+                translationDeviation,
+                angleDeviation
+              }
+            );
+            this.toastrService.warning(msg);
+          }
+        })
+      )
+      .subscribe();
 
     this.routerSub = this.router.events
       .pipe(

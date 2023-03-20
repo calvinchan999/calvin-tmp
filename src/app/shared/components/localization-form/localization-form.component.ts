@@ -155,10 +155,40 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmitLocalizationPoint(point) {
-    this.waypointService.localize(point).subscribe(
+    const { x, y, angle, name } = point;
+    // this.waypointService.localize(name).subscribe(
+    //   result => {
+    //     const { success, message } = result;
+    //     if (success) {
+    //       this.isLocalizedLocation({
+    //         status: 'success'
+    //       });
+
+    //       const audio = new Audio();
+    //       audio.src = this.localizationCorrectBgmPath;
+    //       audio.play();
+
+    //       setTimeout(() => {
+    //         this.router.navigate(['/']);
+    //       }, 5000);
+    //     } else {
+    //       this.isLocalizedLocation({
+    //         status: 'failed',
+    //         error: {
+    //           message
+    //         }
+    //       });
+    //     }
+    //   },
+    //   error => {
+    //     this.isLocalizedLocation({
+    //       status: 'failed',
+    //       error
+    //     });
+    //   }
+    // );
+    this.waypointService.initialPose({x, y, angle}).subscribe(
       result => {
-        const { success, message } = result;
-        if (success) {
           this.isLocalizedLocation({
             status: 'success'
           });
@@ -169,15 +199,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
 
           setTimeout(() => {
             this.router.navigate(['/']);
-          }, 5000);
-        } else {
-          this.isLocalizedLocation({
-            status: 'failed',
-            error: {
-              message
-            }
-          });
-        }
+          }, 3000);
       },
       error => {
         this.isLocalizedLocation({

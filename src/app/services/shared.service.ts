@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, ReplaySubject, Subject, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  EMPTY,
+  Observable,
+  of,
+  ReplaySubject,
+  Subject,
+  timer
+} from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export interface ModalAction {
   topic: string;
@@ -38,16 +47,16 @@ export interface DepartureWaypoint {
 
 export enum TaskCompletionType {
   'RELEASE',
-  'HOLD',
+  'HOLD'
 }
 
 export enum LocalizationType {
   'LIST',
-  'MAP',
+  'MAP'
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class SharedService {
   public currentMapBehaviorSubject$ = new BehaviorSubject<string>('');
@@ -65,7 +74,7 @@ export class SharedService {
   public taskCompletionType$ = new BehaviorSubject<any>(null);
 
   public reset$ = new Subject<number>();
-  public timer$: Observable<any>;
+  public timer$: Observable<any> = EMPTY;
 
   public localizationType$ = new BehaviorSubject<LocalizationType>(
     LocalizationType.LIST
@@ -74,15 +83,17 @@ export class SharedService {
   constructor() {
     this.currentMap$
       .pipe(
-        tap((mapName) => {
+        tap(mapName => {
           this.currentMapBehaviorSubject$.next(mapName);
         })
       )
       .subscribe();
 
+    if (environment.production) {
       this.timer$ = this.reset$.pipe(
         startWith(0),
         switchMap(() => timer(0, 20000)) //  20000, Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
       );
+    }
   }
 }

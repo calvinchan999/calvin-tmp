@@ -21,20 +21,21 @@ export interface Config {
 export class MqttService {
   private client: any;
 
-  public battery$ = new Subject<any>();
-  public dockingChargingFeedback$ = new Subject<any>();
-  public completion$ = new Subject<any>();
+  public batterySubject = new Subject<any>();
+  public dockingChargingFeedbackSubject = new Subject<any>();
+  public completionSubject = new Subject<any>();
   // public $mapActive = new Subject<any>();
   // public $state = new Subject<any>();
-  public pose$ = new Subject<any>();
-  public pauseResume$ = new Subject<any>();
+  public poseSubject = new Subject<any>();
+  public pauseResumeSubject = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
   // public pairing$ = new BehaviorSubject<any>(null);
-  public execution$ = new Subject<any>();
-  public departure$ = new Subject<any>();
-  public state$ = new Subject<any>();
-  public actionExecution$ = new Subject<any>();
-  public arrival$ = new Subject<any>();
+  public executionSubject = new Subject<any>();
+  public departureSubject = new Subject<any>();
+  public stateSubject = new Subject<any>();
+  public actionExecutionSubject = new Subject<any>();
+  public arrivalSubject = new Subject<any>();
+  public poseDeviationSubject = new Subject<any>();
 
   public clientId: string = '';
   constructor(
@@ -78,12 +79,18 @@ export class MqttService {
         // });
       });
 
+      this._mqttService.onOffline.subscribe(err => {
+        console.log(err);
+      });
+
       this._mqttService
         .observe('rvautotech/fobo/battery')
         .subscribe((message: IMqttMessage) => {
           // console.log('rvautotech/fobo/battery');
           // console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.battery$.next(new TextDecoder('utf-8').decode(message.payload));
+          this.batterySubject.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
         });
 
       this._mqttService
@@ -91,7 +98,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/docking/charging/feedback');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.dockingChargingFeedback$.next(
+          this.dockingChargingFeedbackSubject.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -101,7 +108,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/completion');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.completion$.next(
+          this.completionSubject.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -129,7 +136,9 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           // console.log('rvautotech/fobo/pose');
           // console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.pose$.next(new TextDecoder('utf-8').decode(message.payload));
+          this.poseSubject.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
         });
 
       this._mqttService
@@ -137,7 +146,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log('rvautotech/fobo/baseController/pauseResume');
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.pauseResume$.next(
+          this.pauseResumeSubject.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -167,7 +176,7 @@ export class MqttService {
       //     .subscribe((message: IMqttMessage) => {
       //       console.log('rvautotech/fobo/execution');
       //       console.log(new TextDecoder('utf-8').decode(message.payload));
-      //       this.execution$.next(
+      //       this.executionSubject.next(
       //         new TextDecoder('utf-8').decode(message.payload)
       //       );
       //     });
@@ -177,7 +186,7 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           // console.log('rvautotech/fobo/departure');
           // console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.departure$.next(
+          this.departureSubject.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -185,13 +194,15 @@ export class MqttService {
       this._mqttService
         .observe('rvautotech/fobo/state')
         .subscribe((message: IMqttMessage) => {
-          this.state$.next(new TextDecoder('utf-8').decode(message.payload));
+          this.stateSubject.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
         });
 
       this._mqttService
         .observe('rvautotech/fobo/action/execution')
         .subscribe((message: IMqttMessage) => {
-          this.actionExecution$.next(
+          this.actionExecutionSubject.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
@@ -200,7 +211,18 @@ export class MqttService {
         .observe('rvautotech/fobo/arrival')
         .subscribe((message: IMqttMessage) => {
           console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.arrival$.next(new TextDecoder('utf-8').decode(message.payload));
+          this.arrivalSubject.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
+        });
+
+      this._mqttService
+        .observe('rvautotech/fobo/poseDeviation')
+        .subscribe((message: IMqttMessage) => {
+          console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.poseDeviationSubject.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
         });
     }
   }

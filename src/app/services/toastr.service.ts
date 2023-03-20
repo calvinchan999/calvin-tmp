@@ -3,7 +3,7 @@ import { ActiveToast, ToastrService as ToastService } from 'ngx-toastr';
 import * as _ from 'lodash';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ToastrService {
   currentToastlists: Array<ActiveToast<[]>> = [];
@@ -13,7 +13,17 @@ export class ToastrService {
     this.currentToastlists.push(
       this.toastr.info(msg, '', {
         disableTimeOut: false,
+        tapToDismiss: true
+      })
+    );
+  }
+
+  warning(msg: string) {
+    this.currentToastlists.push(
+      this.toastr.warning(msg, '', {
+        disableTimeOut: false,
         tapToDismiss: true,
+        closeButton: true
       })
     );
   }

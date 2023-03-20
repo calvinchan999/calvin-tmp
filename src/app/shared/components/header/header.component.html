@@ -25,35 +25,18 @@
             *ngIf="showBatteryPercentage"
             >{{ percentage }}%</label
           >
-          <i
-            class="mdi mdi-battery-alert-variant-outline battery-icon icon"
-            *ngIf="powerSupplyStatus !== 'CHARGING' && percentage <= 0"
-          ></i>
-          <i
-            class="mdi mdi-battery-low battery-icon icon"
-            *ngIf="
-              powerSupplyStatus !== 'CHARGING' &&
-              percentage > 0 &&
-              percentage <= 10
-            "
-          ></i>
-          <i
-            class="mdi mdi-battery-medium battery-icon icon"
-            *ngIf="
-              powerSupplyStatus !== 'CHARGING' &&
-              percentage > 10 &&
-              percentage < 60
-            "
-          ></i>
-          <i
-            class="mdi mdi-battery-high battery-icon icon"
-            *ngIf="powerSupplyStatus !== 'CHARGING' && percentage >= 60"
-          ></i>
+          <ng-container *ngIf="!powerSupplyStatus">
+            <i
+              class="mdi mdi-battery-alert-variant-outline battery-icon icon"
+            ></i>
+          </ng-container>
+          <ng-container *ngIf="powerSupplyStatus == 'NOT_CHARGING'">
+            <i [class]="getBatteryCssStyle(percentage ? percentage : 0)"></i>
+          </ng-container>
 
-          <i
-            class="mdi mdi-battery-charging battery-charging-icon icon"
-            *ngIf="powerSupplyStatus === 'CHARGING'"
-          ></i>
+          <ng-container *ngIf="powerSupplyStatus === 'CHARGING'">
+            <i class="mdi mdi-battery-charging battery-charging-icon icon"></i>
+          </ng-container>
         </li>
 
         <!-- manual -->
@@ -169,4 +152,3 @@
     </div>
   </div>
 </nav>
-

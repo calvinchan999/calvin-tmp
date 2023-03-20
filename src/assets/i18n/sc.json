@@ -110,5 +110,8 @@
   "no": "不是",
   "taskActions": {
     "batteryChargeAction": "将会执行电池充电动作"
+  },
+  "toast": {
+    "inconnectLocalization": "坐标偏差: {{translationDeviation}}, 角度偏差: {{angleDeviation}}"
   }
 }
