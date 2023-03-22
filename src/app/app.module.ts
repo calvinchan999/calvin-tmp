@@ -28,6 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ToastrModule } from 'ngx-toastr';
 
 import { SignInComponent } from './views/sign-in/sign-in.component';
+import { RobotGroupComponent } from './views/robot-group/robot-group.component';
 
 
 export function HttpLoaderFactory(httpClient: HttpClient) {

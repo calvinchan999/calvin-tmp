@@ -13,6 +13,7 @@
   "waypointList": "目的地",
   "destination": "目的地",
   "downloadLogs": "错误日志",
+  "followRobotGroup": "车跟车",
   "robotStatus": {
     "followMe": "跟随模式",
     "navigation": "导航模式",

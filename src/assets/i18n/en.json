@@ -13,6 +13,7 @@
   "waypointList": "Destination",
   "destination": "Destination",
   "downloadLogs": "Error Logs",
+  "followRobotGroup": "Follow Robot Group",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",

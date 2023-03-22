@@ -25,12 +25,12 @@
             *ngIf="showBatteryPercentage"
             >{{ percentage }}%</label
           >
-          <ng-container *ngIf="!powerSupplyStatus">
+          <!-- <ng-container *ngIf="!powerSupplyStatus">
             <i
               class="mdi mdi-battery-alert-variant-outline battery-icon icon"
             ></i>
-          </ng-container>
-          <ng-container *ngIf="powerSupplyStatus == 'NOT_CHARGING'">
+          </ng-container> -->
+          <ng-container *ngIf="powerSupplyStatus == 'NOT_CHARGING' || powerSupplyStatus !== 'CHARGING'">
             <i [class]="getBatteryCssStyle(percentage ? percentage : 0)"></i>
           </ng-container>
 

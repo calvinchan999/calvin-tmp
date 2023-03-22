@@ -51,6 +51,15 @@ const routes: Routes = [
           )
       },
       {
+        path: 'robot-group',
+        canActivateChild: [AuthGuard],
+        data: { title: 'followRobotGroup' },
+        loadChildren: () =>
+          import('./views/robot-group/robot-group.module').then(
+            m => m.RobotGroupModule
+          )
+      },
+      {
         path: 'login',
         data: { title: 'signIn' },
         component: SignInComponent

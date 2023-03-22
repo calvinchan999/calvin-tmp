@@ -3,7 +3,7 @@ $bg-color: #424242;
 $hl-color: #2196f3;
 $muted-color: mix(white, $bg-color, 70%);
 $trans-time: 300ms;
-$width: 80vw;
+$width: 100%;
 
 *,
 :before,
@@ -46,7 +46,7 @@ form {
 
 .group {
   position: relative;
-  margin: 35px 0;
+  margin: 25px 0;
 }
 
 // INPUTS // ============================== //

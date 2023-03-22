@@ -26,6 +26,7 @@ import { FinalDestinationDialogComponent } from './components/waypoint-form/fina
 import { SignInFormComponent } from './components/sign-in-form/sign-in-form.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { RobotGroupListComponent } from './components/robot-group-list/robot-group-list.component';
 
 @NgModule({
   imports: [
@@ -58,7 +59,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     FollowMeInspectorDialogComponent,
     FinalDestinationDialogComponent,
     SignInFormComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    RobotGroupListComponent
   ],
   exports: [
     HeaderComponent,
@@ -81,7 +83,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     FollowMeInspectorDialogComponent,
     FinalDestinationDialogComponent,
     SignInFormComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    RobotGroupListComponent
   ],
   providers: [ModalComponent]
 })

@@ -1,0 +1,58 @@
+.robot-group-container {
+  height: 100%;
+  width: 100%;
+}
+
+.robot-group-list-wrapper {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.robot-group-join-btn-container,
+.robot-group-confirm-btn-container {
+  position: absolute;
+  bottom: 0;
+  margin: 15px;
+}
+
+.robot-group-join-btn-container {
+  left: 0;
+}
+
+.robot-group-confirm-btn-container {
+  right: 0;
+}
+
+.robot-group-join-btn,
+.robot-group-confirm-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  color: #fff;
+  background-color: #00b8d4;
+  border-color: white;
+  border-width: 2px;
+  font-size: 22px;
+  opacity: 0.8;
+}
+
+.robot-group-join-btn-icon,
+.robot-group-confirm-btn-icon {
+  text-align: center;
+  font-size: 4em;
+}
+
+.robot-group-confirm-btn-icon {
+  position: absolute;
+  bottom: 0;
+}
+
+.robot-group-confirm-btn-title {
+  text-align: center;
+  position: absolute;
+  bottom: 10px;
+}

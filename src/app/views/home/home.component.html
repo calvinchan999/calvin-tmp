@@ -95,6 +95,16 @@
           (eventTrigger)="onDownloadLogs()"
         ></app-card>
       </div>
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="user?.length > 0 && features.grouping"
+      >
+        <app-card
+          title="followRobotGroup"
+          icon="car-multiple"
+          (eventTrigger)="onClickFollowRobotGroup()"
+        ></app-card>
+      </div>
     </div>
   </div>
 </div>

@@ -154,4 +154,8 @@ export class HomeComponent implements OnInit {
       closeAfterRefresh: false,
     });
   }
+
+  onClickFollowRobotGroup() {
+    this.router.navigate(['/robot-group']);
+  }
 }
