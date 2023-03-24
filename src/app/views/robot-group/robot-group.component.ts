@@ -30,13 +30,16 @@ export class RobotGroupComponent implements OnInit {
     this.sharedService.currentMap$
       .pipe(
         take(2),
-        mergeMap(map => this.mapService.getMap(map)),
+        mergeMap(map => {
+          const param = { param: { mapCode:map, offset:0, rowCount: 100  } };
+          return this.robotGroupService.getFmsFloorPlanCode(param)
+        }),
         tap((map: any) => console.log(map)),
         tap(map => {
           let { floorPlanCode } = map;
           floorPlanCode = floorPlanCode ? floorPlanCode : ''; // todo
           // const robotType = ''; // todo
-          const param = { param: { floorPlanCode } };
+          const param = { param: {  } };
           this.robotLists$ = this.robotGroupService.getRobots(param);
         })
       )

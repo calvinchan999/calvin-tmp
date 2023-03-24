@@ -40,7 +40,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     mergeMap(mapResult => {
       if (mapResult && mapResult?.length > 0) {
         const filter = _.pickBy(
-          { mapName: mapResult, initialLocalization: 'true' },
+          { mapName: mapResult },
           _.identity
         );
         return this.waypointService.getWaypoint({ filter });

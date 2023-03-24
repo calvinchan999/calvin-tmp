@@ -268,6 +268,15 @@ export class RobotGroupService {
     });
   }
 
+  getFmsFloorPlanCode(queries) {
+    const url = generateQueryUrl('/map/v1', queries);
+    return this.forkApi({
+      method: 'GET',
+      requestUri: url,
+      body: ''
+    });
+  }
+
   followRobot() {
     const url = `${this.baseUrl}${environment.api.followRobot}`;
     return this.http.get<any>(url);
