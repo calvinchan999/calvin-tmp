@@ -5,6 +5,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ModalComponent } from '../modal/modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-robot-group-form',
@@ -15,6 +16,7 @@ export class RobotGroupFormComponent implements OnInit {
   @Input() metaData;
   robotId: string;
   form: FormGroup;
+  sub = new Subscription();
 
   constructor(
     private robotGroupService: RobotGroupService,
@@ -27,7 +29,7 @@ export class RobotGroupFormComponent implements OnInit {
       // robots: this.fb.array([])
     });
 
-    this.sharedService.currentRobotId
+    this.sub = this.sharedService.currentRobotId
       .pipe(tap(id => (this.robotId = id)))
       .subscribe();
   }
@@ -69,5 +71,9 @@ export class RobotGroupFormComponent implements OnInit {
         .pairRobotGroup(data)
         .subscribe(() => this.modalComponent.closeTrigger$.next());
     }
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
-import { UUID } from 'angular2-uuid';
 import { generateQueryUrl } from 'src/app/utils/query-builder';
 
 @Injectable({
@@ -25,7 +24,7 @@ export class RobotGroupService {
 
   getRobots(queries): Observable<any> {
     const url = generateQueryUrl(`/robot/v1/robotInfo`, queries);
-console.log(url);
+
     return this.forkApi({
       method: 'GET',
       requestUri: url,
@@ -228,6 +227,9 @@ console.log(url);
     //       }
     //     },
     //     estopped: false
+    //   },
+    //   {
+    //     robotCode: 'temi',
     //   }
     // ]);
   }
@@ -264,5 +266,10 @@ console.log(url);
       requestUri: '/robotGroup/v1',
       body: body
     });
+  }
+
+  followRobot() {
+    const url = `${this.baseUrl}${environment.api.followRobot}`;
+    return this.http.get<any>(url);
   }
 }

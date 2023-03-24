@@ -24,6 +24,7 @@ import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
 import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
+import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 
 @Component({
   selector: 'app-default',
@@ -60,7 +61,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private authService: AuthService,
     private taskService: TaskService,
-    private waypointService: WaypointService
+    private waypointService: WaypointService,
+    private robotGroupService: RobotGroupService
   ) {
     this.sharedService.timer$.subscribe(i => {
       if (i > 0) {
@@ -381,18 +383,19 @@ export class DefaultComponent implements OnInit, OnDestroy {
         map(state => JSON.parse(state)),
         tap(data => {
           const { group, master, client, value } = data;
-          this.sharedService.isOpenModal$.next({
-            modal: 'robot-pairing',
-            modalHeader: 'pairedRobot',
-            isDisableClose: false,
-            closeAfterRefresh: false,
-            metaData: {
-              group,
-              master,
-              client,
-              value
-            }
-          });
+          if (group && group.length > 0)
+            this.sharedService.isOpenModal$.next({
+              modal: 'robot-pairing',
+              modalHeader: 'pairedRobot',
+              isDisableClose: false,
+              closeAfterRefresh: false,
+              metaData: {
+                group,
+                master,
+                client,
+                value
+              }
+            });
           // const { poseValid, translationDeviation, angleDeviation } = data;
           // if (!poseValid) {
           //   const msg = this.translateService.instant(
@@ -421,7 +424,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
         ),
         tap(() => this.getCurrentMode()),
         tap(() => this.getCurrentMap()),
-        tap(() => this.getTaskStatus())
+        tap(() => this.getTaskStatus()),
+        tap(() => this.getFollowRobotStatus())
       )
       .subscribe();
   }
@@ -529,6 +533,26 @@ export class DefaultComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+  getFollowRobotStatus() {
+    this.robotGroupService.followRobot().subscribe(res => {
+      const { group, master, client, value } = res;
+      if (group && group.length > 0) {
+        this.sharedService.isOpenModal$.next({
+          modal: 'robot-pairing',
+          modalHeader: 'pairedRobot',
+          isDisableClose: false,
+          closeAfterRefresh: false,
+          metaData: {
+            group,
+            master,
+            client,
+            value
+          }
+        });
+      }
+    });
   }
 
   // getTaskStatus() {

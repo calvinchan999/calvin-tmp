@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, Subscription } from 'rxjs';
 import { mergeMap, take, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from '../services/map.service';
@@ -14,12 +14,14 @@ export class RobotGroupComponent implements OnInit {
   robotLists$: Observable<any> = EMPTY;
   robotId: string;
   selectedRobots: any; // todo
+
+  sub = new Subscription();
   constructor(
     private sharedService: SharedService,
     private mapService: MapService,
     private robotGroupService: RobotGroupService
   ) {
-    this.sharedService.currentRobotId
+    this.sub = this.sharedService.currentRobotId
       .pipe(tap(id => (this.robotId = id)))
       .subscribe();
   }
@@ -33,8 +35,8 @@ export class RobotGroupComponent implements OnInit {
         tap(map => {
           let { floorPlanCode } = map;
           floorPlanCode = floorPlanCode ? floorPlanCode : ''; // todo
-          const robotType = ''; // todo
-          const param = { param: { floorPlanCode, robotType } };
+          // const robotType = ''; // todo
+          const param = { param: { floorPlanCode } };
           this.robotLists$ = this.robotGroupService.getRobots(param);
         })
       )
@@ -58,5 +60,9 @@ export class RobotGroupComponent implements OnInit {
         });
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }
