@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EMPTY, Observable } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
+import { mergeMap, take, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from '../services/map.service';
 import { RobotGroupService } from '../services/robot-group.service';
@@ -27,6 +27,7 @@ export class RobotGroupComponent implements OnInit {
   ngOnInit() {
     this.sharedService.currentMap$
       .pipe(
+        take(2),
         mergeMap(map => this.mapService.getMap(map)),
         tap((map: any) => console.log(map)),
         tap(map => {
