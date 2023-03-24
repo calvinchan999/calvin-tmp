@@ -1,0 +1,14 @@
+<div class="robot-list">
+  <div class="robot-container">
+    <div class="robots">
+      <div
+        class="robot"
+        *ngFor="let robot of robotListsOb | async"
+        [ngClass]="{ selected: isRobotSelected(robot) }"
+        (click)="onSelectedRobot(robot)"
+      >
+        {{ robot?.robotCode }}
+      </div>
+    </div>
+  </div>
+</div>

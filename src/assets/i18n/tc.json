@@ -26,7 +26,7 @@
   "resume": "重新開始",
   "resumeMessage": "重新開始前往目的地",
   "pause": "暫停",
-  "start":"開始",
+  "start": "開始",
   "pauseMessage": "暫停前往目的地",
   "sosDialog": {
     "tips1": "你確定要執行SOS信號嗎？",
@@ -47,7 +47,7 @@
     "tips1": "模式已更新"
   },
   "arrivedAtDestination": "已到達目的地 {{waypointName}}",
-  "completedTask":"任務已完成",
+  "completedTask": "任務已完成",
   "cancelledTask": "任務已取消",
   "navigatingtoDestination": "導航至目的地",
   "localizationDialog": {
@@ -94,7 +94,7 @@
     "title": "你確定這是最終目的地?"
   },
   "error": {
-    "httpStatue":"HTTP狀態:",
+    "httpStatue": "HTTP狀態:",
     "httpError": "- HTTP錯誤:",
     "httpErrorCode": {
       "20001": "找不到任務",
@@ -114,5 +114,15 @@
   },
   "toast": {
     "inconnectLocalization": "坐標偏差: {{translationDeviation}}, 角度偏差: {{angleDeviation}}"
+  },
+  "joinRobotGroup": "加入車隊",
+  "robotGroupName": "車隊名稱",
+  "pairedRobot": "已配對",
+  "robotUnpairing": "取消配對",
+  "robotPairingDialog": {
+    "group": "車隊",
+    "master": "主",
+    "client": "僕",
+    "value": "值"
   }
 }

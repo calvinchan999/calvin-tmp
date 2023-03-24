@@ -24,7 +24,7 @@
   "cancel": "取消",
   "confirm": "确认",
   "resume": "重新开始",
-  "start":"开始",
+  "start": "开始",
   "resumeMessage": "重新开始前往目的地",
   "pause": "暂停",
   "pauseMessage": "暂停前往目的地",
@@ -47,7 +47,7 @@
     "tips1": "模式已更新"
   },
   "arrivedAtDestination": "已到达目的地 {{waypointName}}",
-  "completedTask":"任务已完成",
+  "completedTask": "任务已完成",
   "cancelledTask": "任务已取消",
   "navigatingtoDestination": "导航至目的地",
   "localizationDialog": {
@@ -89,14 +89,14 @@
   "mapNotFoundError": "请选择无地图跟随模式，因为没有找到已激活地图",
   "destinationNotFoundError": "在地图({{mapName}})找不到目的地({{waypointName}})",
   "destinationReminding": "请于轮椅启动前确保以下事项:<br />1) 乘客的<span style='color: red;text-decoration: underline;'>安全带</span>已经扣上<br />2) 轮椅附近位置需<span style='color: red;text-decoration: underline;'>保持空旷</span>",
-  "finalDestination":"最终目的地",
+  "finalDestination": "最终目的地",
   "finalDestinationDialog": {
     "title": "你确定这是最终目的地?"
   },
   "error": {
-    "httpStatue":"HTTP状态:",
+    "httpStatue": "HTTP状态:",
     "httpError": "- HTTP错误:",
-    "httpErrorCode":{
+    "httpErrorCode": {
       "20001": "找不到任務",
       "20002": "任务错误",
       "20003": "任务错误",
@@ -114,5 +114,15 @@
   },
   "toast": {
     "inconnectLocalization": "坐标偏差: {{translationDeviation}}, 角度偏差: {{angleDeviation}}"
+  },
+  "joinRobotGroup": "加入车队",
+  "robotGroupName": "车队名称",
+  "pairedRobot": "已配对",
+  "robotUnpairing": "取消配對",
+  "robotPairingDialog": {
+    "group": "车队",
+    "master": "主",
+    "client": "仆",
+    "value": "值"
   }
 }

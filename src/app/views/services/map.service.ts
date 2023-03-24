@@ -37,7 +37,7 @@ export interface MapMetaData {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MapService {
   public baseUrl;
@@ -53,8 +53,10 @@ export class MapService {
     return this.http.get<MapResponse>(url);
   }
 
-  getMap(): Observable<MapResponse> {
-    const url = `${this.baseUrl}${environment.api.map}`;
+  getMap(mapCode?: string): Observable<MapResponse> {
+    const url = mapCode
+      ? `${this.baseUrl}${environment.api.map}/${mapCode}`
+      : `${this.baseUrl}${environment.api.map}`;
     return this.http.get<MapResponse>(url);
   }
 

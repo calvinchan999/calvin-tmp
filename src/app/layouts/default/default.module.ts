@@ -5,6 +5,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
@@ -12,8 +13,9 @@ import { TranslateModule } from '@ngx-translate/core';
     SharedModule,
     RouterModule,
     FlexLayoutModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    ReactiveFormsModule
   ],
   declarations: [DefaultComponent]
 })
-export class DefaultModule { }
+export class DefaultModule {}

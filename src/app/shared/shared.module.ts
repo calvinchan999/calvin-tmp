@@ -26,7 +26,9 @@ import { FinalDestinationDialogComponent } from './components/waypoint-form/fina
 import { SignInFormComponent } from './components/sign-in-form/sign-in-form.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { RobotGroupListComponent } from './components/robot-group-list/robot-group-list.component';
+import { RobotGroupFormComponent } from './components/robot-group-form/robot-group-form.component';
+import { RobotListComponent } from './components/robot-list/robot-list.component';
+import { RobotPairingDialogComponent } from './components/robot-pairing-dialog/robot-pairing-dialog.component';
 
 @NgModule({
   imports: [
@@ -60,7 +62,9 @@ import { RobotGroupListComponent } from './components/robot-group-list/robot-gro
     FinalDestinationDialogComponent,
     SignInFormComponent,
     ConfirmationDialogComponent,
-    RobotGroupListComponent
+    RobotGroupFormComponent,
+    RobotListComponent,
+    RobotPairingDialogComponent
   ],
   exports: [
     HeaderComponent,
@@ -84,7 +88,9 @@ import { RobotGroupListComponent } from './components/robot-group-list/robot-gro
     FinalDestinationDialogComponent,
     SignInFormComponent,
     ConfirmationDialogComponent,
-    RobotGroupListComponent
+    RobotGroupFormComponent,
+    RobotListComponent,
+    RobotPairingDialogComponent
   ],
   providers: [ModalComponent]
 })

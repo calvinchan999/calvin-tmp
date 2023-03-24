@@ -72,7 +72,9 @@
       <app-pairing-pair (onClose)="onCloseDialog($event)"></app-pairing-pair>
     </div>
     <div *ngSwitchCase="'unpair'">
-      <app-pairing-unpair (onClose)="onCloseDialog($event)"></app-pairing-unpair>
+      <app-pairing-unpair
+        (onClose)="onCloseDialog($event)"
+      ></app-pairing-unpair>
     </div>
     <div *ngSwitchCase="'follow-me-inspector'">
       <app-follow-me-inspector-dialog></app-follow-me-inspector-dialog>
@@ -87,11 +89,21 @@
       <app-sign-in-form></app-sign-in-form>
     </div>
     <div *ngSwitchCase="'confirmation-dialog'">
-      <app-confirmation-dialog [metaData]="metaData" (onClose)="onCloseDialog($event)"></app-confirmation-dialog>
+      <app-confirmation-dialog
+        [metaData]="metaData"
+        (onClose)="onCloseDialog($event)"
+      ></app-confirmation-dialog>
+    </div>
+    <div *ngSwitchCase="'join-robot-group'">
+      <app-robot-group-form [metaData]="metaData"></app-robot-group-form>
+    </div>
+    <div *ngSwitchCase="'robot-pairing'">
+      <app-robot-pairing-dialog
+        [metaData]="metaData"
+      ></app-robot-pairing-dialog>
     </div>
   </ng-template>
 </app-modal>
-
 
 <!-- hardcode modal type to warning -->
 <app-modal
@@ -100,7 +112,7 @@
   [closeAfterRefresh]="closeDialogAfterRefresh"
 >
   <ng-template #modalHeader
-    ><h2 class="modal-title">{{ 'warning' | translate }}</h2></ng-template
+    ><h2 class="modal-title">{{ "warning" | translate }}</h2></ng-template
   >
   <ng-template #modalResponse
     ><label class="modal-body">{{

@@ -1,0 +1,21 @@
+<div class="robot-pairing">
+  <div class="robot-pairing-container">
+    <div class="robot-pairing-group">
+      {{ "robotPairingDialog.group" | translate }}: {{ group }}
+    </div>
+    <div class="robot-pairing-master">
+      {{ "robotPairingDialog.master" | translate }}: {{ master }}
+    </div>
+    <div class="robot-pairing-client">
+      {{ "robotPairingDialog.client" | translate }}: {{ client }}
+    </div>
+    <div class="robot-pairing-value">
+      {{ "robotPairingDialog.value" | translate }}: {{ value }}
+    </div>
+  </div>
+  <div class="robot-pairing-btn-container">
+    <div class="btn hasMap-btn" (click)="unpair()">
+      {{ "unpair" | translate }}
+    </div>
+  </div>
+</div>

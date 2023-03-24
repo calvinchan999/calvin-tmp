@@ -1,0 +1,59 @@
+.robot-pairing {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.robot-pairing-container {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  margin: 15px;
+}
+
+.robot-pairing-group,
+.robot-pairing-master,
+.robot-pairing-client,
+.robot-pairing-value {
+  font-size: 20px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.robot-pairing-btn-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.btn {
+  width: 100%;
+  background-color: transparent;
+  border-radius: 10px;
+}
+
+.hasMap-btn {
+  color: #00b8d4;
+  border: 3px solid #00b8d4;
+}
+
+.hasMap-btn:active {
+  background-color: #00b8d4;
+  color: #fff;
+}
+
+.notMap-btn {
+  color: #e8284c;
+  border: 3px solid #e8284c;
+}
+
+.notMap-btn:active {
+  background-color: #e8284c;
+  color: #fff;
+}

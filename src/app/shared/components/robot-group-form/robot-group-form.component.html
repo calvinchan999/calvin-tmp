@@ -1,0 +1,21 @@
+<div class="robot-group-form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit(form)">
+    <app-textbox
+      name="robotGroupName"
+      type="text"
+      (childEvents)="onUpdateGroupName($event)"
+    ></app-textbox>
+    <div cdkDropList class="robot-list" (cdkDropListDropped)="drop($event)">
+      <div class="robot-box" *ngFor="let data of metaData" cdkDrag>
+        <div class="custom-placeholder" *cdkDragPlaceholder></div>
+        [{{ data.floorPlanCode }}]_{{ data.robotCode }}
+      </div>
+    </div>
+
+    <div class="robot-group-form-btn-container">
+      <button type="submit" class="btn confirm-btn">
+        {{ "confirm" | translate }}
+      </button>
+    </div>
+  </form>
+</div>

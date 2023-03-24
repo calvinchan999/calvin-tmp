@@ -36,6 +36,7 @@ export interface Modal {
   modalHeader: string | null;
   isDisableClose?: boolean;
   metaData?: any;
+  robotId?: string;
   closeAfterRefresh?: boolean;
 }
 
@@ -59,6 +60,7 @@ export enum LocalizationType {
   providedIn: 'root'
 })
 export class SharedService {
+  public currentRobotId = new BehaviorSubject<string>('');
   public currentMapBehaviorSubject$ = new BehaviorSubject<string>('');
   public currentMode$ = new Subject<string>();
   public currentManualStatus$ = new Subject<Boolean>();

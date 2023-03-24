@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RobotGroupListComponent } from './robot-group-list.component';
+import { RobotPairingDialogComponent } from './robot-pairing-dialog.component';
 
-describe('RobotGroupListComponent', () => {
-  let component: RobotGroupListComponent;
-  let fixture: ComponentFixture<RobotGroupListComponent>;
+describe('RobotPairingDialogComponent', () => {
+  let component: RobotPairingDialogComponent;
+  let fixture: ComponentFixture<RobotPairingDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RobotGroupListComponent ]
+      declarations: [ RobotPairingDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RobotGroupListComponent);
+    fixture = TestBed.createComponent(RobotPairingDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

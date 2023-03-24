@@ -23,7 +23,7 @@
   "mapChanged": "The map has been updated with ",
   "cancel": "Cancel",
   "confirm": "Confirm",
-  "start":"Start",
+  "start": "Start",
   "resume": "Resume",
   "resumeMessage": "Restart to the destination",
   "pause": "Pause",
@@ -47,7 +47,7 @@
     "tips1": "The mode has been updated"
   },
   "arrivedAtDestination": "Arrived at destination {{waypointName}}",
-  "completedTask":"The Task has been completed",
+  "completedTask": "The Task has been completed",
   "cancelledTask": "The Task has been cancelled",
   "navigatingtoDestination": "Destination",
   "localizationDialog": {
@@ -114,5 +114,15 @@
   },
   "toast": {
     "inconnectLocalization": "XY Deviation: {{translationDeviation}}, Angle Deviation: {{angleDeviation}}"
+  },
+  "joinRobotGroup": "Join Robot Group",
+  "robotGroupName": "Group Name",
+  "pairedRobot": "Paired Robot",
+  "robotUnpairing": "Robot Unpairing",
+  "robotPairingDialog": {
+    "group": "Robot Group",
+    "master": "Master",
+    "client": "Servant",
+    "value": "Value"
   }
 }

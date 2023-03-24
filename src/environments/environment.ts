@@ -31,7 +31,8 @@ export const environment = {
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
     mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
     lidar: '/api/lidar/v1',
-    pairing: '/api/followMe/v1/pairing'
+    pairing: '/api/followMe/v1/pairing',
+    forward: '/api/fms/v1/forward'
   },
 };
 

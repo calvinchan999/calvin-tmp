@@ -214,7 +214,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
       .pipe(map(state => JSON.parse(state)))
       .subscribe((response: any) => {
         if (response) {
-          const { state, manual } = response;
+          const { robotId, state, manual } = response;
+          this.sharedService.currentRobotId.next(robotId);
           this.sharedService.currentMode$.next(state);
           this.sharedService.currentManualStatus$.next(manual);
           if (state !== `FOLLOW_ME`) {
@@ -233,11 +234,12 @@ export class DefaultComponent implements OnInit, OnDestroy {
           modalHeader,
           isDisableClose,
           metaData,
-          closeAfterRefresh
+          closeAfterRefresh,
+          robotId
         } = response;
         if (modal) {
           this.modal = modal;
-          this.modalTitle = modalHeader;
+          this.modalTitle = robotId ? `${robotId}` : modalHeader;
           this.isDisableClose = isDisableClose;
           this.metaData = metaData;
           this.closeDialogAfterRefresh = closeAfterRefresh;
@@ -370,6 +372,38 @@ export class DefaultComponent implements OnInit, OnDestroy {
             );
             this.toastrService.warning(msg);
           }
+        })
+      )
+      .subscribe();
+
+    this.mqttService.currentRobotPairingStatusSubject
+      .pipe(
+        map(state => JSON.parse(state)),
+        tap(data => {
+          const { group, master, client, value } = data;
+          this.sharedService.isOpenModal$.next({
+            modal: 'robot-pairing',
+            modalHeader: 'pairedRobot',
+            isDisableClose: false,
+            closeAfterRefresh: false,
+            metaData: {
+              group,
+              master,
+              client,
+              value
+            }
+          });
+          // const { poseValid, translationDeviation, angleDeviation } = data;
+          // if (!poseValid) {
+          //   const msg = this.translateService.instant(
+          //     'toast.inconnectLocalization',
+          //     {
+          //       translationDeviation,
+          //       angleDeviation
+          //     }
+          //   );
+          //   this.toastrService.warning(msg);
+          // }
         })
       )
       .subscribe();

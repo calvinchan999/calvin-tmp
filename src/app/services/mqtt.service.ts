@@ -36,6 +36,7 @@ export class MqttService {
   public actionExecutionSubject = new Subject<any>();
   public arrivalSubject = new Subject<any>();
   public poseDeviationSubject = new Subject<any>();
+  public currentRobotPairingStatusSubject = new Subject<any>();
 
   public clientId: string = '';
   constructor(
@@ -221,6 +222,15 @@ export class MqttService {
         .subscribe((message: IMqttMessage) => {
           console.log(new TextDecoder('utf-8').decode(message.payload));
           this.poseDeviationSubject.next(
+            new TextDecoder('utf-8').decode(message.payload)
+          );
+        });
+
+      this._mqttService
+        .observe('rvautotech/fobo/followRobot/pairing')
+        .subscribe((message: IMqttMessage) => {
+          console.log(new TextDecoder('utf-8').decode(message.payload));
+          this.currentRobotPairingStatusSubject.next(
             new TextDecoder('utf-8').decode(message.payload)
           );
         });
