@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class RobotGroupFormComponent implements OnInit {
   @Input() metaData;
-  robotId: string;
+  // robotId: string;
   form: FormGroup;
   sub = new Subscription();
 
@@ -29,9 +29,9 @@ export class RobotGroupFormComponent implements OnInit {
       // robots: this.fb.array([])
     });
 
-    this.sub = this.sharedService.currentRobotId
-      .pipe(tap(id => (this.robotId = id)))
-      .subscribe();
+    // this.sub = this.sharedService.currentRobotId
+    //   .pipe(tap(id => (this.robotId = id)))
+    //   .subscribe();
   }
 
   ngOnInit(): void {}
@@ -58,9 +58,9 @@ export class RobotGroupFormComponent implements OnInit {
     });
 
     const { groupName } = form.getRawValue();
-    const robotId = this.robotId;
+
     if (form.invalid) return;
-    if (groupName && robotId) {
+    if (groupName) {
       const data = {
         groupId: groupName,
         groupName,

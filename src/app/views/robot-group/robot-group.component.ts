@@ -60,26 +60,27 @@ export class RobotGroupComponent implements OnInit {
       });
   }
 
-  //   [
-  //     [],
-  //     []
-  // ]
   onEventRobot(event: Event) {
     this.selectedRobots = event;
   }
 
   onSubmit(data) {
     if (data && data.length >= 2) {
-      if (this.robotId) {
-        this.sharedService.isOpenModal$.next({
-          modal: 'join-robot-group',
-          modalHeader: 'joinRobotGroup',
-          isDisableClose: true,
-          closeAfterRefresh: false,
-          metaData: data,
-          robotId: this.robotId
-        });
-      }
+      // if (this.robotId) {
+      this.sharedService.isOpenModal$.next({
+        modal: 'join-robot-group',
+        modalHeader: 'joinRobotGroup',
+        isDisableClose: true,
+        closeAfterRefresh: false,
+        metaData: data,
+        robotId: this.robotId
+      });
+      // }
+    } else {
+      this.sharedService.response$.next({
+        type: 'normal',
+        message: 'twoOrMoreRobots'
+      });
     }
   }
 

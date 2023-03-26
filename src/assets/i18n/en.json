@@ -119,10 +119,11 @@
   "robotGroupName": "Group Name",
   "pairedRobot": "Paired Robot",
   "robotUnpairing": "Robot Unpairing",
+  "twoOrMoreRobots": "Please choose two or more robots",
   "robotPairingDialog": {
     "group": "Robot Group",
     "master": "Master",
-    "client": "Servant",
+    "client": "Slave",
     "value": "Value"
   }
 }

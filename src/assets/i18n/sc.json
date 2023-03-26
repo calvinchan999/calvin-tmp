@@ -119,6 +119,7 @@
   "robotGroupName": "车队名称",
   "pairedRobot": "已配对",
   "robotUnpairing": "取消配對",
+  "twoOrMoreRobots": "请选择两个或更多的机器人",
   "robotPairingDialog": {
     "group": "车队",
     "master": "主",
