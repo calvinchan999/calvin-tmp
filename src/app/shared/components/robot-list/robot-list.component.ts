@@ -8,13 +8,13 @@ import * as _ from 'lodash';
   styleUrls: ['./robot-list.component.scss']
 })
 export class RobotListComponent implements OnInit {
-  @Input() robotListsOb: Observable<any> = EMPTY;
-  @Output() selectedRobotsEvent = new EventEmitter<any>();
+  @Input() robots;
+  @Output() selectedRobotEvent = new EventEmitter<any>();
   selectedRobots: Array<any> = [];
-
+  
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 
   isRobotSelected(robot) {
     return (
@@ -24,7 +24,7 @@ export class RobotListComponent implements OnInit {
     );
   }
 
-  onSelectedRobot(robot) {
+  onEvent(robot) {
     const index = this.selectedRobots.findIndex(
       selectedRobot => selectedRobot.robotCode === robot.robotCode
     );
@@ -35,6 +35,6 @@ export class RobotListComponent implements OnInit {
       this.selectedRobots.splice(index, 1);
     }
 
-    this.selectedRobotsEvent.emit(this.selectedRobots);
+    this.selectedRobotEvent.emit(this.selectedRobots);
   }
 }

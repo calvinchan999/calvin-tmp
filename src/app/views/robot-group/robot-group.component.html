@@ -1,8 +1,8 @@
 <div class="robot-group-container">
   <div class="robot-group-list-wrapper">
     <app-robot-list
-      [robotListsOb]="robotLists$"
-      (selectedRobotsEvent)="onEventRobotLists($event)"
+      [robots]="robots"
+      (selectedRobotEvent)="onEventRobot($event)"
     ></app-robot-list>
     <!-- <div class="robot-group-join-btn-container d-flex justify-content-around">
       <button class="btn robot-group-join-btn" (click)="joinGroup()">

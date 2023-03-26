@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { EMPTY, Observable, Subscription } from 'rxjs';
-import { mergeMap, take, tap } from 'rxjs/operators';
+import { forkJoin, Subscription } from 'rxjs';
+import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from '../services/map.service';
 import { RobotGroupService } from '../services/robot-group.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-robot-group',
@@ -11,7 +12,7 @@ import { RobotGroupService } from '../services/robot-group.service';
   styleUrls: ['./robot-group.component.scss']
 })
 export class RobotGroupComponent implements OnInit {
-  robotLists$: Observable<any> = EMPTY;
+  robots;
   robotId: string;
   selectedRobots: any; // todo
 
@@ -29,24 +30,41 @@ export class RobotGroupComponent implements OnInit {
   ngOnInit() {
     this.sharedService.currentMap$
       .pipe(
-        take(2),
+        take(1),
         mergeMap(map => {
-          const param = { param: { mapCode:map, offset:0, rowCount: 100  } };
-          return this.robotGroupService.getFmsFloorPlanCode(param)
+          const param = { param: { mapCode: map, offset: 0, rowCount: 100 } };
+          return this.robotGroupService.getFmsFloorPlanCode(param);
         }),
-        tap((map: any) => console.log(map)),
-        tap(map => {
-          let { floorPlanCode } = map;
-          floorPlanCode = floorPlanCode ? floorPlanCode : ''; // todo
-          // const robotType = ''; // todo
-          const param = { param: {  } };
-          this.robotLists$ = this.robotGroupService.getRobots(param);
+        switchMap(map => {
+          const floorPlans = _.uniqBy(map, 'floorPlanCode');
+          let obs = [];
+          floorPlans.forEach((floorPlan: any) => {
+            const { floorPlanCode } = floorPlan;
+            const param = { param: { floorPlanCode } };
+            obs.push(this.robotGroupService.getRobots(param));
+          });
+          return forkJoin(obs);
+        }),
+        map(vals => {
+          const result = [];
+          vals.map((row: any) => {
+            row.forEach(col => {
+              result.push(col);
+            });
+          });
+          return result;
         })
       )
-      .subscribe();
+      .subscribe(res => {
+        this.robots = res;
+      });
   }
 
-  onEventRobotLists(event: Event) {
+  //   [
+  //     [],
+  //     []
+  // ]
+  onEventRobot(event: Event) {
     this.selectedRobots = event;
   }
 

@@ -3,9 +3,9 @@
     <div class="robots">
       <div
         class="robot"
-        *ngFor="let robot of robotListsOb | async"
+        *ngFor="let robot of robots"
         [ngClass]="{ selected: isRobotSelected(robot) }"
-        (click)="onSelectedRobot(robot)"
+        (click)="onEvent(robot)"
       >
         {{ robot?.robotCode }}
       </div>
