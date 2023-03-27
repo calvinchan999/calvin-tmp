@@ -121,7 +121,7 @@
   "robotUnpairing": "Robot Unpairing",
   "twoOrMoreRobots": "Please choose two or more robots",
   "robotPairingDialog": {
-    "group": "Robot Group",
+    "group": "Group",
     "master": "Master",
     "client": "Slave",
     "value": "Sequence",

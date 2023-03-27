@@ -44,7 +44,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
   public response: Response;
   public disconnectMessage: string;
 
-  modal: string = '';
+  modal: string;
   modalTitle: string = '';
   isDisableClose: boolean;
   metaData: any = null;
@@ -89,6 +89,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
           const { action } = actionData;
           if (action) {
             const { alias } = action;
+            
             if (alias && alias.indexOf('BATTERY_CHARGE') > -1) {
               this.sharedService.response$.next({
                 type: 'normal',
@@ -241,6 +242,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
           robotId
         } = response;
         if (modal) {
+          if (!modal) return;
           this.modal = modal;
           this.modalTitle = robotId ? `${robotId}` : modalHeader;
           this.isDisableClose = isDisableClose;
@@ -379,14 +381,16 @@ export class DefaultComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.mqttService.currentRobotPairingStatusSubject
-      .pipe(
-        map(state => JSON.parse(state)),
-        tap(data => {
-          this.robotPairDialogConditionChecker(data);
-        })
-      )
-      .subscribe();
+    this.sub.add(
+      this.mqttService.currentRobotPairingStatusSubject
+        .pipe(
+          map(state => JSON.parse(state)),
+          tap(data => {
+            this.robotPairDialogConditionChecker(data);
+          })
+        )
+        .subscribe()
+    );
 
     this.routerSub = this.router.events
       .pipe(
@@ -513,26 +517,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
   }
 
   getFollowRobotStatus() {
-    this.robotGroupService.followRobot().subscribe(res => {
-      const { group, master, client, value } = res;
-      if (group && group.length > 0) {
-        this.sharedService.isOpenModal$.next({
-          modal: 'robot-pairing',
-          modalHeader: 'pairedRobot',
-          isDisableClose: false,
-          closeAfterRefresh: false,
-          metaData: {
-            group,
-            master,
-            client,
-            value
-          }
-        });
-      }
-    });
+    this.sub.add(
+      this.robotGroupService.followRobot().subscribe(res => {
+        this.robotPairDialogConditionChecker(res);
+      })
+    );
   }
 
-  robotPairDialogConditionChecker({ group, master, client, value }){
+  robotPairDialogConditionChecker({ group, master, client, value }) {
     if (group && group.length > 0) {
       this.sharedService.isRobotPairingPayloadBehaviorSubject.next({
         modal: 'robot-pairing',
@@ -558,8 +550,11 @@ export class DefaultComponent implements OnInit, OnDestroy {
           value
         }
       });
-    }else {
-      this.sharedService.isRobotPairingPayloadBehaviorSubject.next(null)
+    } else {
+      this.sharedService.isRobotPairingPayloadBehaviorSubject.next(null);
+      if (this.modal) {
+        this.dialog.onCloseWithoutRefresh();
+      }
     }
   }
 
