@@ -1,21 +1,42 @@
 <div class="robot-pairing">
   <div class="robot-pairing-container">
-    <div class="robot-pairing-group">
-      {{ "robotPairingDialog.group" | translate }}: {{ group }}
+    <div class="robot-pairing-group-container">
+      <label class="robot-pairing-group-label label">
+        {{ "robotPairingDialog.group" | translate }}:
+      </label>
+      <label class="robot-pairing-group-content content">
+        {{ group }}
+      </label>
     </div>
-    <div class="robot-pairing-master">
-      {{ "robotPairingDialog.master" | translate }}: {{ master }}
+    <div class="robot-pairing-master-container">
+      <label class="robot-pairing-master-label label">
+        {{ "robotPairingDialog.master" | translate }}:
+      </label>
+      <label class="robot-pairing-master-content content">
+        {{ master }}
+      </label>
     </div>
-    <div class="robot-pairing-client">
-      {{ "robotPairingDialog.client" | translate }}: {{ client }}
+    <div class="robot-pairing-client-container">
+      <label class="robot-pairing-client-label label">
+        {{ "robotPairingDialog.client" | translate }}:
+      </label>
+      <label class="robot-pairing-client-content content">
+        {{ client }}
+      </label>
     </div>
-    <div class="robot-pairing-value">
-      {{ "robotPairingDialog.value" | translate }}: {{ value }}
+    <div class="robot-pairing-value-container">
+      <label class="robot-pairing-value-label label">
+       {{ (master ? "robotPairingDialog.totalRobot" :  "robotPairingDialog.value") | translate}}
+      </label>
+      <label class="robot-pairing-value-content content">
+        {{ value }}
+      </label>
     </div>
   </div>
-  <div class="robot-pairing-btn-container">
+  <div class="robot-pairing-btn-container" *ngIf="master">
     <div class="btn hasMap-btn" (click)="unpair()">
       {{ "unpair" | translate }}
     </div>
   </div>
 </div>
+

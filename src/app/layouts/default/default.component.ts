@@ -36,6 +36,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
   disconnectResponseDialog: ModalComponent;
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
+  @ViewChild('robotGroupPairingDialog') robotPairingDialog: ModalComponent;
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
   public routerSub = new Subscription();
@@ -382,31 +383,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       .pipe(
         map(state => JSON.parse(state)),
         tap(data => {
-          const { group, master, client, value } = data;
-          if (group && group.length > 0)
-            this.sharedService.isOpenModal$.next({
-              modal: 'robot-pairing',
-              modalHeader: 'pairedRobot',
-              isDisableClose: false,
-              closeAfterRefresh: false,
-              metaData: {
-                group,
-                master,
-                client,
-                value
-              }
-            });
-          // const { poseValid, translationDeviation, angleDeviation } = data;
-          // if (!poseValid) {
-          //   const msg = this.translateService.instant(
-          //     'toast.inconnectLocalization',
-          //     {
-          //       translationDeviation,
-          //       angleDeviation
-          //     }
-          //   );
-          //   this.toastrService.warning(msg);
-          // }
+          this.robotPairDialogConditionChecker(data);
         })
       )
       .subscribe();
@@ -553,6 +530,37 @@ export class DefaultComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  robotPairDialogConditionChecker({ group, master, client, value }){
+    if (group && group.length > 0) {
+      this.sharedService.isRobotPairingPayloadBehaviorSubject.next({
+        modal: 'robot-pairing',
+        modalHeader: 'pairedRobot',
+        isDisableClose: master ? true : false,
+        closeAfterRefresh: false,
+        metaData: {
+          group,
+          master,
+          client,
+          value
+        }
+      });
+      this.sharedService.isOpenModal$.next({
+        modal: 'robot-pairing',
+        modalHeader: 'pairedRobot',
+        isDisableClose: master ? true : false,
+        closeAfterRefresh: false,
+        metaData: {
+          group,
+          master,
+          client,
+          value
+        }
+      });
+    }else {
+      this.sharedService.isRobotPairingPayloadBehaviorSubject.next(null)
+    }
   }
 
   // getTaskStatus() {

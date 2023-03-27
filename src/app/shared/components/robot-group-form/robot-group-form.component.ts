@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { tap } from 'rxjs/operators';
 import { SharedService } from 'src/app/services/shared.service';
 import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -66,7 +65,6 @@ export class RobotGroupFormComponent implements OnInit {
         groupName,
         pairingRobotList: dataMapper
       };
-      // this.modalComponent.closeTrigger$.next(); // todo
       this.robotGroupService
         .pairRobotGroup(data)
         .subscribe(() => this.modalComponent.closeTrigger$.next());

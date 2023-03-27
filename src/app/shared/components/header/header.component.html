@@ -30,7 +30,12 @@
               class="mdi mdi-battery-alert-variant-outline battery-icon icon"
             ></i>
           </ng-container> -->
-          <ng-container *ngIf="powerSupplyStatus == 'NOT_CHARGING' || powerSupplyStatus !== 'CHARGING'">
+          <ng-container
+            *ngIf="
+              powerSupplyStatus == 'NOT_CHARGING' ||
+              powerSupplyStatus !== 'CHARGING'
+            "
+          >
             <i [class]="getBatteryCssStyle(percentage ? percentage : 0)"></i>
           </ng-container>
 
@@ -71,6 +76,13 @@
         >
           <i class="mdi mdi-home icon"></i>
         </li>
+
+        <!-- robot group-->
+        <li class="nav-item admin-container" (click)="openRobotGroupPairingDialog()" *ngIf="robotGroupPairing">
+          <i class="mdi mdi-car-connected icon"></i>
+        </li>
+
+        <!-- lang-->
         <li class="nav-item language-container" (click)="useLanguage()">
           <!-- <i class="material-icons nav-link icon">language</i> -->
           <i class="mdi mdi-web icon"></i>

@@ -124,6 +124,7 @@
     "group": "车队",
     "master": "主",
     "client": "仆",
-    "value": "值"
+    "value": "序列",
+    "totalRobot": "总机器数"
   }
 }

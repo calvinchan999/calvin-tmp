@@ -12,6 +12,7 @@ import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
 import {
   LocalizationType,
+  Modal,
   SharedService
 } from 'src/app/services/shared.service';
 import { Location } from '@angular/common';
@@ -41,6 +42,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   user: string;
   waypointName: string;
   localizationType: string;
+  robotGroupPairing: boolean = false;
+  robotGroupPairingModalPayload: Modal = null;
 
   constructor(
     private mqttService: MqttService,
@@ -138,6 +141,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
         .pipe(
           tap(type => {
             this.localizationType = LocalizationType[type];
+          })
+        )
+        .subscribe()
+    );
+
+    this.sub.add(
+      this.sharedService.isRobotPairingPayloadBehaviorSubject
+        .pipe(
+          tap(payload => {
+            if (payload) {
+              this.robotGroupPairingModalPayload = payload;
+              this.robotGroupPairing = true;
+            } else {
+              this.robotGroupPairingModalPayload = null;
+              this.robotGroupPairing = false;
+            }
           })
         )
         .subscribe()
@@ -271,6 +290,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       css = `mdi mdi-battery-alert-variant-outline battery-icon icon`;
     }
     return css;
+  }
+
+  openRobotGroupPairingDialog() {
+    const model: Modal = this.robotGroupPairingModalPayload;
+    this.sharedService.isOpenModal$.next(model);
   }
 
   ngOnDestroy() {

@@ -3,8 +3,6 @@ import {
   BehaviorSubject,
   EMPTY,
   Observable,
-  of,
-  ReplaySubject,
   Subject,
   timer
 } from 'rxjs';
@@ -81,6 +79,8 @@ export class SharedService {
   public localizationType$ = new BehaviorSubject<LocalizationType>(
     LocalizationType.LIST
   );
+
+  public isRobotPairingPayloadBehaviorSubject = new BehaviorSubject<Modal>(null);
 
   constructor() {
     this.currentMap$

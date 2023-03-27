@@ -124,6 +124,7 @@
     "group": "Robot Group",
     "master": "Master",
     "client": "Slave",
-    "value": "Value"
+    "value": "Sequence",
+    "totalRobot": "Total Robot"
   }
 }

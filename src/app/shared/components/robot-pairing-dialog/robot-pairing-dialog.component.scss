@@ -8,22 +8,41 @@
 
 .robot-pairing-container {
   text-align: center;
-  width: 100%;
+  width: 50%;
   height: 100%;
   margin: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-.robot-pairing-group,
-.robot-pairing-master,
-.robot-pairing-client,
-.robot-pairing-value {
+.robot-pairing-group-container,
+.robot-pairing-master-container,
+.robot-pairing-client-container,
+.robot-pairing-value-container {
   font-size: 20px;
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  // justify-content: center;
+  // align-items: center;
+}
+
+.label {
+  text-align: center;
+  // border: 1px whitesmoke solid;
+  // border-radius: 15px 0 0 0;
+  // box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+}
+
+.content {
+  text-align: center;
+  // border: 1px whitesmoke solid;
+  // box-shadow:rgba(218, 218, 218, 0.25) 0px 5px 0px, rgba(250, 250, 250, 0.13) 0px 0px 0px 0px
+}
+
+.label,
+.content {
+  width: 100%;
 }
 
 .robot-pairing-btn-container {
