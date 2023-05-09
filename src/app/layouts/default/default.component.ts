@@ -89,7 +89,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
           const { action } = actionData;
           if (action) {
             const { alias } = action;
-            
+
             if (alias && alias.indexOf('BATTERY_CHARGE') > -1) {
               this.sharedService.response$.next({
                 type: 'normal',
@@ -362,24 +362,24 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //   )
     //   .subscribe();
 
-    this.mqttService.poseDeviationSubject
-      .pipe(
-        map(state => JSON.parse(state)),
-        tap(data => {
-          const { poseValid, translationDeviation, angleDeviation } = data;
-          if (!poseValid) {
-            const msg = this.translateService.instant(
-              'toast.inconnectLocalization',
-              {
-                translationDeviation,
-                angleDeviation
-              }
-            );
-            this.toastrService.warning(msg);
-          }
-        })
-      )
-      .subscribe();
+    // this.mqttService.poseDeviationSubject
+    //   .pipe(
+    //     map(state => JSON.parse(state)),
+    //     tap(data => {
+    //       const { poseValid, translationDeviation, angleDeviation } = data;
+    //       if (!poseValid) {
+    //         const msg = this.translateService.instant(
+    //           'toast.inconnectLocalization',
+    //           {
+    //             translationDeviation,
+    //             angleDeviation
+    //           }
+    //         );
+    //         this.toastrService.warning(msg);
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
 
     this.sub.add(
       this.mqttService.currentRobotPairingStatusSubject

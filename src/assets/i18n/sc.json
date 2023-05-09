@@ -113,7 +113,7 @@
     "batteryChargeAction": "将会执行电池充电动作"
   },
   "toast": {
-    "inconnectLocalization": "坐标偏差: {{translationDeviation}}, 角度偏差: {{angleDeviation}}"
+    "inconnectLocalization": "位置有效性: {{poseValid}}, 坐标偏差: {{translationDeviation}}, 角度偏差: {{angleDeviation}}"
   },
   "joinRobotGroup": "加入车队",
   "robotGroupName": "车队名称",

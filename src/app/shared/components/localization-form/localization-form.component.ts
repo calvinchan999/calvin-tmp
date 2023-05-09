@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of, Subscription } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { delay, map, mergeMap, tap } from 'rxjs/operators';
 import {
   LocalizationType,
   SharedService
@@ -15,6 +15,8 @@ import {
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { MapEditorType } from '../../utils/map-wrapper/map-wrapper.component';
+import { merge } from 'hammerjs';
+import { ToastrService } from 'ngx-toastr';
 
 export interface Metadata {
   x: number;
@@ -39,10 +41,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
     mergeMap(mapResult => {
       if (mapResult && mapResult?.length > 0) {
-        const filter = _.pickBy(
-          { mapName: mapResult },
-          _.identity
-        );
+        const filter = _.pickBy({ mapName: mapResult }, _.identity);
         return this.waypointService.getWaypoint({ filter });
       } else {
         return of(null).pipe(tap(() => this.router.navigate(['/'])));
@@ -71,7 +70,8 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private mapService: MapService,
     private waypointService: WaypointService,
-    private router: Router
+    private router: Router,
+    private toastrService: ToastrService
   ) {
     this.setMessage();
   }
@@ -187,8 +187,31 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     //     });
     //   }
     // );
-    this.waypointService.initialPose({x, y, angle}).subscribe(
-      result => {
+    this.waypointService
+      .initialPose({ x, y, angle })
+      .pipe(
+        tap(() => this.sharedService.loading$.next(true)),
+        delay(15000),
+        mergeMap(() => this.waypointService.poseDeviation()),
+        tap(deviationRes => {
+          const {
+            poseValid,
+            translationDeviation,
+            angleDeviation
+          } = deviationRes;
+          const msg = this.translateService.instant(
+            'toast.inconnectLocalization',
+            {
+              poseValid,
+              translationDeviation,
+              angleDeviation
+            }
+          );
+          this.toastrService.warning(msg);
+        })
+      )
+      .subscribe(
+        () => {
           this.isLocalizedLocation({
             status: 'success'
           });
@@ -196,18 +219,18 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
           const audio = new Audio();
           audio.src = this.localizationCorrectBgmPath;
           audio.play();
-
+          this;
           setTimeout(() => {
             this.router.navigate(['/']);
           }, 3000);
-      },
-      error => {
-        this.isLocalizedLocation({
-          status: 'failed',
-          error
-        });
-      }
-    );
+        },
+        error => {
+          this.isLocalizedLocation({
+            status: 'failed',
+            error
+          });
+        }
+      );
   }
 
   onCloseModel() {

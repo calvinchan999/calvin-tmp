@@ -3,6 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  appVersion: require('../../package.json').version + '-dev',
   production: false,
   remoteConfig: true,
   remoteConfigUrl: 'assets/config/dashboard-config.json',
@@ -33,7 +34,8 @@ export const environment = {
     lidar: '/api/lidar/v1',
     pairing: '/api/followMe/v1/pairing',
     forward: '/api/fms/v1/forward',
-    followRobot: '/api/followRobot/v1/pairing'
+    followRobot: '/api/followRobot/v1/pairing',
+    poseDeviation: '/api/localization/v1/pose/deviation'
   },
 };
 

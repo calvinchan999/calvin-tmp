@@ -92,4 +92,10 @@ export class WaypointService {
   resume(): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}${environment.api.resume}`, {});
   }
+
+  poseDeviation(): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}${environment.api.poseDeviation}`
+    );
+  }
 }

@@ -113,7 +113,7 @@
     "batteryChargeAction": "Battery Charging Action will been executed"
   },
   "toast": {
-    "inconnectLocalization": "XY Deviation: {{translationDeviation}}, Angle Deviation: {{angleDeviation}}"
+    "inconnectLocalization": "Pose Valid: {{poseValid}}, XY Deviation: {{translationDeviation}}, Angle Deviation: {{angleDeviation}}"
   },
   "joinRobotGroup": "Join Robot Group",
   "robotGroupName": "Group Name",

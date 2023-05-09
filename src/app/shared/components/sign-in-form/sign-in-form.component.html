@@ -1,18 +1,22 @@
 <div class="container-fluid sign-in-wrapper">
-    <div class="sign-in-container">
-      <app-textbox
-        name="account"
-        type="account"
-        (childEvents)="onUpdateAccount($event)"
-      ></app-textbox>
-      <app-textbox
-        name="password"
-        type="password"
-        (childEvents)="onUpdatePassword($event)"
-      ></app-textbox>
-      <div class="submit-button" (click)="onSubmit()">
-        {{ "login" | translate }}
-      </div>
+  <div class="sign-in-container">
+    <app-textbox
+      name="account"
+      type="account"
+      (childEvents)="onUpdateAccount($event)"
+    ></app-textbox>
+    <app-textbox
+      name="password"
+      type="password"
+      (childEvents)="onUpdatePassword($event)"
+    ></app-textbox>
+    <div class="submit-button" (click)="onSubmit()">
+      {{ "login" | translate }}
     </div>
   </div>
-  
+  <div class="app-version-container">
+    <div class="label">
+      {{ appVersion }}
+    </div>
+  </div>
+</div>

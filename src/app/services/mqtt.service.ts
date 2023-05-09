@@ -217,14 +217,14 @@ export class MqttService {
           );
         });
 
-      this._mqttService
-        .observe('rvautotech/fobo/poseDeviation')
-        .subscribe((message: IMqttMessage) => {
-          console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.poseDeviationSubject.next(
-            new TextDecoder('utf-8').decode(message.payload)
-          );
-        });
+      // this._mqttService
+      //   .observe('rvautotech/fobo/poseDeviation')
+      //   .subscribe((message: IMqttMessage) => {
+      //     console.log(new TextDecoder('utf-8').decode(message.payload));
+      //     this.poseDeviationSubject.next(
+      //       new TextDecoder('utf-8').decode(message.payload)
+      //     );
+      //   });
 
       this._mqttService
         .observe('rvautotech/fobo/followRobot/pairing')

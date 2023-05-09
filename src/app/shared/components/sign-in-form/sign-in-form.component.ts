@@ -5,6 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-sign-in-form',
@@ -13,6 +14,7 @@ import { SharedService } from 'src/app/services/shared.service';
 })
 export class SignInFormComponent implements OnInit {
   protected form: FormGroup;
+  public appVersion: string = environment.appVersion;
   constructor(
     private fb: FormBuilder,
     private sharedService: SharedService,

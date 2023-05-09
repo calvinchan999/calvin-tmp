@@ -5,6 +5,7 @@ import { Config, MqttService } from './services/mqtt.service';
 import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
+import { environment } from 'src/environments/environment';
 // import { IndexedDbService } from './services/indexed-db.service';
 
 @Component({
@@ -21,8 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private mqttService: MqttService,
     private sharedService: SharedService,
     private spinner: NgxSpinnerService,
-    private languageService: LanguageService,
-    // private indexedDbService: IndexedDbService
+    private languageService: LanguageService // private indexedDbService: IndexedDbService
   ) {
     this.languageService.setInitState();
 
@@ -45,7 +45,10 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    const appVersion: string = environment.appVersion;
+    console.log(`appVersion: ${appVersion}`);
+  }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
