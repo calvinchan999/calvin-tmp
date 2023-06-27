@@ -52,7 +52,8 @@
   "navigatingtoDestination": "Destination",
   "localizationDialog": {
     "successMessage": "The initial point has been updated",
-    "failedMessage": "Update failed"
+    "failedMessage": "Update failed",
+    "confirmation": "Could you please confirm if the current waypoint is suitable for localization ?"
   },
   "resetWaypoint": "Reset waypoint",
   "clearWaypoint": "Clear Waypoint",

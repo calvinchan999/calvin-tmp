@@ -52,7 +52,8 @@
   "navigatingtoDestination": "導航至目的地",
   "localizationDialog": {
     "successMessage": "已更新初始點",
-    "failedMessage": "更新初始點失敗"
+    "failedMessage": "更新初始點失敗",
+    "confirmation": "您確認當前航點是否適正確?"
   },
   "resetWaypoint": "重設初始點",
   "clearWaypoint": "清除初始點",

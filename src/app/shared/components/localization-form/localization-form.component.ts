@@ -14,7 +14,7 @@ import {
 } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
-import { MapEditorType } from '../../utils/map-wrapper/map-wrapper.component';
+import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { merge } from 'hammerjs';
 import { ToastrService } from 'ngx-toastr';
 
@@ -35,7 +35,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   metaData: Metadata;
   message: any;
   type: string;
-  mapEditorType = MapEditorType.LOCALIZATIONEDITOR;
+  editor = EditorType.LOCALIZATIONEDITOR;
   waypointLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
@@ -88,7 +88,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
             }),
             mergeMap(() =>
               this.mapService
-                .getMapMetaData(currentMap)
+                .getMapMetadata(currentMap)
                 .pipe(tap(metaData => (this.metaData = metaData)))
             )
           )
@@ -219,9 +219,28 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
           const audio = new Audio();
           audio.src = this.localizationCorrectBgmPath;
           audio.play();
-          this;
+
           setTimeout(() => {
-            this.router.navigate(['/']);
+            // this.router.navigate(['/']);
+            
+            this.sharedService.isOpenModal$.next({
+              modal: 'confirmation-dialog',
+              modalHeader: '',
+              isDisableClose: false,
+              metaData: {
+                viewComponentRef: '',
+                message: 'localizationDialog.confirmation',
+                submitButtonName: 'confirm',
+                height: '50px',
+                width: '150px',
+                fontSize: '22px',
+                component: 'localization',
+                editor: this.editor,
+                floorPlanImg: this.floorPlanImg,
+                rosMapImage: this.rosMapImage,
+                metaData: this.metaData
+              }
+            });
           }, 3000);
         },
         error => {
