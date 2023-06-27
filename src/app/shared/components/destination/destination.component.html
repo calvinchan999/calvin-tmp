@@ -1,12 +1,12 @@
-<div class="container-fluid destination-container" *ngIf="rosMapImage && metaData">
+<div class="container-fluid destination-container" *ngIf="rosMapImage && metadata">
   <div class="card ">
     <app-map-wrapper
       class="map"
-      [type]="mapEditorType"
+      [editor]="editor"
       [mapImage]="rosMapImage"
-      [currentRobotPose]="currentRobotPose"
-      [metaData]="metaData"
-      [targetWaypoints]="targetWaypointData"
+      [robotPose]="robotPose"
+      [metadata]="metadata"
+      [waypointTargets]="waypoint"
     ></app-map-wrapper>
    
   </div>

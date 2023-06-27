@@ -33,7 +33,7 @@ export interface Modal {
   modal: string | null;
   modalHeader: string | null;
   isDisableClose?: boolean;
-  metaData?: any;
+  metaData?: any; // todo
   robotId?: string;
   closeAfterRefresh?: boolean;
 }

@@ -649,12 +649,18 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']).then(() => location.reload());
   }
 
-  onCloseDialog(status?: boolean) {
+  onCloseDialog(data) {
+    const { status, parentComponent } = data
     // @ts-ignore
     Promise.all([this.dialog.onCloseWithoutRefresh()]).then(() => {
-      if (status) {
+      if (status && parentComponent ==='waypoint') {
         const dialogName = this.modal;
         this.sharedService.isClosedModal$.next(dialogName);
+      }
+      if(status && parentComponent === 'localization'){
+        this.router.navigate(['/']);
+      }else if(!status  && parentComponent === 'localization'){
+        this.router.navigate(['/localization']);
       }
     });
   }

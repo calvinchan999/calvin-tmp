@@ -7,7 +7,7 @@ import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
-import { MapEditorType } from '../../utils/map-wrapper/map-wrapper.component';
+import { EditorType  } from '../../utils/map-wrapper/map-wrapper.component';
 import { Metadata } from '../localization-form/localization-form.component';
 
 @Component({
@@ -18,12 +18,12 @@ import { Metadata } from '../localization-form/localization-form.component';
 export class DestinationComponent implements OnInit, OnDestroy {
   // @Input() payload: any;
   rosMapImage: string;
-  metaData: Metadata;
-  currentRobotPose: any;
+  metadata: Metadata;
+  robotPose: any;
 
   sub = new Subscription();
-  targetWaypointData;
-  mapEditorType = MapEditorType['POSITIONLISTENER'];
+  waypoint;
+  editor = EditorType['POSITIONLISTENER'];
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
@@ -45,8 +45,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
         ),
         mergeMap(currentMap =>
           this.mapService
-            .getMapMetaData(currentMap)
-            .pipe(tap(metaData => (this.metaData = metaData)))
+            .getMapMetadata(currentMap)
+            .pipe(tap(metadata => (this.metadata = metadata)))
         )
       )
       .subscribe(
@@ -60,7 +60,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
       this.mqttService.poseSubject
         .pipe(
           map(pose => JSON.parse(pose)),
-          tap(pose => (this.currentRobotPose = pose))
+          tap(pose => (this.robotPose = pose))
         )
         .subscribe()
     );
@@ -91,7 +91,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
       this.sharedService.departureWaypoint$.subscribe(data => {
         if (data) {
           const { x, y, name } = data;
-          this.targetWaypointData = {
+          this.waypoint = {
             targetX: x,
             targetY: y,
             targetAngle: 0,
@@ -104,7 +104,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     setTimeout(() => {
-      if (!this.targetWaypointData) {
+      if (!this.waypoint) {
         this.router.navigate(['/']);
       }
     }, 3000);

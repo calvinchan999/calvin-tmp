@@ -1,12 +1,13 @@
 <div class="confirmation-dialog">
+  <ng-container #viewComponentRef></ng-container>
   <div class="confirmation-dialog-title">
     <label [innerHTML]="message"></label>
   </div>
   <div class="confirmation-dialog-btn-container">
-    <div class="btn cancel-btn" (click)="onCancel()">
+    <div class="btn cancel-btn" (click)="onCancel()" [ngStyle]="{ 'width': buttonWidth, 'height': buttonHeight, 'fontSize': fontSize}">
       {{ "cancel" | translate }}
     </div>
-    <div class="btn confirm-btn" (click)="onConfirm()">
+    <div class="btn confirm-btn" (click)="onConfirm()" [ngStyle]="{ 'width': buttonWidth, 'height': buttonHeight,  'fontSize': fontSize }">
       {{ confirmButtonName | translate }}
     </div>
   </div>

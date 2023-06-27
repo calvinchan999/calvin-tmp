@@ -31,7 +31,7 @@
     ></div>
     <div
       class="localization-btn-container d-flex justify-content-around"
-      *ngIf="type === mapEditorType.LOCALIZATIONEDITOR"
+      *ngIf="editor === editorType.LOCALIZATIONEDITOR && !disableEditorButton"
     >
       <button
         class="btn localization-edit-button"

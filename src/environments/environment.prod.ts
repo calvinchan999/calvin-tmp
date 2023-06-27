@@ -25,7 +25,7 @@ export const environment = {
     localizationPose: '/api/localization/v1/pose',
     docking: '/api/docking/v1/charging',
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
-    mapMetaData: (map: string) => `/api/map/v1/${map}/mapMetadata`,
+    mapMetadata: (map: string) => `/api/map/v1/${map}/mapMetadata`,
     lidar: '/api/lidar/v1',
     pairing: '/api/followMe/v1/pairing',
     forward: '/api/fms/v1/forward',

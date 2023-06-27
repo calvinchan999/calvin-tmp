@@ -27,7 +27,7 @@ export interface Lidar {
   pointList: [];
 }
 
-export interface MapMetaData {
+export interface MapMetadata {
   resolution: number;
   width: number;
   height: number;
@@ -71,9 +71,9 @@ export class MapService {
     return this.http.get<any>(url, { responseType: 'blob' });
   }
 
-  getMapMetaData(name: string): Observable<MapMetaData> {
-    const url = `${this.baseUrl}${environment.api.mapMetaData(name)}`;
-    return this.http.get<MapMetaData>(url);
+  getMapMetadata(name: string): Observable<MapMetadata> {
+    const url = `${this.baseUrl}${environment.api.mapMetadata(name)}`;
+    return this.http.get<MapMetadata>(url);
   }
 
   getLidar(): Observable<Lidar> {

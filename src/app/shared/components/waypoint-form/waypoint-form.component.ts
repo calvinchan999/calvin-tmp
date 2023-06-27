@@ -111,7 +111,14 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
         modal: 'confirmation-dialog',
         modalHeader: '',
         isDisableClose: true,
-        metaData: { message: 'destinationReminding', submitButtonName: 'start' }
+        metaData: {
+          message: 'destinationReminding',
+          submitButtonName: 'start',
+          height: '150px',
+          width: '150px',
+          fontSize: '42px',
+          component: 'waypoint'
+        }
       });
 
       //   this.waypointService.sendTask(data).subscribe(() =>
