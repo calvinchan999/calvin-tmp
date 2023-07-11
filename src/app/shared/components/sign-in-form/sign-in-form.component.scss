@@ -13,6 +13,7 @@
 
 .sign-in-container {
   text-align: center;
+  // width: 350px;
   // align-items: center;
   // display: flex;
   // flex-direction: column;
@@ -20,7 +21,7 @@
 
 .submit-button {
   min-height: 20px;
-  width: 80vw;
+  width: 100% !important;
   border: 4px solid #00b8d4;
   border-radius: 10px;
   flex: 0 0 25%;
@@ -47,4 +48,46 @@
 
 .label {
   color: #fff;
+}
+
+@media only screen and (min-width: 350px) {
+  /* CSS rules for screens wider than 480px */
+  .sign-in-container {
+    width: 350px;
+  }
+}
+
+@media only screen and (min-width: 400px) {
+  /* CSS rules for screens wider than 480px */
+  .sign-in-container {
+    width: 350px;
+  }
+}
+
+@media only screen and (min-width: 480px) {
+  /* CSS rules for screens wider than 480px */
+  .sign-in-container {
+    width: 400px;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  /* CSS rules for screens wider than 768px */
+  .sign-in-container {
+    width: 450px;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  /* CSS rules for screens wider than 992px */
+  .sign-in-container {
+    width: 450px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  /* CSS rules for screens wider than 1200px */
+  .sign-in-container {
+    width: 550px;
+  }
 }

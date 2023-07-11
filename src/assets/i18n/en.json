@@ -127,5 +127,6 @@
     "client": "Slave",
     "value": "Sequence",
     "totalRobot": "Total Robot"
-  }
+  },
+  "broadcast": "Broadcast Message"
 }

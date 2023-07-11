@@ -10,7 +10,7 @@ import {
 import { Observable, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
-import { catchError, timeout } from 'rxjs/operators';
+import { catchError, finalize, timeout } from 'rxjs/operators';
 // import { IndexedDbService } from '../services/indexed-db.service';
 
 @Injectable()
@@ -54,11 +54,13 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               } else {
                 return this.errorHandler(err);
               }
+            }),
+            finalize(() => {
+              // request completes, errors, or is cancelled
+              // this.sharedService.loading$.next(false);
+              this.removeRequest(req);
+              this.sharedService.loading$.next(this.requests.length > 0 ? true : false);
             })
-            // finalize(() => {
-            //   // request completes, errors, or is cancelled
-            //   this.sharedService.loading$.next(false);
-            // })
           )
           .subscribe(
             event => {

@@ -8,7 +8,7 @@ import { ModalComponent } from 'src/app/shared/components/modal/modal.component'
 @Component({
   selector: 'app-sos-form',
   templateUrl: './sos-form.component.html',
-  styleUrls: ['./sos-form.component.scss'],
+  styleUrls: ['./sos-form.component.scss']
 })
 export class SosFormComponent implements OnInit {
   constructor(
@@ -20,21 +20,23 @@ export class SosFormComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onCloseModel() {
+  onCancel() {
     this.modalComponent.closeTrigger$.next();
   }
 
-  onSubmitModel() {
-
+  onConfirm() {
     // todo, mock payload for testing
     const topic = 'rvautotech/fobo/sos';
     const payload = '{ sos: true }';
-    this.mqttService.unsafePublish(topic, payload).pipe(mergeMap(() => this.translateService.get('sosDialog.tips2'))).subscribe((tip2) => {
-      this.modalComponent.closeTrigger$.next();
-      this.sharedService.response$.next({
-        type: 'normal',
-        message: tip2,
+    this.mqttService
+      .unsafePublish(topic, payload)
+      .pipe(mergeMap(() => this.translateService.get('sosDialog.tips2')))
+      .subscribe(tip2 => {
+        this.modalComponent.closeTrigger$.next();
+        this.sharedService.response$.next({
+          type: 'normal',
+          message: tip2
+        });
       });
-    });
   }
 }

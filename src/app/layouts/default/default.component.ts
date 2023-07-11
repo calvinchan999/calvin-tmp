@@ -381,6 +381,21 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //   )
     //   .subscribe();
 
+    this.mqttService.broadcastMessageSubject
+      .pipe(
+        map(msg => JSON.parse(msg)),
+        tap(data => {
+          const { message } = data;
+          if (message) {
+            this.sharedService.response$.next({
+              type: 'broadcast',
+              message: message
+            });
+          }
+        })
+      )
+      .subscribe();
+
     this.sub.add(
       this.mqttService.currentRobotPairingStatusSubject
         .pipe(
@@ -415,12 +430,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.initializeErrors();
   }
 
+
   getCurrentMap() {
     this.mapService.getActiveMap().subscribe((response: MapResponse) => {
       console.log('Get Active Map:');
       console.log(response);
       const { name } = response;
       this.sharedService.currentMap$.next(name);
+      this.sharedService.loading$.next(false);
     });
   }
 
@@ -591,11 +608,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
             case 100003:
             case 200013:
             case 300002:
-              this.translateService
-                .get(`error.httpErrorCode.${errors.errorCode}`)
-                .subscribe(translate => {
-                  errorMsg = translate;
-                });
+              errorMsg = this.translateService.instant(
+                `error.httpErrorCode.${errors.errorCode}`
+              );
+              // this.translateService
+              //   .get(`error.httpErrorCode.${errors.errorCode}`)
+              //   .subscribe(translate => {
+              //     errorMsg = translate;
+              //   });
               break;
             default:
               errorMsg = errors.errorMsg;
@@ -650,16 +670,16 @@ export class DefaultComponent implements OnInit, OnDestroy {
   }
 
   onCloseDialog(data) {
-    const { status, parentComponent } = data
+    const { status, parentComponent } = data;
     // @ts-ignore
     Promise.all([this.dialog.onCloseWithoutRefresh()]).then(() => {
-      if (status && parentComponent ==='waypoint') {
+      if (status && parentComponent === 'waypoint') {
         const dialogName = this.modal;
         this.sharedService.isClosedModal$.next(dialogName);
       }
-      if(status && parentComponent === 'localization'){
+      if (status && parentComponent === 'localization') {
         this.router.navigate(['/']);
-      }else if(!status  && parentComponent === 'localization'){
+      } else if (!status && parentComponent === 'localization') {
         this.router.navigate(['/localization']);
       }
     });

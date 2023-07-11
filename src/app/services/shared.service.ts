@@ -24,7 +24,7 @@ export interface Mode {
 // }
 
 export interface Response {
-  type: 'normal' | 'warning';
+  type: 'normal' | 'warning' | 'broadcast';
   message: string;
   closeAfterRefresh?: boolean;
 }

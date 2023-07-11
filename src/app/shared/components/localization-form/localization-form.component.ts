@@ -77,14 +77,25 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.sub = this.sharedService.currentMap$.subscribe(currentMap => {
+    this.sub = this.sharedService.currentMap$.pipe(tap((currentMap: any) => {
       if (currentMap) {
+        // this.mapService
+        //   .getMapImage(currentMap)
+        //   .pipe(
+        //     mergeMap(async data => {
+        //       // const img: string = URL.createObjectURL(data);
+        //       // return (this.floorPlanImg = ''), (this.rosMapImage = img);
+
+        //     }),
+        const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+        const queries = { param };
         this.mapService
-          .getMapImage(currentMap)
+          .getMap(currentMap, queries)
           .pipe(
-            mergeMap(async data => {
-              const img: string = URL.createObjectURL(data);
-              return (this.floorPlanImg = ''), (this.rosMapImage = img);
+            tap(mapInfo => {
+              const { base64Image } = mapInfo;
+              this.rosMapImage = base64Image;
+              this.floorPlanImg = '';
             }),
             mergeMap(() =>
               this.mapService
@@ -93,8 +104,9 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
             )
           )
           .subscribe();
+          
       }
-    });
+    })).subscribe();
 
     this.sub.add(
       this.sharedService.localizationType$
@@ -222,7 +234,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
 
           setTimeout(() => {
             // this.router.navigate(['/']);
-            
+
             this.sharedService.isOpenModal$.next({
               modal: 'confirmation-dialog',
               modalHeader: '',

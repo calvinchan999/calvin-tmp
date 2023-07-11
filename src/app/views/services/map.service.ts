@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
 export interface Map {
   map: string;
@@ -11,6 +12,7 @@ export interface MapResponse {
   id: string;
   name: string;
   robotId: string;
+  base64Image: string;
 }
 
 export interface LocalizationPose {
@@ -53,10 +55,15 @@ export class MapService {
     return this.http.get<MapResponse>(url);
   }
 
-  getMap(mapCode?: string): Observable<MapResponse> {
-    const url = mapCode
-      ? `${this.baseUrl}${environment.api.map}/${mapCode}`
-      : `${this.baseUrl}${environment.api.map}`;
+  getMap(mapCode?: string, queries?: any): Observable<MapResponse> {
+    const baseUrl = `${this.baseUrl}${environment.api.map}`;
+    let url;
+    if (!queries) {
+      url = mapCode ? `${baseUrl}/${mapCode}` : `${baseUrl}`;
+    } else {
+      url = generateQueryUrl(`${baseUrl}/${mapCode}`, queries);
+    }
+
     return this.http.get<MapResponse>(url);
   }
 

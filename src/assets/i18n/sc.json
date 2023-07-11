@@ -127,5 +127,6 @@
     "client": "仆",
     "value": "序列",
     "totalRobot": "总机器数"
-  }
+  },
+  "broadcast": "广播"
 }

@@ -6,6 +6,7 @@ import { AppConfigService } from './services/app-config.service';
 import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
 import { environment } from 'src/environments/environment';
+import { tap } from 'rxjs/operators';
 // import { IndexedDbService } from './services/indexed-db.service';
 
 @Component({
@@ -36,13 +37,13 @@ export class AppComponent implements OnInit, OnDestroy {
     //   .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
     //   .subscribe();
 
-    this.sharedService.loading$.subscribe(status => {
+    this.sharedService.loading$.pipe(tap((status) => {
       if (status) {
         this.spinner.show();
       } else {
         this.spinner.hide();
       }
-    });
+    })).subscribe();
   }
 
   ngOnInit() {

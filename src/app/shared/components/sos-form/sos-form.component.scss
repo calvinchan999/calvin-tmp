@@ -1,49 +1,58 @@
-.sos-container {
+.container {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sos-title-container {
   text-align: center;
+  width: 300px;
+  height: 100%;
+  margin: 45px;
+}
+
+.sos-title {
+  font-size: 25px;
   width: 100%;
-  .sos-title-container {
-    text-align: center;
-    width: 100%;
-    height: 150px;
-    .sos-title {
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-  }
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .sos-btn-container {
-  padding-top: 30px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
   width: 100%;
-  .sos-cancel-button {
-    background-color: #fe0000;
-    width: 50%;
-    color: white;
-    margin: 0 10px 0 10px;
-  }
-  .sos-confirm-button {
-    background-color: #09ff78;
-    width: 50%;
-    color: black;
-    margin: 0 10px 0 10px;
-  }
+  justify-content: center;
 }
 
-@media only screen and (max-width: 900px) {
-  .sos-title {
-    font-size: 35px !important;
-  }
+.btn {
+  width: 150px;
+  background-color: transparent;
+  border-radius: 10px;
+}
 
-  .sos-cancel-button {
-    font-size: 35px;
-  }
+.confirm-btn {
+  color: #00b8d4;
+  border: 3px solid #00b8d4;
+}
 
-  .sos-confirm-button {
-    font-size: 35px;
-  }
+.confirm-btn:active {
+  background-color: #00b8d4;
+  color: #fff;
+}
+
+.cancel-btn {
+  color: #e8284c;
+  border: 3px solid #e8284c;
+}
+
+.cancel-btn:active {
+  background-color: #e8284c;
+  color: #fff;
 }

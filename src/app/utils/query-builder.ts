@@ -5,7 +5,7 @@ export interface Query {
     [key: string]: string | number | Array<any>;
   };
   param?: {
-    [key: string]: string | number | Array<any>;
+    [key: string]: string | number | Array<any> | boolean;
   };
 }
 
