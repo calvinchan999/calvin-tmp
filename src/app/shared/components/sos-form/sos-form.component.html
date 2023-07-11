@@ -1,13 +1,13 @@
-<div class="sos-container">
+<div class="container">
   <div class="sos-title-container">
-    <h2 class="sos-title">{{ "sosDialog.tips1" | translate }}</h2>
+    <div class="sos-title">{{ "sosDialog.tips1" | translate }}</div>
   </div>
-</div>
-<div class="sos-btn-container d-flex justify-content-around">
-  <button class="btn sos-cancel-button" (click)="onCloseModel()">
-    {{ "cancel" | translate }}
-  </button>
-  <button class="btn sos-confirm-button" (click)="onSubmitModel()">
-    {{ "confirm" | translate }}
-  </button>
+  <div class="sos-btn-container">
+    <div class="btn cancel-btn" (click)="onCancel()">
+      {{ "cancel" | translate }}
+    </div>
+    <div class="btn confirm-btn" (click)="onConfirm()">
+      {{ "confirm" | translate }}
+    </div>
+  </div>
 </div>
