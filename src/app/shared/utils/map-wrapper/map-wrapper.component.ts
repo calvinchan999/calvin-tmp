@@ -12,9 +12,10 @@ import {
 } from '@angular/core';
 import Konva from 'konva';
 import { EMPTY, forkJoin, iif, Observable, of, Subscription } from 'rxjs';
-import { delay, finalize, mergeMap, tap } from 'rxjs/operators';
+import { delay, finalize, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 export interface Point {
   x: number;
@@ -60,7 +61,7 @@ export class MapWrapperComponent
   mapLayer: Konva.Layer;
 
   degrees: number = 0;
-  scale: number = 0.2; // 0.35
+  scale: number = 0.77; // 0.35
   // rosScale: number = 2; // 0.66, 1.35
   // floorPlanScale: number = 1;
   scaleMultiplier: number = 0.85; // 0.99
@@ -87,7 +88,8 @@ export class MapWrapperComponent
   disableEditorButton: boolean = false;
   constructor(
     private waypointService: WaypointService,
-    private mapService: MapService
+    private mapService: MapService,
+    private appConfigService: AppConfigService
   ) {
     // if (/android/i.test(this.userAgent)) {
     //   this.platform = 'android';
@@ -100,6 +102,7 @@ export class MapWrapperComponent
   ngOnInit() {}
 
   ngAfterViewInit() {
+    const pixelRatio = this.appConfigService.getConfig().largeImagePixelRatio;
     const rosImg$ = new Observable<HTMLImageElement>(observer => {
       const rosImage = new Image();
       rosImage.onload = () => {
@@ -112,7 +115,7 @@ export class MapWrapperComponent
       rosImage.src = `data:image/jpeg;base64,${this.mapImage}`;
     });
 
-    this.sub = forkJoin([rosImg$])
+    forkJoin([rosImg$])
       .pipe(
         tap(img => {
           const stage = new Konva.Stage({
@@ -149,12 +152,12 @@ export class MapWrapperComponent
           });
 
           if (img[0].width > 10000 || img[0].height > 10000) {
-            rosMap.cache({ pixelRatio: 0.2 });
+            rosMap.cache({ pixelRatio });
           }
 
           mapLayer.add(rosMap);
 
-          mapLayer.batchDraw();
+          // mapLayer.batchDraw();
 
           this.mapLayer = mapLayer;
 
@@ -186,7 +189,7 @@ export class MapWrapperComponent
             y: 0
           });
         }),
-        tap(() => {
+        finalize(() => {
           this.stage.on('wheel', event => {
             event.evt.preventDefault();
             const direction = event.evt.deltaY > 0 ? 1 : -1;
@@ -203,19 +206,21 @@ export class MapWrapperComponent
               }
             });
 
-            this.mapLayer.on('dblclick dbltap', async (event: any) => {
-              if (this.isReset) {
-                if (this.mapLayer.find('.waypoint').length <= 0) {
-                  this.getRosMapXYPointer(event)
-                    .pipe(
-                      mergeMap(position => this.drawnWaypoint$(position)),
-                      tap(() => this.robotCurrentPositionPointer.destroy()),
-                      tap(() => this.lidarGroup.removeChildren())
-                    )
-                    .subscribe();
-                }
-              }
-            });
+            // this.mapLayer.on('dblclick dbltap', async (event: any) => {
+            //   if (this.isReset) {
+            //     if (this.mapLayer.find('.waypoint').length <= 0) {
+            //       this.getRosMapXYPointer(event)
+            //         .pipe(
+            //           switchMap(position => this.drawnWaypoint$(position)),
+            //           switchMap(() =>
+            //             of(this.robotCurrentPositionPointer.destroy())
+            //           ),
+            //           switchMap(() => of(this.lidarGroup.removeChildren()))
+            //         )
+            //         .subscribe();
+            //     }
+            //   }
+            // });
 
             this.waypointCircle.on(
               'mousedown touchstart',
@@ -388,7 +393,6 @@ export class MapWrapperComponent
   init() {
     let obs: Observable<any>[] = [];
     obs.push(this.createRobotCurrentPosition());
-    console.log(`init`);
     if (this.editor === EditorType.LOCALIZATIONEDITOR) {
       obs.push(this.createLidarRedpoints());
     } else if (this.editor === EditorType.POSITIONLISTENER) {
@@ -538,16 +542,17 @@ export class MapWrapperComponent
 
   createAngleLabel(degrees: number): Observable<any> {
     const { x, y } = this.waypointCenterCircle.getAttrs();
+
     this.waypointAngleLabel = new Konva.Text({
-      x: x,
-      y: y,
+      x,
+      y,
       text: `${degrees}°`,
-      fontSize: 80 / this.scale,
+      fontSize: 50 / this.scale,
       fontFamily:
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
       fill: 'black',
-      stroke: 'black',
-      strokeWidth: 6 / this.scale,
+      stroke: 'white',
+      strokeWidth: 2,
       name: 'waypointAngleLabel',
       zIndex: 1
     });
@@ -564,7 +569,7 @@ export class MapWrapperComponent
         this.waypointCircle.setAttrs({
           x: x,
           y: y,
-          radius: 200 / this.scale,
+          radius: 150 / this.scale,
           stroke: 'black',
           strokeWidth: 15 / this.scale,
           name: 'waypoint'
@@ -625,9 +630,6 @@ export class MapWrapperComponent
 
             this.stage.position(newPos);
             this.scale = oldScale;
-            // this.waypointCenterCircle.scale({ x: oldScale, y: oldScale });
-            // this.waypointCircle.scale({ x: oldScale, y: oldScale });
-            // this.waypointLine.strokeWidth(10 / this.scale);
           })
         )
         .subscribe();
@@ -660,9 +662,6 @@ export class MapWrapperComponent
 
           this.stage.position(newPos);
           this.scale = oldScale;
-          // this.waypointCenterCircle.scale({ x: oldScale, y: oldScale });
-          // this.waypointCircle.scale({ x: oldScale, y: oldScale });
-          // this.waypointLine.strokeWidth(10 * this.scale);
         })
       )
       .subscribe();
@@ -671,9 +670,6 @@ export class MapWrapperComponent
   onPinchin(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
-      // this.stage.draggable(false);
-      // this.zoomOut(scaleMultiplier);
-      // this.stage.draggable(true);
       of(this.stage.draggable(false))
         .pipe(
           tap(() => this.zoomOut(scaleMultiplier)),
@@ -686,9 +682,6 @@ export class MapWrapperComponent
   onPinchout(event: Event) {
     if (event && this.rosMap) {
       const scaleMultiplier = 0.9;
-      // this.stage.draggable(false);
-      // this.zoomIn(scaleMultiplier);
-      // this.stage.draggable(true);
       of(this.stage.draggable(false))
         .pipe(
           tap(() => this.zoomIn(scaleMultiplier)),
@@ -763,16 +756,20 @@ export class MapWrapperComponent
 
   onReset(): Observable<any> {
     return of(null).pipe(
-      tap(() => this.robotCurrentPositionPointer.destroy()),
-      tap(() => this.localizationToolsGroup.removeChildren()),
-      tap(() => this.lidarGroup.removeChildren()),
-      finalize(() => this.init())
+      switchMap(() => of(this.robotCurrentPositionPointer.destroy())),
+      switchMap(() => of(this.localizationToolsGroup.removeChildren())),
+      switchMap(() => of(this.lidarGroup.removeChildren()))
     );
   }
 
   onEditMode() {
-    this.isReset = true;
-    this.onReset().subscribe();
+    this.onReset()
+      .pipe(
+        finalize(() => {
+          this.isReset = true;
+        })
+      )
+      .subscribe(() => this.init());
   }
 
   onPreviewMode() {
@@ -780,8 +777,25 @@ export class MapWrapperComponent
     this.stage.draggable(true);
     this.isUpdatedWaypoint.emit(false);
     forkJoin([this.getRobotCurrentPosition$(), this.getLidarData$()])
-      .pipe(mergeMap(() => this.onReset()))
+      .pipe(
+        mergeMap(() => this.onReset()),
+        finalize(() => this.init())
+      )
       .subscribe();
+  }
+
+  onDoubleTap(event: Event) {
+    if (event && this.mapLayer && this.isReset) {
+      if (this.mapLayer.find('.waypoint').length <= 0) {
+        this.getRosMapXYPointer(event)
+          .pipe(
+            switchMap(position => this.drawnWaypoint$(position)),
+            switchMap(() => of(this.robotCurrentPositionPointer.destroy())),
+            switchMap(() => of(this.lidarGroup.removeChildren()))
+          )
+          .subscribe();
+      }
+    }
   }
 
   getRobotCurrentPosition$(): Observable<any> {
@@ -793,10 +807,6 @@ export class MapWrapperComponent
   getLidarData$(): Observable<any> {
     return this.lidarData$().pipe(tap(res => (this.lidarData = res)));
   }
-
-  // getMapEditorType(type) {
-  //   return EditorType[type];
-  // }
 
   ngOnDestroy() {
     if (this.sub) {

@@ -1,10 +1,10 @@
 {
   "server": {
-    "endpoint": "http://calvinchan999.eastasia.cloudapp.azure.com:8081", 
+    "endpoint": "http://rv-dev.eastasia.cloudapp.azure.com:8081",
     "envirmonent": "development"
   },
   "mqtt": {
-    "ip_address": "calvinchan999.eastasia.cloudapp.azure.com",
+    "ip_address": "20.189.76.3",
     "port_no": 61614,
     "protocol": "ws"
   },
@@ -22,5 +22,6 @@
     "logs": false,
     "pairing": true,
     "grouping": true
-  }
+  },
+  "largeImagePixelRatio": 0.003
 }

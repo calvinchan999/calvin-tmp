@@ -15,7 +15,7 @@ import { catchError, finalize, timeout } from 'rxjs/operators';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
-  DEFAULTTIMEOUT: number = 60000;
+  DEFAULTTIMEOUT: number = 120000;
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
