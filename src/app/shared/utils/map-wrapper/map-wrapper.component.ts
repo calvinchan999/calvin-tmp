@@ -16,6 +16,7 @@ import { delay, finalize, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { SharedService } from 'src/app/services/shared.service';
 
 export interface Point {
   x: number;
@@ -65,7 +66,7 @@ export class MapWrapperComponent
   // rosScale: number = 2; // 0.66, 1.35
   // floorPlanScale: number = 1;
   scaleMultiplier: number = 0.85; // 0.99
-  rosMap;
+  rosMap: Konva.Image;
 
   isReset: boolean = false;
 
@@ -86,10 +87,15 @@ export class MapWrapperComponent
   platform: string = '';
 
   disableEditorButton: boolean = false;
+
+  maxPx = 546;
+  newRatio = 1;
+
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private sharedService: SharedService
   ) {
     // if (/android/i.test(this.userAgent)) {
     //   this.platform = 'android';
@@ -102,7 +108,7 @@ export class MapWrapperComponent
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const pixelRatio = this.appConfigService.getConfig().largeImagePixelRatio;
+    // const pixelRatio = this.appConfigService.getConfig().largeImagePixelRatio;
     const rosImg$ = new Observable<HTMLImageElement>(observer => {
       const rosImage = new Image();
       rosImage.onload = () => {
@@ -112,12 +118,54 @@ export class MapWrapperComponent
       rosImage.onerror = err => {
         observer.error(err);
       };
-      rosImage.src = `data:image/jpeg;base64,${this.mapImage}`;
+      rosImage.src = `data:image/png;base64,${this.mapImage}`;
     });
 
-    forkJoin([rosImg$])
+    // const maxPx = this.maxPx;
+    const loadImage = canvas => {
+      return new Promise((resolve, reject) => {
+        const rosMapImageObj = new Image();
+        rosMapImageObj.onload = () => {
+          resolve(rosMapImageObj);
+        };
+        rosMapImageObj.onerror = error => {
+          reject(error);
+        };
+        rosMapImageObj.src = canvas.toDataURL('image/png');
+      });
+    };
+
+    this.sub = rosImg$
       .pipe(
-        tap(img => {
+        tap(() => this.sharedService.loading$.next(true)),
+        switchMap(async img => {
+          const maxPx = this.maxPx;
+          const imgWidth = img.width;
+          const imgHeight = img.height;
+          if (imgWidth >= maxPx || imgHeight >= maxPx) {
+          // if (true) {
+            let newRatio = maxPx / Math.max(img.width, img.height);
+            this.newRatio = newRatio;
+            let canvas = await this.getResizedCanvas(
+              img,
+              img.width * newRatio,
+              img.height * newRatio
+            );
+            return { canvas };
+          } else {
+            return { img };
+          }
+        }),
+        switchMap(async ({ canvas, img }) => {
+          if (canvas) {
+            const rosMapImageObj = await loadImage(canvas);
+            return rosMapImageObj;
+          } else {
+            return img;
+          }
+        }),
+        delay(5000),
+        mergeMap(async (img: any) => {
           const stage = new Konva.Stage({
             container: 'canvas',
             width: this.canvas.nativeElement.offsetWidth,
@@ -132,32 +180,21 @@ export class MapWrapperComponent
             y: 0
           });
 
-          // let wHeight;
-          // let wWidth;
-          // if (img[0].width > 2048 || img[0].height > 2048) {
-          //   if (img[0].width > img[0].height) {
-          //     wHeight *= 2048 / wWidth;
-          //     wWidth = 2048;
-          //   } else {
-          //     wWidth *= 2048 / wHeight;
-          //     wHeight = 2048;
-          //   }
-          // }
-
           const rosMap = new Konva.Image({
-            image: img[0],
+            image: img,
             draggable: false,
             x: 0,
-            y: 0
+            y: 0,
+            width: img.width,
+            height: img.height
           });
 
-          if (img[0].width > 10000 || img[0].height > 10000) {
-            rosMap.cache({ pixelRatio });
-          }
+          // if (img[0].width > 10000 || img[0].height > 10000) {
+          //   rosMap.cache({ pixelRatio });
+          // }
+          // rosMap.cache({ pixelRatio: 0.03 });
 
           mapLayer.add(rosMap);
-
-          // mapLayer.batchDraw();
 
           this.mapLayer = mapLayer;
 
@@ -182,188 +219,26 @@ export class MapWrapperComponent
           this.stage = stage;
           this.stage.add(this.mapLayer);
 
-          this.stage.scale({ x: this.scale, y: this.scale }); // set default scale
+          this.stage.scale({
+            x: this.scale,
+            y: this.scale
+          }); // set default scale
 
           this.stage.position({
             x: 0,
             y: 0
           });
-        }),
-        finalize(() => {
-          this.stage.on('wheel', event => {
-            event.evt.preventDefault();
-            const direction = event.evt.deltaY > 0 ? 1 : -1;
-            if (direction < 0) {
-              this.zoomIn();
-            } else {
-              this.zoomOut();
-            }
-          });
-          if (this.editor === EditorType.LOCALIZATIONEDITOR) {
-            this.mapLayer.on('mousedown touchstart', async (event: any) => {
-              if (this.isReset) {
-                this.stage.draggable(true);
-              }
-            });
-
-            // this.mapLayer.on('dblclick dbltap', async (event: any) => {
-            //   if (this.isReset) {
-            //     if (this.mapLayer.find('.waypoint').length <= 0) {
-            //       this.getRosMapXYPointer(event)
-            //         .pipe(
-            //           switchMap(position => this.drawnWaypoint$(position)),
-            //           switchMap(() =>
-            //             of(this.robotCurrentPositionPointer.destroy())
-            //           ),
-            //           switchMap(() => of(this.lidarGroup.removeChildren()))
-            //         )
-            //         .subscribe();
-            //     }
-            //   }
-            // });
-
-            this.waypointCircle.on(
-              'mousedown touchstart',
-              async (event: any) => {
-                if (this.isReset && !this.isLineLocked) {
-                  this.localizationToolsGroup.getChildren().forEach(child => {
-                    if (child.className === 'Arrow') {
-                      child.destroy();
-                    }
-                  });
-
-                  this.getRosMapXYPointer(event).subscribe(position => {
-                    this.isLineUpdated = true;
-
-                    this.waypointLine = new Konva.Arrow({
-                      fill: 'black',
-                      stroke: 'black',
-                      strokeWidth: 10 / this.scale,
-                      // remove line from hit graph, so we can check intersections
-                      listening: false,
-                      name: 'angleLine',
-                      zIndex: 2,
-                      points: [
-                        this.waypointCircle.x(),
-                        this.waypointCircle.y(),
-                        position.x,
-                        position.y
-                      ]
-                    });
-                    this.localizationToolsGroup.add(this.waypointLine);
-                  });
-                }
-              }
-            );
-
-            this.waypointCircle.on(
-              'mousemove touchmove ',
-              async (event: any) => {
-                if (this.isReset) {
-                  if (this.isLineLocked) {
-                    return;
-                  }
-                  if (!this.waypointLine) {
-                    return;
-                  }
-                  if (this.mapLayer.find('.angleLine').length > 0) {
-                    this.stage.draggable(false);
-                    this.mapLayer.draggable(false);
-                  }
-                  if (this.isLineUpdated) {
-                    this.getRosMapXYPointer(event).subscribe(position => {
-                      const points = this.waypointLine.points().slice();
-                      points[2] = position.x;
-                      points[3] = position.y;
-                      this.waypointLine.points(points);
-                      this.mapLayer.batchDraw();
-                    });
-                  }
-                }
-              }
-            );
-
-            this.waypointCircle.on(
-              'mouseup mouseout touchend touchout ',
-              async (event: any) => {
-                if (this.isReset) {
-                  if (!this.waypointLine) {
-                    return;
-                  }
-                  if (!event.target.hasName('target')) {
-                    if (
-                      this.localizationToolsGroup.find('.angleLine').length >
-                        0 &&
-                      this.isLineUpdated
-                    ) {
-                      this.localizationToolsGroup
-                        .getChildren()
-                        .forEach((child: any) => {
-                          if (child.getAttrs().name === 'waypointAngleLabel') {
-                            child.destroy();
-                          }
-                        });
-                      const { draggable } = this.stage.getAttrs();
-                      if (!draggable) {
-                        this.isLineLocked = true;
-                        this.getXYAngle()
-                          .pipe(
-                            mergeMap((data: any) => {
-                              const { x, y, angle, degrees } = data;
-                              return this.waypointService
-                                .initialPose({
-                                  x,
-                                  y,
-                                  angle
-                                })
-                                .pipe(
-                                  mergeMap(() => this.createAngleLabel(degrees))
-                                );
-                            }),
-                            mergeMap(() => {
-                              return of(null).pipe(
-                                delay(2000),
-                                mergeMap(() => {
-                                  return this.getLidarData$().pipe(
-                                    mergeMap(() => this.createLidarRedpoints())
-                                  );
-                                })
-                              );
-                            })
-                          )
-                          .subscribe(
-                            () => {
-                              this.isUpdatedWaypoint.emit({
-                                status: 'success'
-                              });
-                              this.isLineLocked = false;
-                            },
-                            error => {
-                              this.isUpdatedWaypoint.emit({
-                                status: 'failed',
-                                error
-                              });
-                              this.isLineLocked = false;
-                            }
-                          );
-                      }
-                    }
-                  }
-                  this.isLineUpdated = false;
-                }
-              }
-            );
-          }
+          return of();
         }),
         // handle 2 cases "localizationEditor" & "positionListener"
-        mergeMap(() =>
+        switchMap(() =>
           iif(
             () => this.editor === EditorType.LOCALIZATIONEDITOR,
             this.getRobotCurrentPosition$(),
             of(null)
           )
         ),
-        mergeMap(() =>
+        switchMap(() =>
           iif(
             () => this.editor === EditorType.LOCALIZATIONEDITOR,
             this.getLidarData$(),
@@ -372,6 +247,7 @@ export class MapWrapperComponent
         )
       )
       .subscribe(() => {
+        this.sharedService.loading$.next(false);
         if (this.mapLayer && this.metaData && this.editor && this.mapImage) {
           this.init();
         }
@@ -398,7 +274,152 @@ export class MapWrapperComponent
     } else if (this.editor === EditorType.POSITIONLISTENER) {
       obs.push(this.createTargetPosition());
     }
-    forkJoin(obs).subscribe();
+    this.sub.add(
+      forkJoin(obs).subscribe(() => {
+        this.stage.on('wheel', event => {
+          event.evt.preventDefault();
+          const direction = event.evt.deltaY > 0 ? 1 : -1;
+          if (direction < 0) {
+            this.zoomIn();
+          } else {
+            this.zoomOut();
+          }
+        });
+
+        if (this.editor === EditorType.LOCALIZATIONEDITOR) {
+          this.mapLayer.on('mousedown touchstart', async (event: any) => {
+            if (this.isReset) {
+              this.stage.draggable(true);
+            }
+          });
+
+          this.waypointCircle.on('mousedown touchstart', async (event: any) => {
+            if (this.isReset && !this.isLineLocked) {
+              this.localizationToolsGroup.getChildren().forEach(child => {
+                if (child.className === 'Arrow') {
+                  child.destroy();
+                }
+              });
+
+              this.getRosMapXYPointer(event).subscribe(position => {
+                this.isLineUpdated = true;
+
+                this.waypointLine = new Konva.Arrow({
+                  fill: 'black',
+                  stroke: 'black',
+                  strokeWidth: (50 * this.newRatio) / this.scale,
+                  // remove line from hit graph, so we can check intersections
+                  listening: false,
+                  name: 'angleLine',
+                  zIndex: 2,
+                  points: [
+                    this.waypointCircle.x(),
+                    this.waypointCircle.y(),
+                    position.x,
+                    position.y
+                  ]
+                });
+                this.localizationToolsGroup.add(this.waypointLine);
+              });
+            }
+          });
+
+          this.waypointCircle.on('mousemove touchmove ', async (event: any) => {
+            if (this.isReset) {
+              if (this.isLineLocked) {
+                return;
+              }
+              if (!this.waypointLine) {
+                return;
+              }
+              if (this.mapLayer.find('.angleLine').length > 0) {
+                this.stage.draggable(false);
+                this.mapLayer.draggable(false);
+              }
+              if (this.isLineUpdated) {
+                this.getRosMapXYPointer(event).subscribe(position => {
+                  const points = this.waypointLine.points().slice();
+                  points[2] = position.x;
+                  points[3] = position.y;
+                  this.waypointLine.points(points);
+                  this.mapLayer.batchDraw();
+                });
+              }
+            }
+          });
+
+          this.waypointCircle.on(
+            'mouseup mouseout touchend touchout ',
+            async (event: any) => {
+              if (this.isReset) {
+                if (!this.waypointLine) {
+                  return;
+                }
+                if (!event.target.hasName('target')) {
+                  if (
+                    this.localizationToolsGroup.find('.angleLine').length > 0 &&
+                    this.isLineUpdated
+                  ) {
+                    this.localizationToolsGroup
+                      .getChildren()
+                      .forEach((child: any) => {
+                        if (child.getAttrs().name === 'waypointAngleLabel') {
+                          child.destroy();
+                        }
+                      });
+                    const { draggable } = this.stage.getAttrs();
+                    if (!draggable) {
+                      this.isLineLocked = true;
+                      this.getXYAngle()
+                        .pipe(
+                          mergeMap((data: any) => {
+                            const { x, y, angle, degrees } = data;
+                            return this.waypointService
+                              .initialPose({
+                                x,
+                                y,
+                                angle
+                              })
+                              .pipe(
+                                mergeMap(() => this.createAngleLabel(degrees))
+                              );
+                          }),
+                          mergeMap(() => {
+                            return of(null).pipe(
+                              delay(2000),
+                              mergeMap(() => {
+                                return this.getLidarData$().pipe(
+                                  mergeMap(() => this.createLidarRedpoints())
+                                );
+                              })
+                            );
+                          })
+                        )
+                        .subscribe(
+                          () => {
+                            this.isUpdatedWaypoint.emit({
+                              status: 'success'
+                            });
+                            this.isLineLocked = false;
+                          },
+                          error => {
+                            this.isUpdatedWaypoint.emit({
+                              status: 'failed',
+                              error
+                            });
+                            this.isLineLocked = false;
+                          }
+                        );
+                    }
+                  }
+                }
+                this.isLineUpdated = false;
+              }
+            }
+          );
+        }
+      })
+    );
   }
 
   lidarData$(): Observable<any> {
@@ -416,9 +437,14 @@ export class MapWrapperComponent
               for (const i in pointList) {
                 if (i) {
                   const redpoint = new Konva.Circle({
-                    x: Math.abs((x - pointList[i]['x']) / resolution),
-                    y: height - Math.abs((y - pointList[i]['y']) / resolution),
-                    radius: 2,
+                    x:
+                      Math.abs((x - pointList[i]['x']) / resolution) *
+                      this.newRatio,
+                    y:
+                      (height -
+                        Math.abs((y - pointList[i]['y']) / resolution)) *
+                      this.newRatio,
+                    radius: 2 * this.newRatio,
                     fill: 'red',
                     name: 'redpoint'
                   });
@@ -460,11 +486,29 @@ export class MapWrapperComponent
           }
         }),
         tap(data => {
+          // x: Math.abs(
+          //   ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) *
+          //     this.newRatio) /
+          //     resolution
+          // ),
+
+          // x:
+          // Math.abs((x - targetX) * this.newRatio ) / resolution,
+
           const scaleUpSize = 7;
           const locationImg = new Konva.Image({
+            // x:
+            //   (Math.abs(x - targetX) / resolution - data.img.width) /
+            //   scaleUpSize /
+            //   this.scale /
+            //   2,
             x:
-              Math.abs((x - targetX) / resolution) -
-              data.img.width / scaleUpSize / this.scale / 2,
+              (Math.abs(x - targetX) /
+                resolution /
+                scaleUpSize /
+                this.scale /
+                2) *
+              this.newRatio,
             y:
               height -
               Math.abs((y - targetY) / resolution) -
@@ -496,22 +540,26 @@ export class MapWrapperComponent
           robotPoseX: this.robotPose?.x,
           robotPoseY: this.robotPose?.y,
           robotCurrentPositionX: this.robotCurrentPosition?.x,
-          robotCurrentPositionY: this.robotCurrentPosition?.y
+          robotCurrentPositionY: this.robotCurrentPosition?.y,
+          newRatio: this.newRatio
         });
+
         this.robotCurrentPositionPointer.setAttrs({
           name: 'currentPosition',
           fill: 'blue',
           x: Math.abs(
-            (x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) /
+            ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) *
+              this.newRatio) /
               resolution
           ),
           y:
-            height -
-            Math.abs(
-              (y - (this.robotPose?.y ?? this.robotCurrentPosition?.y ?? 0)) /
-                resolution
-            ),
-          radius: 10
+            (height -
+              Math.abs(
+                (y - (this.robotPose?.y ?? this.robotCurrentPosition?.y ?? 0)) /
+                  resolution
+              )) *
+            this.newRatio,
+          radius: 10 * this.newRatio
         });
         this.mapLayer.add(this.robotCurrentPositionPointer);
       }),
@@ -552,7 +600,7 @@ export class MapWrapperComponent
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
       fill: 'black',
       stroke: 'white',
-      strokeWidth: 2,
+      strokeWidth: 2 * this.newRatio,
       name: 'waypointAngleLabel',
       zIndex: 1
     });
@@ -699,20 +747,20 @@ export class MapWrapperComponent
     return of(mousePointTo);
   }
 
-  getXYPointer(event: Event): Observable<{ x: number; y: number }> {
-    const oldScale = this.stage.scaleX();
-    const mousePointTo = {
-      x:
-        ((event.target as any).getStage().getPointerPosition().x / oldScale -
-          this.stage.x() / oldScale) /
-        this.scale,
-      y:
-        ((event.target as any).getStage().getPointerPosition().y / oldScale -
-          this.stage.y() / oldScale) /
-        this.scale
-    };
-    return of(mousePointTo);
-  }
+  // getXYPointer(event: Event): Observable<{ x: number; y: number }> {
+  //   const oldScale = this.stage.scaleX();
+  //   const mousePointTo = {
+  //     x:
+  //       ((event.target as any).getStage().getPointerPosition().x / oldScale -
+  //         this.stage.x() / oldScale) /
+  //       this.scale,
+  //     y:
+  //       ((event.target as any).getStage().getPointerPosition().y / oldScale -
+  //         this.stage.y() / oldScale) /
+  //       this.scale
+  //   };
+  //   return of(mousePointTo);
+  // }
 
   getXYAngle(): Observable<any> {
     const waypoint = this.mapLayer.find('.waypoint')[0].getAttrs();
@@ -720,8 +768,11 @@ export class MapWrapperComponent
     const lineLastPositionX = lineLastPosition['points'][2];
     const lineLastPositionY = lineLastPosition['points'][3];
 
-    const Vx = (lineLastPositionX - waypoint.x) / this.scale;
-    const Vy = (waypoint.y - lineLastPositionY) / this.scale;
+    // const Vx = ((lineLastPositionX - waypoint.x) * this.newRatio) / this.scale;
+    // const Vy = ((waypoint.y - lineLastPositionY) * this.newRatio) / this.scale;
+
+    const Vx = lineLastPositionX - waypoint.x;
+    const Vy = waypoint.y - lineLastPositionY;
 
     let radians = 0;
 
@@ -739,10 +790,11 @@ export class MapWrapperComponent
 
     const metaData = this.metaData;
 
-    const x = waypoint.x * metaData.resolution - Math.abs(metaData.x);
+    const x =
+      (waypoint.x / this.newRatio) * metaData.resolution - Math.abs(metaData.x);
 
     const y =
-      (metaData.height - waypoint.y) * metaData.resolution -
+      (metaData.height - waypoint.y / this.newRatio) * metaData.resolution -
       Math.abs(metaData.y);
 
     return of({ x, y, angle: radians, degrees: this.degrees });
@@ -808,9 +860,30 @@ export class MapWrapperComponent
     return this.lidarData$().pipe(tap(res => (this.lidarData = res)));
   }
 
+  getResizedCanvas(image: any, newWidth: number, newHeight: number) {
+    let canvas = document.createElement('canvas');
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, newWidth, newHeight);
+    return canvas;
+  }
+
   ngOnDestroy() {
     if (this.sub) {
       this.sub.unsubscribe();
+      this.mapLayer.destroy();
+      // this.rosMap.destroy();
+      // this.stage.destroy();
+      // this.localizationToolsGroup.destroy();
+      // this.mapLayer.destroy();
+      // this.lidarGroup.destroy();
+      // this.waypointCircle.destroy();
+      // this.waypointCenterCircle.destroy();
+      // this.waypointLine.destroy();
+      // this.waypointAngleLabel.destroy();
+      // this.robotCurrentPositionPointer.destroy();
     }
+    // this.mapLayer.destroy();
   }
 }
