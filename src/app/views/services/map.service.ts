@@ -92,4 +92,9 @@ export class MapService {
     const url = `${this.baseUrl}${environment.api.localizationPose}`;
     return this.http.get<LocalizationPose>(url);
   }
+
+  resizeImage(data): Observable<any> {
+    const url = this.appConfigService.getConfig().imageScalingServer;
+    return this.http.post(`${url}/api/image/resize`, data);
+  }
 }

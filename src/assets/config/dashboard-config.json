@@ -23,5 +23,7 @@
     "pairing": true,
     "grouping": true
   },
-  "largeImagePixelRatio": 0.003
+  "maxPx": 2048,
+  "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5100",
+  "largeImageServerSideRendering": false
 }

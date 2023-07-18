@@ -88,9 +88,11 @@ export class MapWrapperComponent
 
   disableEditorButton: boolean = false;
 
-  maxPx = 546;
+  maxPx = this.appConfigService.getConfig().maxPx ?? 1048;
   newRatio = 1;
 
+  largeImageServerSideRendering: boolean =
+    this.appConfigService.getConfig().largeImageServerSideRendering ?? false;
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService,
@@ -118,7 +120,7 @@ export class MapWrapperComponent
       rosImage.onerror = err => {
         observer.error(err);
       };
-      rosImage.src = `data:image/png;base64,${this.mapImage}`;
+      rosImage.src = `data:image/jpeg;base64,${this.mapImage}`;
     });
 
     // const maxPx = this.maxPx;
@@ -131,7 +133,14 @@ export class MapWrapperComponent
         rosMapImageObj.onerror = error => {
           reject(error);
         };
-        rosMapImageObj.src = canvas.toDataURL('image/png');
+
+        if (!this.largeImageServerSideRendering) {
+          // client side
+          rosMapImageObj.src = canvas.toDataURL('image/jpeg');
+        } else {
+          // server side
+          rosMapImageObj.src = `data:image/png;base64,${canvas}`;
+        }
       });
     };
 
@@ -143,14 +152,27 @@ export class MapWrapperComponent
           const imgWidth = img.width;
           const imgHeight = img.height;
           if (imgWidth >= maxPx || imgHeight >= maxPx) {
-          // if (true) {
             let newRatio = maxPx / Math.max(img.width, img.height);
             this.newRatio = newRatio;
-            let canvas = await this.getResizedCanvas(
-              img,
-              img.width * newRatio,
-              img.height * newRatio
-            );
+            let canvas;
+            if (!this.largeImageServerSideRendering) {
+              // Resizing large image on the client side
+              canvas = await this.getResizedCanvas(
+                img,
+                img.width * newRatio,
+                img.height * newRatio
+              );
+            } else {
+              // Resizing large image on the server side
+              const result = await this.mapService
+                .resizeImage({
+                  img: `data:image/jpeg;base64,${this.mapImage}`,
+                  newRatio
+                })
+                .toPromise();
+              canvas = result.image;
+            }
+
             return { canvas };
           } else {
             return { img };

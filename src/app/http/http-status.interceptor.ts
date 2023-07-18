@@ -15,13 +15,13 @@ import { catchError, finalize, timeout } from 'rxjs/operators';
 
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
-  DEFAULTTIMEOUT: number = 120000;
+  DEFAULTTIMEOUT: number = 240000; // 4 min
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
-    private sharedService: SharedService,
-    // private indexedDbService: IndexedDbService
-  ) {}
+    private sharedService: SharedService
+  ) // private indexedDbService: IndexedDbService
+  {}
 
   removeRequest(req: HttpRequest<any>) {
     const i = this.requests.indexOf(req);
@@ -59,7 +59,9 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               // request completes, errors, or is cancelled
               // this.sharedService.loading$.next(false);
               this.removeRequest(req);
-              this.sharedService.loading$.next(this.requests.length > 0 ? true : false);
+              this.sharedService.loading$.next(
+                this.requests.length > 0 ? true : false
+              );
             })
           )
           .subscribe(
