@@ -60,7 +60,7 @@
   "editMode": "前往编辑模式",
   "previewMode": "前往预览模式",
   "normal": "信息",
-  "warning": "警告",
+  "warning": "提示",
   "login": "登录",
   "account": "用户帐户",
   "password": "密码",
@@ -106,7 +106,8 @@
       "200013": "旧密码不正确",
       "300002": "验证码错误"
     },
-    "disconnect": "系统断开连接"
+    "disconnect": "系统断开连接",
+    "wifiSignalDisconnect":"WiFi信号已断开,请重新连接"
   },
   "yes": "是",
   "no": "不是",

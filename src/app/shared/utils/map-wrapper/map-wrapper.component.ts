@@ -75,7 +75,7 @@ export class MapWrapperComponent
 
   waypointCircle: Konva.Circle = new Konva.Circle();
   waypointCenterCircle: Konva.Circle = new Konva.Circle();
-  waypointLine: Konva.Arrow;
+  waypointLine: Konva.Line;
   waypointAngleLabel: Konva.Text;
 
   robotCurrentPositionPointer: Konva.Circle = new Konva.Circle();
@@ -318,7 +318,7 @@ export class MapWrapperComponent
           this.waypointCircle.on('mousedown touchstart', async (event: any) => {
             if (this.isReset && !this.isLineLocked) {
               this.localizationToolsGroup.getChildren().forEach(child => {
-                if (child.className === 'Arrow') {
+                if (child.className === 'Line') {
                   child.destroy();
                 }
               });
@@ -326,10 +326,10 @@ export class MapWrapperComponent
               this.getRosMapXYPointer(event).subscribe(position => {
                 this.isLineUpdated = true;
 
-                this.waypointLine = new Konva.Arrow({
+                this.waypointLine = new Konva.Line({
                   fill: 'black',
                   stroke: 'black',
-                  strokeWidth: (50 * this.newRatio) / this.scale,
+                  strokeWidth: (30 / this.scale) * this.newRatio,
                   // remove line from hit graph, so we can check intersections
                   listening: false,
                   name: 'angleLine',
@@ -622,7 +622,7 @@ export class MapWrapperComponent
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
       fill: 'black',
       stroke: 'white',
-      strokeWidth: 2 * this.newRatio,
+      strokeWidth: (10 / this.scale) * this.newRatio,
       name: 'waypointAngleLabel',
       zIndex: 1
     });
@@ -894,7 +894,7 @@ export class MapWrapperComponent
   ngOnDestroy() {
     if (this.sub) {
       this.sub.unsubscribe();
-      this.mapLayer.destroy();
+      // this.mapLayer.destroy();
       // this.rosMap.destroy();
       // this.stage.destroy();
       // this.localizationToolsGroup.destroy();

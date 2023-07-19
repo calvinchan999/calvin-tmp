@@ -430,7 +430,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.initializeErrors();
   }
 
-
   getCurrentMap() {
     this.mapService.getActiveMap().subscribe((response: MapResponse) => {
       console.log('Get Active Map:');
@@ -599,6 +598,19 @@ export class DefaultComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(async (errors: any) => {
         if (errors?.inFlight) {
+          const httpStatusPromise = await this.translateService
+            .get('error.httpStatue')
+            .toPromise();
+          const httpErrorPromise = await this.translateService
+            .get('error.httpError')
+            .toPromise();
+          const statusCodeMsg = errors.statusCode
+            ? `${httpStatusPromise} ${errors.statusCode}`
+            : '';
+          const errorCodeMsg = errors.errorCode
+            ? `${httpErrorPromise} ${errors.errorCode}`
+            : '';
+
           let errorMsg;
           switch (errors.errorCode) {
             case 20001:
@@ -618,22 +630,16 @@ export class DefaultComponent implements OnInit, OnDestroy {
               //   });
               break;
             default:
-              errorMsg = errors.errorMsg;
+              errorMsg = statusCodeMsg
+                ? errors.errorMsg
+                : this.translateService.instant(`error.wifiSignalDisconnect`);
               break;
           }
-          const httpStatusPromise = await this.translateService
-            .get('error.httpStatue')
-            .toPromise();
-          const httpErrorPromise = await this.translateService
-            .get('error.httpError')
-            .toPromise();
-          const statusCodeMsg = errors.statusCode
-            ? `${httpStatusPromise} ${errors.statusCode}`
-            : '';
-          const errorCodeMsg = errors.errorCode
-            ? `${httpErrorPromise} ${errors.errorCode}`
-            : '';
-          const message = ` ${statusCodeMsg} ${errorCodeMsg} - ${errorMsg}`;
+
+          const message =
+            statusCodeMsg || errorCodeMsg
+              ? ` ${statusCodeMsg} ${errorCodeMsg} - ${errorMsg}`
+              : `${errorMsg}`;
           if (errors.errorCode !== 403) {
             this.sharedService.response$.next({ type: 'warning', message });
           }

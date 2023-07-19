@@ -106,7 +106,8 @@
       "200013": "Password not matched",
       "300002": "Door pin code not available"
     },
-    "disconnect": "Connection Failed"
+    "disconnect": "Connection Failed",
+    "wifiSignalDisconnect": "WiFi Signal has been disconnected, please connect again"
   },
   "yes": "Yes",
   "no": "No",

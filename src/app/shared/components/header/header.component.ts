@@ -200,11 +200,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   localizationByMap() {
-    this.sharedService.localizationType$.next(LocalizationType.MAP);
+    setTimeout(
+      () => this.sharedService.localizationType$.next(LocalizationType.MAP),
+      0
+    );
   }
 
   localizationByList() {
-    this.sharedService.localizationType$.next(LocalizationType.LIST);
+    setTimeout(
+      () => this.sharedService.localizationType$.next(LocalizationType.LIST),
+      0
+    );
   }
 
   useLanguage() {

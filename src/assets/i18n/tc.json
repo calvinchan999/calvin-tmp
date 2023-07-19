@@ -60,7 +60,7 @@
   "editMode": "前往編輯模式",
   "previewMode": "前往預覽模式",
   "normal": "信息",
-  "warning": "警告",
+  "warning": "提示",
   "login": "登錄",
   "account": "用戶帳戶",
   "password": "密碼",
@@ -106,7 +106,8 @@
       "200013": "舊密碼不正確",
       "300002": "驗證碼錯誤"
     },
-    "disconnect": "系統斷開連接"
+    "disconnect": "系統斷開連接",
+    "wifiSignalDisconnect":"WiFi信號已斷開,請重新連接"
   },
   "yes": "是",
   "no": "不是",
