@@ -237,7 +237,7 @@ export class MqttService {
         });
 
       this._mqttService
-        .observe('rvautotech/fobo/broadcastMessage')
+        .observe('rvautotech/fobo/broadcast')
         .subscribe((message: IMqttMessage) => {
           console.log(new TextDecoder('utf-8').decode(message.payload));
           this.broadcastMessageSubject.next(

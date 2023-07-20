@@ -20,9 +20,11 @@
     ><h2 class="modal-title">{{ response.type | translate }}</h2></ng-template
   >
   <ng-template #modalResponse
-    ><label class="modal-body">{{
+    ><label class="modal-body" [innerHTML]="response?.message | translate">
+      <!-- {{
       response?.message | translate
-    }}</label></ng-template
+    }} -->
+    </label></ng-template
   >
 </app-modal>
 
@@ -98,7 +100,9 @@
       <app-robot-group-form [metaData]="metaData"></app-robot-group-form>
     </div>
     <div *ngSwitchCase="'robot-pairing'">
-      <app-robot-pairing-dialog [metaData]="metaData"></app-robot-pairing-dialog>
+      <app-robot-pairing-dialog
+        [metaData]="metaData"
+      ></app-robot-pairing-dialog>
     </div>
   </ng-template>
 </app-modal>

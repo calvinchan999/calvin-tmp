@@ -385,11 +385,11 @@ export class DefaultComponent implements OnInit, OnDestroy {
       .pipe(
         map(msg => JSON.parse(msg)),
         tap(data => {
-          const { message } = data;
-          if (message) {
+          const { subject, content, createdBy, createdDateTime } = data;
+          if (subject && content) {
             this.sharedService.response$.next({
               type: 'broadcast',
-              message: message
+              message: `${subject}<br/>${content}<br/>${createdDateTime}`
             });
           }
         })
