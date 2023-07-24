@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of, Subscription } from 'rxjs';
-import { delay, map, mergeMap, tap } from 'rxjs/operators';
+import { EMPTY, iif, Observable, of, Subscription } from 'rxjs';
+import {
+  catchError,
+  delay,
+  map,
+  mergeMap,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import {
   LocalizationType,
   SharedService
@@ -15,8 +22,8 @@ import {
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
-import { merge } from 'hammerjs';
 import { ToastrService } from 'ngx-toastr';
+// import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 export interface Metadata {
   x: number;
@@ -63,6 +70,8 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   );
   selectedWaypoint: Waypoint;
   localizationCorrectBgmPath: string = `./assets/musics/correct.mp3`;
+  mapName: string;
+  newRatio: number;
 
   constructor(
     private modalComponent: ModalComponent,
@@ -71,42 +80,78 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     private mapService: MapService,
     private waypointService: WaypointService,
     private router: Router,
-    private toastrService: ToastrService
+    private toastrService: ToastrService // private indexedDbService: IndexedDbService
   ) {
     this.setMessage();
   }
 
   ngOnInit() {
-    this.sub = this.sharedService.currentMap$.pipe(tap((currentMap: any) => {
-      if (currentMap) {
-        // this.mapService
-        //   .getMapImage(currentMap)
-        //   .pipe(
-        //     mergeMap(async data => {
-        //       // const img: string = URL.createObjectURL(data);
-        //       // return (this.floorPlanImg = ''), (this.rosMapImage = img);
+    this.sub = this.sharedService.currentMap$
+      .pipe(
+        mergeMap((currentMap: any) => {
+          // if (currentMap) {
 
-        //     }),
-        const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
-        const queries = { param };
-        this.mapService
-          .getMap(currentMap, queries)
-          .pipe(
-            tap(mapInfo => {
-              const { base64Image } = mapInfo;
-              this.rosMapImage = base64Image;
-              this.floorPlanImg = '';
-            }),
-            mergeMap(() =>
-              this.mapService
-                .getMapMetadata(currentMap)
-                .pipe(tap(metaData => (this.metaData = metaData)))
-            )
-          )
-          .subscribe();
-          
-      }
-    })).subscribe();
+            // this.mapService
+            //   .getMapImage(currentMap)
+            //   .pipe(
+            //     mergeMap(async data => {
+            //       // const img: string = URL.createObjectURL(data);
+            //       // return (this.floorPlanImg = ''), (this.rosMapImage = img);
+
+            //     }),
+            const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+            const queries = { param };
+
+            this.mapName = currentMap;
+
+            const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
+              tap(mapInfo => {
+                const { base64Image } = mapInfo;
+                this.rosMapImage = base64Image;
+                // this.floorPlanImg = '';
+              }),
+              mergeMap(() =>
+                this.mapService
+                  .getMapMetadata(currentMap)
+                  .pipe(tap(metaData => (this.metaData = metaData)))
+              )
+            );
+
+            const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
+              tap(metaData => {
+                this.metaData = metaData;
+                const {image, newRatio} = JSON.parse(localStorage.getItem(`map_${currentMap}`))
+                this.rosMapImage = image;
+                this.newRatio = newRatio;
+              })
+            );
+            const isExist = localStorage.getItem(`map_${currentMap}`)
+              ? true
+              : false;
+
+            return of(EMPTY)
+              .pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)))
+              ;
+
+            // this.mapService
+            //   .getMap(currentMap, queries)
+            //   .pipe(
+            //     tap(mapInfo => {
+            //       const { base64Image } = mapInfo;
+            //       this.rosMapImage = base64Image;
+            //       // this.floorPlanImg = '';
+            //     }),
+            //     mergeMap(() =>
+            //       this.mapService
+            //         .getMapMetadata(currentMap)
+            //         .pipe(tap(metaData => (this.metaData = metaData)))
+            //     )
+            //   )
+            //   .subscribe();
+          // }
+        })
+      )
+      .subscribe();
 
     this.sub.add(
       this.sharedService.localizationType$

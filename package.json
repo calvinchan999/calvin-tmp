@@ -1,6 +1,6 @@
 {
   "name": "mobile-chair-frontend",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "scripts": {
     "ng": "ng",
     "start": "ng serve  --host 0.0.0.0 --port 8989 --disable-host-check",
@@ -27,9 +27,9 @@
     "@mdi/font": "^6.6.96",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
+    "@types/pouchdb": "^6.4.0",
     "angular2-uuid": "^1.1.1",
     "bootstrap": "^5.1.3",
-    "dexie": "^3.2.4",
     "hammerjs": "^2.0.8",
     "js-query-builder": "^0.2.1",
     "konva": "^8.3.4",
@@ -40,6 +40,7 @@
     "ngx-spinner": "^12.0.0",
     "ngx-toastr": "^14.3.0",
     "pdfmake": "^0.2.5",
+    "pouchdb": "^8.0.1",
     "rxjs": "^6.6.7",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

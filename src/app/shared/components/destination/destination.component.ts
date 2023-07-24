@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { EMPTY, Subscription, iif, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
@@ -25,6 +25,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
   sub = new Subscription();
   waypoint;
   editor = EditorType['POSITIONLISTENER'];
+  mapName: string;
+  newRatio: number;
+
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
@@ -35,31 +38,40 @@ export class DestinationComponent implements OnInit, OnDestroy {
   ) {
     this.sub = this.sharedService.currentMap$
       .pipe(
-        mergeMap(currentMap =>
-          // this.mapService.getMapImage(currentMap).pipe(
-          //   tap(mapImage => {
-          //     const img: string = URL.createObjectURL(mapImage);
-          //     return (this.rosMapImage = img);
-          //   }),
-          //   map(() => currentMap)
-          // )
-          {
-            const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
-            const queries = { param };
-            return this.mapService.getMap(currentMap, queries).pipe(
-              tap(mapInfo => {
-                const { base64Image } = mapInfo;
-                this.rosMapImage = base64Image;
-              }),
-              map(() => currentMap)
-            );
-          }
-        ),
-        mergeMap(currentMap =>
-          this.mapService
-            .getMapMetadata(currentMap)
-            .pipe(tap(metaData => (this.metaData = metaData)))
-        )
+        mergeMap(currentMap => {
+          this.mapName = currentMap;
+          const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+          const queries = { param };
+          const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
+            tap(mapInfo => {
+              const { base64Image } = mapInfo;
+              this.rosMapImage = base64Image;
+              // this.floorPlanImg = '';
+            }),
+            mergeMap(() =>
+              this.mapService
+                .getMapMetadata(currentMap)
+                .pipe(tap(metaData => (this.metaData = metaData)))
+            )
+          );
+
+          const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
+            tap(metaData => {
+              this.metaData = metaData;
+              const { image, newRatio } = JSON.parse(
+                localStorage.getItem(`map_${currentMap}`)
+              );
+              this.rosMapImage = image;
+              this.newRatio = newRatio;
+            })
+          );
+
+          const isExist = localStorage.getItem(`map_${currentMap}`)
+            ? true
+            : false;
+
+          return of(EMPTY).pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)));
+        })
       )
       .subscribe(
         () => {},

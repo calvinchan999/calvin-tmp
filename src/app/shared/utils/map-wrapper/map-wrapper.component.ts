@@ -17,7 +17,6 @@ import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { SharedService } from 'src/app/services/shared.service';
-// import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 export interface Point {
   x: number;
@@ -52,6 +51,8 @@ export class MapWrapperComponent
   @Input() floorPlan: string;
   @Input() mapImage: string;
   @Input() metaData: any;
+  @Input() mapName: string;
+  @Input() newRatio: number = 1;
   @Output() isUpdatedWaypoint = new EventEmitter<any>(false);
   editorType = EditorType;
   sub = new Subscription();
@@ -90,7 +91,7 @@ export class MapWrapperComponent
   disableEditorButton: boolean = false;
 
   maxPx = this.appConfigService.getConfig().maxPx ?? 1048;
-  newRatio = 1;
+  // newRatio = 1;
 
   largeImageServerSideRendering: boolean =
     this.appConfigService.getConfig().largeImageServerSideRendering ?? false;
@@ -98,9 +99,9 @@ export class MapWrapperComponent
     private waypointService: WaypointService,
     private mapService: MapService,
     private appConfigService: AppConfigService,
-    private sharedService: SharedService,
-    // private indexedDbService: IndexedDbService
-  ) {
+    private sharedService: SharedService
+  ) // private indexedDbService: IndexedDbService
+  {
     // if (/android/i.test(this.userAgent)) {
     //   this.platform = 'android';
     // }
@@ -153,10 +154,11 @@ export class MapWrapperComponent
           const maxPx = this.maxPx;
           const imgWidth = img.width;
           const imgHeight = img.height;
-          if (imgWidth >= maxPx || imgHeight >= maxPx) {
+          console.log({imgWidth, imgHeight});
+          if (imgWidth > maxPx || imgHeight > maxPx) {
             let newRatio = maxPx / Math.max(img.width, img.height);
             this.newRatio = newRatio;
-            this.scale/=newRatio;
+            this.scale /= newRatio;
             let canvas;
             if (!this.largeImageServerSideRendering) {
               // Resizing large image on the client side
@@ -173,6 +175,11 @@ export class MapWrapperComponent
                   newRatio
                 })
                 .toPromise();
+              const jsonData = {
+                image: result.image,
+                newRatio
+              }
+              localStorage.setItem(`map_${this.mapName}`, JSON.stringify(jsonData));
               canvas = result.image;
             }
 
@@ -522,14 +529,12 @@ export class MapWrapperComponent
           const locationImg = new Konva.Image({
             x:
               (Math.abs(x - targetX) / resolution) * this.newRatio -
-              data.img.width *this.newRatio  / this.scale / 2,
+              (data.img.width * this.newRatio) / this.scale / 2,
             y:
               (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
-              data.img.height* this.newRatio  / this.scale,
-            width:
-              ( data.img.width * this.newRatio) / this.scale,
-            height:
-              ( data.img.height * this.newRatio) / this.scale,
+              (data.img.height * this.newRatio) / this.scale,
+            width: (data.img.width * this.newRatio) / this.scale,
+            height: (data.img.height * this.newRatio) / this.scale,
             image: data.img,
             name: 'targetWaypoint'
           });
