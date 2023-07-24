@@ -131,11 +131,11 @@ export class DestinationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // setTimeout(() => {
-    //   if (!this.waypoint) {
-    //     this.router.navigate(['/']);
-    //   }
-    // }, 3000);
+    setTimeout(() => {
+      if (!this.waypoint) {
+        this.router.navigate(['/']);
+      }
+    }, 3000);
   }
 
   onPause() {
