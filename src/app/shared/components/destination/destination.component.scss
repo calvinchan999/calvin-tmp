@@ -1,14 +1,15 @@
 .destination-container {
   position: absolute;
-  height: 90%;
+  height: 100%;
   width: 100%;
   display: flex;
-  justify-content: center;
+  // justify-content: center;
+  flex-direction: column;
 }
 
 .spuare-group {
-  position: absolute;
-  bottom: 0;
+  // position: absolute;
+  // bottom: 0;
   z-index: 1000;
   display: flex;
   justify-content: center;
@@ -72,11 +73,20 @@
   width: 90vw;
 }
 
+.map-subtitle {
+  color: #fff;
+}
+
+.map-container{
+  height: 70%;
+  width: 100%;
+}
+
 .waypoint-title{
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
+  height: 70%;
   color: #fff;
   justify-content: center;
 }
