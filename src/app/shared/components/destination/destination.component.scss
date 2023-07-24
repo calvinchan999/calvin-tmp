@@ -72,6 +72,15 @@
   width: 90vw;
 }
 
+.waypoint-title{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  color: #fff;
+  justify-content: center;
+}
+
 @media only screen and (max-width: 900px) {
   .map-item {
     font-size: 35px !important;

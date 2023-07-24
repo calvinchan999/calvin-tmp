@@ -71,7 +71,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   selectedWaypoint: Waypoint;
   localizationCorrectBgmPath: string = `./assets/musics/correct.mp3`;
   mapName: string;
-  newRatio: number;
+  newRatio: number = 1;
 
   constructor(
     private modalComponent: ModalComponent,

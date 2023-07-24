@@ -129,5 +129,6 @@
     "value": "Sequence",
     "totalRobot": "Total Robot"
   },
-  "broadcast": "Broadcast Message"
+  "broadcast": "Broadcast Message",
+  "goingToDestination": "Going To"
 }

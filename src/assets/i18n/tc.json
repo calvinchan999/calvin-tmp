@@ -129,5 +129,6 @@
     "value": "序列",
     "totalRobot": "總機器數"
   },
-  "broadcast": "廣播"
+  "broadcast": "廣播",
+  "goingToDestination": "前往目的地"
 }

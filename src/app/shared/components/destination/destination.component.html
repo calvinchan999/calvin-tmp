@@ -1,5 +1,8 @@
-<div class="container-fluid destination-container" *ngIf="rosMapImage && metaData">
-  <div class="card ">
+<div
+  class="container-fluid destination-container"
+  *ngIf="rosMapImage && metaData"
+>
+  <div class="card" *ngIf="enableMap">
     <app-map-wrapper
       class="map"
       [editor]="editor"
@@ -10,7 +13,14 @@
       [mapName]="mapName"
       [newRatio]="newRatio"
     ></app-map-wrapper>
-   
+  </div>
+  
+  <div class="waypoint-title" *ngIf="!enableMap">
+    <h1 style="text-align: center;">{{ "goingToDestination" | translate }}</h1>
+    <br />
+    <h1 style="text-align: center;" *ngIf="waypoint">
+      {{ waypoint.targetName }}
+    </h1>
   </div>
   <div class="spuare-group">
     <div class="square-button cancel" (click)="onCancel()">

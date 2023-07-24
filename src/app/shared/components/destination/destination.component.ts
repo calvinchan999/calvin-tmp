@@ -10,6 +10,7 @@ import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { Metadata } from '../localization-form/localization-form.component';
 import * as _ from 'lodash';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'app-destination',
@@ -26,7 +27,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
   waypoint;
   editor = EditorType['POSITIONLISTENER'];
   mapName: string;
-  newRatio: number;
+  newRatio: number = 1;
+
+  enableMap: boolean = this.appConfigService.getConfig().enableMap ?? false;
 
   constructor(
     private waypointService: WaypointService,
@@ -34,7 +37,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
     private mapService: MapService,
     private mqttService: MqttService,
     private translateService: TranslateService,
-    private router: Router
+    private router: Router,
+    private appConfigService: AppConfigService
   ) {
     this.sub = this.sharedService.currentMap$
       .pipe(
@@ -127,11 +131,11 @@ export class DestinationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      if (!this.waypoint) {
-        this.router.navigate(['/']);
-      }
-    }, 3000);
+    // setTimeout(() => {
+    //   if (!this.waypoint) {
+    //     this.router.navigate(['/']);
+    //   }
+    // }, 3000);
   }
 
   onPause() {

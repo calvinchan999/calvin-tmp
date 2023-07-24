@@ -154,7 +154,7 @@ export class MapWrapperComponent
           const maxPx = this.maxPx;
           const imgWidth = img.width;
           const imgHeight = img.height;
-          console.log({imgWidth, imgHeight});
+ 
           if (imgWidth > maxPx || imgHeight > maxPx) {
             let newRatio = maxPx / Math.max(img.width, img.height);
             this.newRatio = newRatio;
