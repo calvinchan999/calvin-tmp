@@ -409,7 +409,7 @@ export class MapWrapperComponent
               this.waypointLine = new Konva.Line({
                 fill: 'black',
                 stroke: 'black',
-                strokeWidth: 10  * this.newRatio,
+                strokeWidth: 10 * this.newRatio,
                 // remove line from hit graph, so we can check intersections
                 listening: false,
                 name: 'angleLine',
@@ -613,12 +613,12 @@ export class MapWrapperComponent
           this.destinationPoint = new Konva.Image({
             x:
               (Math.abs(x - targetX) / resolution) * this.newRatio -
-              (data.img.width * this.newRatio) / this.scale / 2,
+              (data.img.width * this.newRatio) / this.scale / 2 / 2,
             y:
               (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
-              (data.img.height * this.newRatio) / this.scale,
-            width: (data.img.width * this.newRatio) / this.scale,
-            height: (data.img.height * this.newRatio) / this.scale,
+              (data.img.height * this.newRatio) / this.scale / 2,
+            width: (data.img.width * this.newRatio) / this.scale / 2,
+            height: (data.img.height * this.newRatio) / this.scale / 2,
             image: data.img,
             opacity: 0.7,
             name: 'targetWaypoint'

@@ -52,7 +52,6 @@ export class DestinationComponent implements OnInit, OnDestroy {
             tap(mapInfo => {
               const { base64Image } = mapInfo;
               this.rosMapImage = base64Image;
-              // this.floorPlanImg = '';
             }),
             mergeMap(() =>
               this.mapService
