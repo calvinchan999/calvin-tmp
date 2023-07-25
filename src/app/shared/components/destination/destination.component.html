@@ -1,6 +1,6 @@
 <div
   class="container-fluid destination-container"
-  *ngIf="rosMapImage && metaData"
+  *ngIf="(rosMapImage || floorPlanData) && metaData"
 >
   <div class="map-container" *ngIf="enableMap">
     <app-map-wrapper
@@ -13,6 +13,15 @@
       [mapName]="mapName"
       [newRatio]="newRatio"
     ></app-map-wrapper>
+
+    <!-- <app-map-wrapper
+      class="map"
+      [editor]="editor"
+      [floorPlan]="floorPlanData"
+      [robotPose]="robotPose"
+      [metaData]="metaData"
+      [waypointTargets]="waypoint"
+    ></app-map-wrapper> -->
   </div>
 
   <div class="waypoint-title" *ngIf="!enableMap">

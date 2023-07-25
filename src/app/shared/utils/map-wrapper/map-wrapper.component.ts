@@ -11,8 +11,25 @@ import {
   ViewChild
 } from '@angular/core';
 import Konva from 'konva';
-import { EMPTY, forkJoin, iif, Observable, of, Subscription } from 'rxjs';
-import { delay, finalize, mergeMap, switchMap, tap } from 'rxjs/operators';
+import {
+  defer,
+  EMPTY,
+  forkJoin,
+  iif,
+  merge,
+  Observable,
+  of,
+  Subscription
+} from 'rxjs';
+import {
+  catchError,
+  delay,
+  filter,
+  finalize,
+  mergeMap,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
@@ -48,7 +65,7 @@ export class MapWrapperComponent
   @Input() editor: EditorType;
   @Input() robotPose: any; // todo
   @Input() waypointTargets: any; // todo
-  @Input() floorPlan: string;
+  @Input() floorPlan: any;
   @Input() mapImage: string;
   @Input() metaData: any;
   @Input() mapName: string;
@@ -80,7 +97,10 @@ export class MapWrapperComponent
   waypointLine: Konva.Line;
   waypointAngleLabel: Konva.Text;
 
-  robotCurrentPositionPointer: Konva.Circle = new Konva.Circle();
+  robotCurrentPositionPoint: Konva.Circle = new Konva.Circle();
+
+  // destinationPoint: Konva.Circle = new Konva.Circle();
+  destinationPoint: Konva.Image;
 
   isLineLocked: boolean = false;
   isLineUpdated: boolean = false;
@@ -93,15 +113,16 @@ export class MapWrapperComponent
   maxPx = this.appConfigService.getConfig().maxPx ?? 1048;
   // newRatio = 1;
 
+  scaleFactor = 1;
+
   largeImageServerSideRendering: boolean =
     this.appConfigService.getConfig().largeImageServerSideRendering ?? false;
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService,
     private appConfigService: AppConfigService,
-    private sharedService: SharedService
-  ) // private indexedDbService: IndexedDbService
-  {
+    private sharedService: SharedService // private indexedDbService: IndexedDbService
+  ) {
     // if (/android/i.test(this.userAgent)) {
     //   this.platform = 'android';
     // }
@@ -113,17 +134,62 @@ export class MapWrapperComponent
   ngOnInit() {}
 
   ngAfterViewInit() {
-    // const pixelRatio = this.appConfigService.getConfig().largeImagePixelRatio;
-    const rosImg$ = new Observable<HTMLImageElement>(observer => {
-      const rosImage = new Image();
-      rosImage.onload = () => {
-        observer.next(rosImage);
-        observer.complete();
-      };
-      rosImage.onerror = err => {
-        observer.error(err);
-      };
-      rosImage.src = `data:image/jpeg;base64,${this.mapImage}`;
+    console.log(this.floorPlan);
+    // const floorPlanImg$ = new Observable<HTMLImageElement>(observer => {
+    //   const img = new Image();
+    //   img.onload = () => {
+    //     observer.next(img);
+    //     observer.complete();
+    //   };
+    //   img.onerror = err => {
+    //     observer.error(err);
+    //   };
+
+    //   if (!this.floorPlan) return observer.error('floorPlan is not exist');
+    //   const { floorPlanImage } = this.floorPlan;
+    //   img.src = floorPlanImage;
+    // });
+
+    // const rosImg$ = new Observable<HTMLImageElement>(observer => {
+    //   const rosImage = new Image();
+    //   rosImage.onload = () => {
+    //     observer.next(rosImage);
+    //     observer.complete();
+    //   };
+    //   rosImage.onerror = err => {
+    //     observer.error(err);
+    //   };
+    //   rosImage.src = `data:image/jpeg;base64,${this.mapImage}`;
+    // });
+
+    const img$ = defer(() => {
+      return iif(
+        () => this.floorPlan,
+        new Observable<HTMLImageElement>(observer => {
+          const img = new Image();
+          img.onload = () => {
+            observer.next(img);
+            observer.complete();
+          };
+          img.onerror = err => {
+            observer.error(err);
+          };
+          const { floorPlanImage, transformedScale } = this.floorPlan;
+          // this.scale = transformedScale;
+          img.src = floorPlanImage;
+        }),
+        new Observable<HTMLImageElement>(observer => {
+          const img = new Image();
+          img.onload = () => {
+            observer.next(img);
+            observer.complete();
+          };
+          img.onerror = err => {
+            observer.error(err);
+          };
+          img.src = `data:image/jpeg;base64,${this.mapImage}`;
+        })
+      );
     });
 
     // const maxPx = this.maxPx;
@@ -147,14 +213,14 @@ export class MapWrapperComponent
       });
     };
 
-    this.sub = rosImg$
+    this.sub = img$
       .pipe(
         tap(() => this.sharedService.loading$.next(true)),
         switchMap(async img => {
           const maxPx = this.maxPx;
           const imgWidth = img.width;
           const imgHeight = img.height;
- 
+          console.log({ imgWidth, imgHeight });
           if (imgWidth > maxPx || imgHeight > maxPx) {
             let newRatio = maxPx / Math.max(img.width, img.height);
             this.newRatio = newRatio;
@@ -178,8 +244,11 @@ export class MapWrapperComponent
               const jsonData = {
                 image: result.image,
                 newRatio
-              }
-              localStorage.setItem(`map_${this.mapName}`, JSON.stringify(jsonData));
+              };
+              localStorage.setItem(
+                `map_${this.mapName}`,
+                JSON.stringify(jsonData)
+              );
               canvas = result.image;
             }
 
@@ -198,6 +267,7 @@ export class MapWrapperComponent
         }),
         delay(5000),
         mergeMap(async (img: any) => {
+          console.log(`debug`);
           const stage = new Konva.Stage({
             container: 'canvas',
             width: this.canvas.nativeElement.offsetWidth,
@@ -220,11 +290,6 @@ export class MapWrapperComponent
             width: img.width,
             height: img.height
           });
-
-          // if (img[0].width > 10000 || img[0].height > 10000) {
-          //   rosMap.cache({ pixelRatio });
-          // }
-          // rosMap.cache({ pixelRatio: 0.03 });
 
           mapLayer.add(rosMap);
 
@@ -280,7 +345,12 @@ export class MapWrapperComponent
       )
       .subscribe(() => {
         this.sharedService.loading$.next(false);
-        if (this.mapLayer && this.metaData && this.editor && this.mapImage) {
+        if (
+          this.mapLayer &&
+          this.metaData &&
+          this.editor &&
+          (this.mapImage || this.floorPlan)
+        ) {
           this.init();
         }
       });
@@ -292,7 +362,7 @@ export class MapWrapperComponent
       this.mapLayer &&
       this.metaData &&
       this.editor &&
-      this.mapImage
+      (this.mapImage || this.floorPlan)
     ) {
       this.init();
     }
@@ -339,7 +409,7 @@ export class MapWrapperComponent
               this.waypointLine = new Konva.Line({
                 fill: 'black',
                 stroke: 'black',
-                strokeWidth: (30 / this.scale) * this.newRatio,
+                strokeWidth: 10  * this.newRatio,
                 // remove line from hit graph, so we can check intersections
                 listening: false,
                 name: 'angleLine',
@@ -526,7 +596,21 @@ export class MapWrapperComponent
           // Math.abs((x - targetX) * this.newRatio ) / resolution,
 
           // const scaleUpSize = 5;
-          const locationImg = new Konva.Image({
+
+          // const locationImg = new Konva.Image({
+          //   x:
+          //     (Math.abs(x - targetX) / resolution) * this.newRatio -
+          //     (data.img.width * this.newRatio) / this.scale / 2,
+          //   y:
+          //     (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
+          //     (data.img.height * this.newRatio) / this.scale,
+          //   width: (data.img.width * this.newRatio) / this.scale,
+          //   height: (data.img.height * this.newRatio) / this.scale,
+          //   image: data.img,
+          //   name: 'targetWaypoint'
+          // });
+
+          this.destinationPoint = new Konva.Image({
             x:
               (Math.abs(x - targetX) / resolution) * this.newRatio -
               (data.img.width * this.newRatio) / this.scale / 2,
@@ -536,9 +620,20 @@ export class MapWrapperComponent
             width: (data.img.width * this.newRatio) / this.scale,
             height: (data.img.height * this.newRatio) / this.scale,
             image: data.img,
+            opacity: 0.7,
             name: 'targetWaypoint'
           });
-          this.mapLayer.add(locationImg);
+
+          // this.destinationPoint.setAttrs({
+          //   name: 'targetWaypoint',
+          //   x: (Math.abs(x - targetX) / resolution) * this.newRatio,
+          //   y: (height - Math.abs((y - targetY) / resolution)) * this.newRatio,
+          //   radius: 7 / this.newRatio,
+          //   strokeWidth: 5,
+          //   stroke: 'green'
+          // });
+
+          this.mapLayer.add(this.destinationPoint);
         })
       );
     } else {
@@ -564,27 +659,27 @@ export class MapWrapperComponent
           newRatio: this.newRatio
         });
 
-        this.robotCurrentPositionPointer.setAttrs({
+        this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
           fill: 'blue',
           x: Math.abs(
-            ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) *
+            ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? x)) *
               this.newRatio) /
               resolution
           ),
           y:
             (height -
               Math.abs(
-                (y - (this.robotPose?.y ?? this.robotCurrentPosition?.y ?? 0)) /
+                (y - (this.robotPose?.y ?? this.robotCurrentPosition?.y ?? y)) /
                   resolution
               )) *
             this.newRatio,
-          radius: 10 * this.newRatio
+          radius: 15 * this.newRatio
         });
-        this.mapLayer.add(this.robotCurrentPositionPointer);
+        this.mapLayer.add(this.robotCurrentPositionPoint);
       }),
       tap(() => {
-        const currentPosition = this.robotCurrentPositionPointer.getAttrs();
+        const currentPosition = this.robotCurrentPositionPoint.getAttrs();
         const pointTo = {
           x: this.mapLayer.x() - currentPosition.x / this.stage.scaleX(),
           y: this.mapLayer.y() - currentPosition.y / this.stage.scaleY()
@@ -596,7 +691,7 @@ export class MapWrapperComponent
           pointTo.y &&
           !this.isReset
         ) {
-          const absolutePosition = this.robotCurrentPositionPointer.getAbsolutePosition();
+          const absolutePosition = this.robotCurrentPositionPoint.getAbsolutePosition();
 
           const newPos = {
             x: this.stage.x() - absolutePosition.x + this.stage.width() / 2,
@@ -615,13 +710,13 @@ export class MapWrapperComponent
       x,
       y,
       text: `${degrees}°`,
-      fontSize: 50 / this.scale,
+      fontSize: 50,
       fontFamily:
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
       fill: 'black',
-      stroke: 'white',
-      strokeWidth: (10 / this.scale) * this.newRatio,
       name: 'waypointAngleLabel',
+      stroke: 'white',
+      strokeWidth: 2,
       zIndex: 1
     });
 
@@ -698,6 +793,16 @@ export class MapWrapperComponent
 
             this.stage.position(newPos);
             this.scale = oldScale;
+
+            // const scaleFactor = this.scaleFactor * this.scaleMultiplier;
+
+            // if (scaleFactor >= 1) {
+            //   this.scaleFactor = scaleFactor;
+            //   this.robotCurrentPositionPoint.scale({
+            //     x: scaleFactor,
+            //     y: scaleFactor
+            //   });
+            // }
           })
         )
         .subscribe();
@@ -730,6 +835,16 @@ export class MapWrapperComponent
 
           this.stage.position(newPos);
           this.scale = oldScale;
+
+          // const scaleFactor = this.scaleFactor / this.scaleMultiplier;
+
+          // if (scaleFactor <= 1) {
+          //   this.scaleFactor = scaleFactor;
+          //   this.robotCurrentPositionPoint.scale({
+          //     x: scaleFactor,
+          //     y: scaleFactor
+          //   });
+          // }
         })
       )
       .subscribe();
@@ -821,14 +936,14 @@ export class MapWrapperComponent
   }
 
   onClearWaypoint() {
-    this.robotCurrentPositionPointer.destroy();
+    this.robotCurrentPositionPoint.destroy();
     this.localizationToolsGroup.removeChildren();
     this.lidarGroup.removeChildren();
   }
 
   onReset(): Observable<any> {
     return of(null).pipe(
-      switchMap(() => of(this.robotCurrentPositionPointer.destroy())),
+      switchMap(() => of(this.robotCurrentPositionPoint.destroy())),
       switchMap(() => of(this.localizationToolsGroup.removeChildren())),
       switchMap(() => of(this.lidarGroup.removeChildren()))
     );
@@ -862,7 +977,7 @@ export class MapWrapperComponent
         this.getRosMapXYPointer(event)
           .pipe(
             switchMap(position => this.drawnWaypoint$(position)),
-            switchMap(() => of(this.robotCurrentPositionPointer.destroy())),
+            switchMap(() => of(this.robotCurrentPositionPoint.destroy())),
             switchMap(() => of(this.lidarGroup.removeChildren()))
           )
           .subscribe();
@@ -902,7 +1017,7 @@ export class MapWrapperComponent
       // this.waypointCenterCircle.destroy();
       // this.waypointLine.destroy();
       // this.waypointAngleLabel.destroy();
-      // this.robotCurrentPositionPointer.destroy();
+      // this.robotCurrentPositionPoint.destroy();
     }
     // this.mapLayer.destroy();
   }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
@@ -96,5 +96,50 @@ export class MapService {
   resizeImage(data): Observable<any> {
     const url = this.appConfigService.getConfig().imageScalingServer;
     return this.http.post(`${url}/api/image/resize`, data);
+  }
+
+  getFloorPlan(mapCode: string): Observable<any> {
+    const url = `${this.baseUrl}${environment.api.floorPlan(mapCode)}?floorPlanIncluded=true`;
+    return this.http.get(url);
+  }
+
+  getFloorPlanPointFromMapPoint(map, mapPt): Observable<any> {
+    console.log({map, mapPt})
+    console.log({
+      transformedAngle: map.transformedAngle
+    })
+    let resolution = map.resolution == 0 ? 0.05 : map.resolution;
+    let sinD = Math.sin((Math.PI * map.transformedAngle) / 180);
+    let cosD = Math.cos((Math.PI * map.transformedAngle) / 180);
+    let x1 = (mapPt.positionX - map.originX) / resolution;
+    let y1 = map.imageHeight - (mapPt.positionY - map.originY) / resolution;
+
+    let x0 = 0;
+    let y0 = 0;
+
+    if (sinD != 0 && cosD != 0) {
+      x0 =
+        (x1 - map.imageWidth / 2 + (sinD * (map.imageHeight / 2 - y1)) / cosD) /
+        (cosD / map.transformedScale +
+          (sinD * sinD) / (map.transformedScale * cosD));
+      y0 =
+        (map.imageWidth / 2 + (map.imageHeight / 2 - y1) * (cosD / sinD) - x1) /
+        ((cosD * cosD) / (map.transformedScale * sinD) +
+          sinD / map.transformedScale);
+    } else {
+      x0 = (x1 - map.imageWidth / 2) * map.transformedScale;
+      y0 = (map.imageHeight / 2 - y1) * map.transformedScale;
+    }
+
+    let x = x0 + map.imageWidth / 2 + map.transformedPositionX;
+    let y = map.transformedPositionY + map.imageHeight / 2 - y0;
+    let retAngle =
+      (90 - (mapPt.angle * 180) / Math.PI + map.transformedAngle) % 360;
+
+    return of({
+      GuiX: x,
+      GuiY: y,
+      GuiAngle: retAngle
+    });
   }
 }

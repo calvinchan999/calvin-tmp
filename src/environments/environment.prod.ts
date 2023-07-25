@@ -30,6 +30,7 @@ export const environment = {
     pairing: '/api/followMe/v1/pairing',
     forward: '/api/fms/v1/forward',
     followRobot: '/api/followRobot/v1/pairing',
-    poseDeviation: '/api/localization/v1/pose/deviation'
+    poseDeviation: '/api/localization/v1/pose/deviation',
+    floorPlan: (mapCode: string) => `/api/floorPlan/v1/${mapCode}`
   },
 };

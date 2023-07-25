@@ -31,6 +31,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
 
   enableMap: boolean = this.appConfigService.getConfig().enableMap ?? false;
 
+  floorPlanData: any;
+
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
@@ -75,6 +77,35 @@ export class DestinationComponent implements OnInit, OnDestroy {
             : false;
 
           return of(EMPTY).pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)));
+
+          // const ob3$ = this.mapService.getFloorPlan(currentMap).pipe(
+          //   map((info: any) => {
+          //     return {
+          //       floorPlanImage: info.base64Image,
+          //       mapCode: info.mapList[0].mapCode,
+          //       floorPlanCode: info.floorPlanCode,
+          //       originX: info.mapList[0].originX,
+          //       originY: info.mapList[0].originY,
+          //       resolution: info.mapList[0].resolution,
+          //       imageWidth: info.mapList[0].imageWidth,
+          //       imageHeight: info.mapList[0].imageHeight,
+          //       transformedPositionX: info.mapList[0].transformedPositionX,
+          //       transformedPositionY: info.mapList[0].transformedPositionY,
+          //       transformedScale: info.mapList[0].transformedScale,
+          //       transformedAngle: info.mapList[0].transformedAngle
+          //     };
+          //   }),
+          //   tap(result => (this.floorPlanData = result)),
+          //   mergeMap(() =>
+          //     this.mapService.getMapMetadata(currentMap).pipe(
+          //       tap(metaData => {
+          //         this.metaData = metaData;
+          //       })
+          //     )
+          //   )
+          // );
+
+          // return of(EMPTY).pipe(mergeMap(() => ob3$));
         })
       )
       .subscribe(
@@ -131,11 +162,11 @@ export class DestinationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      if (!this.waypoint) {
-        this.router.navigate(['/']);
-      }
-    }, 3000);
+    // setTimeout(() => {
+    //   if (!this.waypoint) {
+    //     this.router.navigate(['/']);
+    //   }
+    // }, 3000);
   }
 
   onPause() {
