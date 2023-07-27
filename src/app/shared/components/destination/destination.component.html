@@ -4,6 +4,7 @@
 >
   <div class="map-container" *ngIf="enableMap">
     <app-map-wrapper
+      *ngIf="!floorPlanData"
       class="map"
       [editor]="editor"
       [mapImage]="rosMapImage"
@@ -14,14 +15,15 @@
       [newRatio]="newRatio"
     ></app-map-wrapper>
 
-    <!-- <app-map-wrapper
+    <app-map-wrapper
+      *ngIf="floorPlanData"
       class="map"
       [editor]="editor"
       [floorPlan]="floorPlanData"
       [robotPose]="robotPose"
       [metaData]="metaData"
       [waypointTargets]="waypoint"
-    ></app-map-wrapper> -->
+    ></app-map-wrapper>
   </div>
 
   <div class="waypoint-title" *ngIf="!enableMap">

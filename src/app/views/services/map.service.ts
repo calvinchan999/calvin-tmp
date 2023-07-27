@@ -99,15 +99,13 @@ export class MapService {
   }
 
   getFloorPlan(mapCode: string): Observable<any> {
-    const url = `${this.baseUrl}${environment.api.floorPlan(mapCode)}?floorPlanIncluded=true`;
+    const url = `${this.baseUrl}${environment.api.floorPlan(
+      mapCode
+    )}?floorPlanIncluded=true`;
     return this.http.get(url);
   }
 
   getFloorPlanPointFromMapPoint(map, mapPt): Observable<any> {
-    console.log({map, mapPt})
-    console.log({
-      transformedAngle: map.transformedAngle
-    })
     let resolution = map.resolution == 0 ? 0.05 : map.resolution;
     let sinD = Math.sin((Math.PI * map.transformedAngle) / 180);
     let cosD = Math.cos((Math.PI * map.transformedAngle) / 180);

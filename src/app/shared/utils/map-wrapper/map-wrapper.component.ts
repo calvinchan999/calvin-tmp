@@ -17,6 +17,7 @@ import {
   forkJoin,
   iif,
   merge,
+  observable,
   Observable,
   of,
   Subscription
@@ -90,7 +91,7 @@ export class MapWrapperComponent
   isReset: boolean = false;
 
   robotCurrentPosition;
-  lidarData;
+  lidarPoints;
 
   waypointCircle: Konva.Circle = new Konva.Circle();
   waypointCenterCircle: Konva.Circle = new Konva.Circle();
@@ -220,8 +221,8 @@ export class MapWrapperComponent
           const maxPx = this.maxPx;
           const imgWidth = img.width;
           const imgHeight = img.height;
-          console.log({ imgWidth, imgHeight });
-          if (imgWidth > maxPx || imgHeight > maxPx) {
+
+          if ((imgWidth > maxPx || imgHeight > maxPx) && !this.floorPlan) {
             let newRatio = maxPx / Math.max(img.width, img.height);
             this.newRatio = newRatio;
             this.scale /= newRatio;
@@ -265,9 +266,8 @@ export class MapWrapperComponent
             return img;
           }
         }),
-        delay(5000),
+        delay(3000),
         mergeMap(async (img: any) => {
-          console.log(`debug`);
           const stage = new Konva.Stage({
             container: 'canvas',
             width: this.canvas.nativeElement.offsetWidth,
@@ -338,7 +338,7 @@ export class MapWrapperComponent
         switchMap(() =>
           iif(
             () => this.editor === EditorType.LOCALIZATIONEDITOR,
-            this.getLidarData$(),
+            this.getlidarPoints$(),
             of(null)
           )
         )
@@ -370,7 +370,11 @@ export class MapWrapperComponent
 
   init() {
     let obs: Observable<any>[] = [];
-    obs.push(this.createRobotCurrentPosition());
+    if (!this.floorPlan) {
+      obs.push(this.createRobotCurrentPointToRosMap());
+    } else {
+      obs.push(this.createRobotCurrentPointToFloorPlan());
+    }
     if (this.editor === EditorType.LOCALIZATIONEDITOR) {
       obs.push(this.createLidarRedpoints());
     } else if (this.editor === EditorType.POSITIONLISTENER) {
@@ -490,7 +494,7 @@ export class MapWrapperComponent
                           return of(null).pipe(
                             delay(2000),
                             mergeMap(() => {
-                              return this.getLidarData$().pipe(
+                              return this.getlidarPoints$().pipe(
                                 mergeMap(() => this.createLidarRedpoints())
                               );
                             })
@@ -523,14 +527,14 @@ export class MapWrapperComponent
     });
   }
 
-  lidarData$(): Observable<any> {
+  lidarPoints$(): Observable<any> {
     return this.mapService.getLidar();
   }
 
   createLidarRedpoints(): Observable<any> {
     return of(this.lidarGroup.removeChildren()).pipe(
       mergeMap(() =>
-        of(this.lidarData).pipe(
+        of(this.lidarPoints).pipe(
           tap(data => {
             if (data?.pointList) {
               const { pointList } = data;
@@ -581,67 +585,196 @@ export class MapWrapperComponent
 
       img.src = './assets/images/location-svg.svg';
 
-      return ob.pipe(
-        tap(data => {
-          if (this.mapLayer.findOne('.targetWaypoint')?.getAttrs()) {
-            this.mapLayer.findOne('.targetWaypoint').destroy();
-          }
-          // x: Math.abs(
-          //   ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) *
-          //     this.newRatio) /
-          //     resolution
-          // ),
+      if (this.floorPlan) {
+        return ob.pipe(
+          mergeMap(data => {
+            const { x, y, height } = this.metaData;
+            const {
+              transformedAngle,
+              resolution,
+              originX,
+              originY,
+              imageHeight,
+              imageWidth,
+              transformedScale,
+              transformedPositionX,
+              transformedPositionY
+            } = this.floorPlan;
 
-          // x:
-          // Math.abs((x - targetX) * this.newRatio ) / resolution,
+            const map = {
+              transformedAngle,
+              resolution,
+              originX,
+              originY,
+              imageHeight,
+              imageWidth,
+              transformedScale,
+              transformedPositionX,
+              transformedPositionY
+            };
 
-          // const scaleUpSize = 5;
+            const destinationPoint = {
+              angle: 0,
+              positionX: targetX,
+              positionY: targetY,
+            };
 
-          // const locationImg = new Konva.Image({
-          //   x:
-          //     (Math.abs(x - targetX) / resolution) * this.newRatio -
-          //     (data.img.width * this.newRatio) / this.scale / 2,
-          //   y:
-          //     (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
-          //     (data.img.height * this.newRatio) / this.scale,
-          //   width: (data.img.width * this.newRatio) / this.scale,
-          //   height: (data.img.height * this.newRatio) / this.scale,
-          //   image: data.img,
-          //   name: 'targetWaypoint'
-          // });
+            return this.mapService
+              .getFloorPlanPointFromMapPoint(map, destinationPoint)
+              .pipe(
+                mergeMap(floorPlanPoint => {
+                  return of({
+                    GuiX: floorPlanPoint.GuiX,
+                    GuiY: floorPlanPoint.GuiY,
+                    GuiAngle: floorPlanPoint.GuiAngle,
+                    floorPlan: data
+                  });
+                })
+              );
+          }),
+          tap(data => {
+            if (this.mapLayer.findOne('.targetWaypoint')?.getAttrs()) {
+              this.mapLayer.findOne('.targetWaypoint').destroy();
+            }
 
-          this.destinationPoint = new Konva.Image({
-            x:
-              (Math.abs(x - targetX) / resolution) * this.newRatio -
-              (data.img.width * this.newRatio) / this.scale / 2 / 2,
-            y:
-              (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
-              (data.img.height * this.newRatio) / this.scale / 2,
-            width: (data.img.width * this.newRatio) / this.scale / 2,
-            height: (data.img.height * this.newRatio) / this.scale / 2,
-            image: data.img,
-            opacity: 0.7,
-            name: 'targetWaypoint'
-          });
+            this.destinationPoint = new Konva.Image({
+              x:
+                data.GuiX * this.newRatio -
+                (data.floorPlan.img.width * this.newRatio) / 2,
+              y:
+                data.GuiY * this.newRatio -
+                data.floorPlan.img.height * this.newRatio,
+              width: data.floorPlan.img.width * this.newRatio,
+              height: data.floorPlan.img.height * this.newRatio,
+              image: data.floorPlan.img,
+              opacity: 0.7,
+              name: 'targetWaypoint'
+            });
 
-          // this.destinationPoint.setAttrs({
-          //   name: 'targetWaypoint',
-          //   x: (Math.abs(x - targetX) / resolution) * this.newRatio,
-          //   y: (height - Math.abs((y - targetY) / resolution)) * this.newRatio,
-          //   radius: 7 / this.newRatio,
-          //   strokeWidth: 5,
-          //   stroke: 'green'
-          // });
+            this.mapLayer.add(this.destinationPoint);
+          })
+        );
+      } else {
+        return ob.pipe(
+          tap(data => {
+            if (this.mapLayer.findOne('.targetWaypoint')?.getAttrs()) {
+              this.mapLayer.findOne('.targetWaypoint').destroy();
+            }
+            // x: Math.abs(
+            //   ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? 0)) *
+            //     this.newRatio) /
+            //     resolution
+            // ),
 
-          this.mapLayer.add(this.destinationPoint);
-        })
-      );
+            // x:
+            // Math.abs((x - targetX) * this.newRatio ) / resolution,
+
+            // const scaleUpSize = 5;
+
+            // const locationImg = new Konva.Image({
+            //   x:
+            //     (Math.abs(x - targetX) / resolution) * this.newRatio -
+            //     (data.img.width * this.newRatio) / this.scale / 2,
+            //   y:
+            //     (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
+            //     (data.img.height * this.newRatio) / this.scale,
+            //   width: (data.img.width * this.newRatio) / this.scale,
+            //   height: (data.img.height * this.newRatio) / this.scale,
+            //   image: data.img,
+            //   name: 'targetWaypoint'
+            // });
+
+            this.destinationPoint = new Konva.Image({
+              x:
+                (Math.abs(x - targetX) / resolution) * this.newRatio -
+                (data.img.width * this.newRatio) / 2,
+              y:
+                (height - Math.abs((y - targetY) / resolution)) *
+                  this.newRatio -
+                (data.img.height * this.newRatio),
+              width: (data.img.width * this.newRatio)  ,
+              height: (data.img.height * this.newRatio) ,
+              image: data.img,
+              opacity: 0.7,
+              name: 'targetWaypoint'
+            });
+
+            // this.destinationPoint.setAttrs({
+            //   name: 'targetWaypoint',
+            //   x: (Math.abs(x - targetX) / resolution) * this.newRatio,
+            //   y: (height - Math.abs((y - targetY) / resolution)) * this.newRatio,
+            //   radius: 7 / this.newRatio,
+            //   strokeWidth: 5,
+            //   stroke: 'green'
+            // });
+
+            this.mapLayer.add(this.destinationPoint);
+          })
+        );
+      }
     } else {
       return of(null);
     }
   }
 
-  createRobotCurrentPosition(): Observable<any> {
+  createRobotCurrentPointToFloorPlan(): Observable<any> {
+    return of(EMPTY).pipe(
+      mergeMap(() => {
+        const { x, y, height } = this.metaData;
+        const {
+          transformedAngle,
+          resolution,
+          originX,
+          originY,
+          imageHeight,
+          imageWidth,
+          transformedScale,
+          transformedPositionX,
+          transformedPositionY
+        } = this.floorPlan;
+
+        const map = {
+          transformedAngle,
+          resolution,
+          originX,
+          originY,
+          imageHeight,
+          imageWidth,
+          transformedScale,
+          transformedPositionX,
+          transformedPositionY
+        };
+
+        const destinationPoint = {
+          angle: 0,
+          positionX:
+            x - x + (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? x),
+          positionY:
+            y - y + (this.robotPose?.y ?? this.robotCurrentPosition?.y ?? y)
+        };
+
+        return this.mapService.getFloorPlanPointFromMapPoint(
+          map,
+          destinationPoint
+        );
+      }),
+      tap(floorPlanPoint => {
+        const { GuiX, GuiY } = floorPlanPoint;
+        console.log(floorPlanPoint);
+        this.robotCurrentPositionPoint.setAttrs({
+          name: 'currentPosition',
+          fill: 'blue',
+          x: GuiX,
+          y: GuiY,
+          radius: 15 * this.newRatio
+        });
+        this.mapLayer.add(this.robotCurrentPositionPoint);
+        this.flyToRobotPoint();
+      })
+    );
+  }
+
+  createRobotCurrentPointToRosMap(): Observable<any> {
     // currentRobotPose mqtt
     // robotCurrentPosition http request
     return of(null).pipe(
@@ -679,28 +812,32 @@ export class MapWrapperComponent
         this.mapLayer.add(this.robotCurrentPositionPoint);
       }),
       tap(() => {
-        const currentPosition = this.robotCurrentPositionPoint.getAttrs();
-        const pointTo = {
-          x: this.mapLayer.x() - currentPosition.x / this.stage.scaleX(),
-          y: this.mapLayer.y() - currentPosition.y / this.stage.scaleY()
-        };
-
-        if (
-          this.mapLayer.find('.currentPosition').length > 0 &&
-          pointTo.x &&
-          pointTo.y &&
-          !this.isReset
-        ) {
-          const absolutePosition = this.robotCurrentPositionPoint.getAbsolutePosition();
-
-          const newPos = {
-            x: this.stage.x() - absolutePosition.x + this.stage.width() / 2,
-            y: this.stage.y() - absolutePosition.y + this.stage.height() / 2
-          };
-          this.stage.position(newPos);
-        }
+        this.flyToRobotPoint();
       })
     );
+  }
+
+  flyToRobotPoint() {
+    const currentPosition = this.robotCurrentPositionPoint.getAttrs();
+    const pointTo = {
+      x: this.mapLayer.x() - currentPosition.x / this.stage.scaleX(),
+      y: this.mapLayer.y() - currentPosition.y / this.stage.scaleY()
+    };
+
+    if (
+      this.mapLayer.find('.currentPosition').length > 0 &&
+      pointTo.x &&
+      pointTo.y &&
+      !this.isReset
+    ) {
+      const absolutePosition = this.robotCurrentPositionPoint.getAbsolutePosition();
+
+      const newPos = {
+        x: this.stage.x() - absolutePosition.x + this.stage.width() / 2,
+        y: this.stage.y() - absolutePosition.y + this.stage.height() / 2
+      };
+      this.stage.position(newPos);
+    }
   }
 
   createAngleLabel(degrees: number): Observable<any> {
@@ -963,7 +1100,7 @@ export class MapWrapperComponent
     this.isReset = false;
     this.stage.draggable(true);
     this.isUpdatedWaypoint.emit(false);
-    forkJoin([this.getRobotCurrentPosition$(), this.getLidarData$()])
+    forkJoin([this.getRobotCurrentPosition$(), this.getlidarPoints$()])
       .pipe(
         mergeMap(() => this.onReset()),
         finalize(() => this.init())
@@ -991,8 +1128,8 @@ export class MapWrapperComponent
     );
   }
 
-  getLidarData$(): Observable<any> {
-    return this.lidarData$().pipe(tap(res => (this.lidarData = res)));
+  getlidarPoints$(): Observable<any> {
+    return this.lidarPoints$().pipe(tap(res => (this.lidarPoints = res)));
   }
 
   getResizedCanvas(image: any, newWidth: number, newHeight: number) {
