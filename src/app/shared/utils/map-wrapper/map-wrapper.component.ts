@@ -135,7 +135,6 @@ export class MapWrapperComponent
   ngOnInit() {}
 
   ngAfterViewInit() {
-    console.log(this.floorPlan);
     // const floorPlanImg$ = new Observable<HTMLImageElement>(observer => {
     //   const img = new Image();
     //   img.onload = () => {
@@ -588,7 +587,7 @@ export class MapWrapperComponent
       if (this.floorPlan) {
         return ob.pipe(
           mergeMap(data => {
-            const { x, y, height } = this.metaData;
+            // const { x, y, height } = this.metaData;
             const {
               transformedAngle,
               resolution,
@@ -616,7 +615,7 @@ export class MapWrapperComponent
             const destinationPoint = {
               angle: 0,
               positionX: targetX,
-              positionY: targetY,
+              positionY: targetY
             };
 
             return this.mapService
@@ -691,9 +690,9 @@ export class MapWrapperComponent
               y:
                 (height - Math.abs((y - targetY) / resolution)) *
                   this.newRatio -
-                (data.img.height * this.newRatio),
-              width: (data.img.width * this.newRatio)  ,
-              height: (data.img.height * this.newRatio) ,
+                data.img.height * this.newRatio,
+              width: data.img.width * this.newRatio,
+              height: data.img.height * this.newRatio,
               image: data.img,
               opacity: 0.7,
               name: 'targetWaypoint'
@@ -760,7 +759,7 @@ export class MapWrapperComponent
       }),
       tap(floorPlanPoint => {
         const { GuiX, GuiY } = floorPlanPoint;
-        console.log(floorPlanPoint);
+        // console.log(floorPlanPoint);
         this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
           fill: 'blue',

@@ -27,5 +27,5 @@
   "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5100",
   "largeImageServerSideRendering": true,
   "enableMap": true,
-  "enableFloorPlanMode": true
+  "enableFloorPlanMode": false
 }

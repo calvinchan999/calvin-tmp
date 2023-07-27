@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { iif, of, Subject, Subscription } from 'rxjs';
@@ -32,6 +32,10 @@ import { RobotGroupService } from 'src/app/views/services/robot-group.service';
   styleUrls: ['./default.component.scss']
 })
 export class DefaultComponent implements OnInit, OnDestroy {
+  // todo
+  // @HostListener('touchstart') onTouchStartEvent() {
+    
+  // }
   @ViewChild('disconnectResponseDialog')
   disconnectResponseDialog: ModalComponent;
   @ViewChild('responseDialog') responseDialog: ModalComponent;
