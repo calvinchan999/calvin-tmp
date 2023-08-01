@@ -31,6 +31,7 @@ import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { RobotGroupService } from 'src/app/views/services/robot-group.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'app-default',
@@ -73,7 +74,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private taskService: TaskService,
     private waypointService: WaypointService,
-    private robotGroupService: RobotGroupService
+    private robotGroupService: RobotGroupService,
+    private appConfigService: AppConfigService
   ) {
     this.sharedService.timer$.subscribe(i => {
       if (i > 0) {
@@ -189,31 +191,27 @@ export class DefaultComponent implements OnInit, OnDestroy {
             }
           } else if (cancelled) {
             message = cancelledTask;
-          } 
+          }
 
           if (message.length > 0) {
             // this.sharedService.loading$.next(true);
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
-            this.sharedService.isOpenModal$.next({
-              modal: 'final-destination-dialog',
-              modalHeader: 'finalDestination',
-              isDisableClose: false,
-              metaData: null,
-              closeAfterRefresh: false
-            });
-            // setTimeout(() => {
-            //   this.sharedService.loading$.next(false);
-            //   this.router.navigate(['/']).then(() => {
-            //     this.sharedService.isOpenModal$.next({
-            //       modal: 'final-destination-dialog',
-            //       modalHeader: 'finalDestination',
-            //       isDisableClose: false,
-            //       metaData: null,
-            //       closeAfterRefresh: false
-            //     });
-            //   });
-            // }, 3000);
+
+            if (this.appConfigService.getConfig().enableTaskReleaseOrHold) {
+              this.sharedService.isOpenModal$.next({
+                modal: 'final-destination-dialog',
+                modalHeader: 'finalDestination',
+                isDisableClose: false,
+                metaData: null,
+                closeAfterRefresh: false
+              });
+            } else {
+              setTimeout(() => {
+                // this.sharedService.loading$.next(false);
+                this.router.navigate(['/']);
+              }, 3000);
+            }
           }
         }
       });

@@ -128,14 +128,14 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/mode']);
   }
 
-  onDownloadLogs() {
+  // onDownloadLogs() {
     // this.indexedDbService
     //   .getLogs()
     //   .pipe(
     //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
     //   )
     //   .subscribe();
-  }
+  // }
 
   onClickPairing() {
     this.sharedService.isOpenModal$.next({

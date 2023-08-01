@@ -2,6 +2,47 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
+export interface Server {
+  endpoint: string;
+  environment: string;
+}
+
+export interface Mqtt {
+  ip_address: string;
+  port_no: number;
+  protocol: string;
+}
+
+export interface Battery {
+  upperLimit: string;
+  duration: string;
+}
+
+export interface Feature {
+  waypoint: boolean;
+  docking: boolean;
+  sos: boolean;
+  map: boolean;
+  localization: boolean;
+  mode: boolean;
+  logs: boolean;
+  pairing: boolean;
+  grouping: boolean;
+}
+
+export interface AppConfig {
+  server: Server;
+  mqtt: Mqtt;
+  battery: Battery;
+  feature: Feature;
+  maxPx: number;
+  imageScalingServer: string;
+  largeImageServerSideRendering: boolean;
+  enableMap: boolean;
+  enableFloorPlanMode: boolean;
+  enableTaskReleaseOrHold: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
