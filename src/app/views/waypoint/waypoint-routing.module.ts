@@ -11,10 +11,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'waypoint-list',
+        redirectTo: 'list',
       },
       {
-        path: 'waypoint-list',
+        path: 'list',
         data: { title: 'waypointList' },
         component: WaypointListComponent,
       },

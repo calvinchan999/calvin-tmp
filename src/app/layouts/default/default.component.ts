@@ -1,7 +1,13 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { iif, of, Subject, Subscription } from 'rxjs';
+import { EMPTY, iif, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -34,7 +40,7 @@ import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 export class DefaultComponent implements OnInit, OnDestroy {
   // todo
   // @HostListener('touchstart') onTouchStartEvent() {
-    
+
   // }
   @ViewChild('disconnectResponseDialog')
   disconnectResponseDialog: ModalComponent;
@@ -145,6 +151,31 @@ export class DefaultComponent implements OnInit, OnDestroy {
             .get('cancelledTask')
             .pipe(map(cancelledTask => ({ ...data, cancelledTask })))
         )
+        // mergeMap(data => {
+        //   if (data) {
+        //     const { completed, cancelled, completedTask, cancelledTask } = data;
+        //     let message = '';
+        //     if (completed) {
+        //       if (!cancelled) {
+        //         message = completedTask;
+        //       } else {
+        //         message = cancelledTask;
+        //       }
+        //     } else if (cancelled) {
+        //       message = cancelledTask;
+        //     }
+        //     if (message.length > 0) {
+        //       this.sharedService.loading$.next(true);
+        //       this.dialog.onCloseWithoutRefresh();
+        //       this.sharedService.response$.next({ type: 'normal', message });
+        //       setTimeout(() => {
+        //         this.sharedService.loading$.next(false);
+        //         this.router.navigate(['/']);
+        //       }, 3000);
+        //     }
+        //   }
+        //   return of(EMPTY);
+        // })
       )
       .subscribe(data => {
         if (data) {
@@ -158,15 +189,31 @@ export class DefaultComponent implements OnInit, OnDestroy {
             }
           } else if (cancelled) {
             message = cancelledTask;
-          }
+          } 
+
           if (message.length > 0) {
-            this.sharedService.loading$.next(true);
+            // this.sharedService.loading$.next(true);
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
-            setTimeout(() => {
-              this.sharedService.loading$.next(false);
-              this.router.navigate(['/']);
-            }, 3000);
+            this.sharedService.isOpenModal$.next({
+              modal: 'final-destination-dialog',
+              modalHeader: 'finalDestination',
+              isDisableClose: false,
+              metaData: null,
+              closeAfterRefresh: false
+            });
+            // setTimeout(() => {
+            //   this.sharedService.loading$.next(false);
+            //   this.router.navigate(['/']).then(() => {
+            //     this.sharedService.isOpenModal$.next({
+            //       modal: 'final-destination-dialog',
+            //       modalHeader: 'finalDestination',
+            //       isDisableClose: false,
+            //       metaData: null,
+            //       closeAfterRefresh: false
+            //     });
+            //   });
+            // }, 3000);
           }
         }
       });
