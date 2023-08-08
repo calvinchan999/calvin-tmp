@@ -53,7 +53,9 @@
   "localizationDialog": {
     "successMessage": "已更新初始點",
     "failedMessage": "更新初始點失敗",
-    "confirmation": "您確認當前航點是否正確?"
+    "confirmation": "您確認當前航點是否正確?",
+    "poseDeviationSuccessMessage": "定位成功",
+    "poseDeviationFailedMessage":"定位不佳，建議嘗試手動移動輪椅到其他地方修正或重新定位"
   },
   "resetWaypoint": "重設初始點",
   "clearWaypoint": "清除初始點",

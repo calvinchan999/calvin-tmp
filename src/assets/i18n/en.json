@@ -53,7 +53,9 @@
   "localizationDialog": {
     "successMessage": "The initial point has been updated",
     "failedMessage": "Update failed",
-    "confirmation": "Could you please confirm if the current waypoint is suitable for localization ?"
+    "confirmation": "Could you please confirm if the current waypoint is suitable for localization ?",
+    "poseDeviationSuccessMessage": "Localization succeed",
+    "poseDeviationFailedMessage":"Poor localization, please try to move mobile chair to other location or relocalization"
   },
   "resetWaypoint": "Reset waypoint",
   "clearWaypoint": "Clear Waypoint",

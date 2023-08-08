@@ -91,63 +91,63 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
         mergeMap((currentMap: any) => {
           // if (currentMap) {
 
-            // this.mapService
-            //   .getMapImage(currentMap)
-            //   .pipe(
-            //     mergeMap(async data => {
-            //       // const img: string = URL.createObjectURL(data);
-            //       // return (this.floorPlanImg = ''), (this.rosMapImage = img);
+          // this.mapService
+          //   .getMapImage(currentMap)
+          //   .pipe(
+          //     mergeMap(async data => {
+          //       // const img: string = URL.createObjectURL(data);
+          //       // return (this.floorPlanImg = ''), (this.rosMapImage = img);
 
-            //     }),
-            const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
-            const queries = { param };
+          //     }),
+          const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+          const queries = { param };
 
-            this.mapName = currentMap;
+          this.mapName = currentMap;
 
-            const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
-              tap(mapInfo => {
-                const { base64Image } = mapInfo;
-                this.rosMapImage = base64Image;
-                // this.floorPlanImg = '';
-              }),
-              mergeMap(() =>
-                this.mapService
-                  .getMapMetadata(currentMap)
-                  .pipe(tap(metaData => (this.metaData = metaData)))
-              )
-            );
+          const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
+            tap(mapInfo => {
+              const { base64Image } = mapInfo;
+              this.rosMapImage = base64Image;
+              // this.floorPlanImg = '';
+            }),
+            mergeMap(() =>
+              this.mapService
+                .getMapMetadata(currentMap)
+                .pipe(tap(metaData => (this.metaData = metaData)))
+            )
+          );
 
-            const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
-              tap(metaData => {
-                this.metaData = metaData;
-                const {image, newRatio} = JSON.parse(localStorage.getItem(`map_${currentMap}`))
-                this.rosMapImage = image;
-                this.newRatio = newRatio;
-              })
-            );
-            const isExist = localStorage.getItem(`map_${currentMap}`)
-              ? true
-              : false;
+          const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
+            tap(metaData => {
+              this.metaData = metaData;
+              const { image, newRatio } = JSON.parse(
+                localStorage.getItem(`map_${currentMap}`)
+              );
+              this.rosMapImage = image;
+              this.newRatio = newRatio;
+            })
+          );
+          const isExist = localStorage.getItem(`map_${currentMap}`)
+            ? true
+            : false;
 
-            return of(EMPTY)
-              .pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)))
-              ;
+          return of(EMPTY).pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)));
 
-            // this.mapService
-            //   .getMap(currentMap, queries)
-            //   .pipe(
-            //     tap(mapInfo => {
-            //       const { base64Image } = mapInfo;
-            //       this.rosMapImage = base64Image;
-            //       // this.floorPlanImg = '';
-            //     }),
-            //     mergeMap(() =>
-            //       this.mapService
-            //         .getMapMetadata(currentMap)
-            //         .pipe(tap(metaData => (this.metaData = metaData)))
-            //     )
-            //   )
-            //   .subscribe();
+          // this.mapService
+          //   .getMap(currentMap, queries)
+          //   .pipe(
+          //     tap(mapInfo => {
+          //       const { base64Image } = mapInfo;
+          //       this.rosMapImage = base64Image;
+          //       // this.floorPlanImg = '';
+          //     }),
+          //     mergeMap(() =>
+          //       this.mapService
+          //         .getMapMetadata(currentMap)
+          //         .pipe(tap(metaData => (this.metaData = metaData)))
+          //     )
+          //   )
+          //   .subscribe();
           // }
         })
       )
@@ -244,11 +244,13 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     //     });
     //   }
     // );
+
     this.waypointService
       .initialPose({ x, y, angle })
       .pipe(
+        delay(0),
         tap(() => this.sharedService.loading$.next(true)),
-        delay(15000),
+        delay(15000), //Use a 15s delay after calling the Pose Deviation API, as the robot does not update its status immediately
         mergeMap(() => this.waypointService.poseDeviation()),
         tap(deviationRes => {
           const {
@@ -256,14 +258,28 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
             translationDeviation,
             angleDeviation
           } = deviationRes;
-          const msg = this.translateService.instant(
-            'toast.inconnectLocalization',
-            {
-              poseValid,
-              translationDeviation,
-              angleDeviation
-            }
-          );
+
+          let msg;
+
+          // const msg = this.translateService.instant(
+          //   'toast.inconnectLocalization',
+          //   {
+          //     poseValid,
+          //     translationDeviation,
+          //     angleDeviation
+          //   }
+          // );
+
+          if (poseValid) {
+            msg = this.translateService.instant(
+              'localizationDialog.poseDeviationSuccessMessage'
+            );
+          } else {
+            msg = this.translateService.instant(
+              'localizationDialog.poseDeviationFailedMessage'
+            );
+          }
+
           this.toastrService.warning(msg);
         })
       )

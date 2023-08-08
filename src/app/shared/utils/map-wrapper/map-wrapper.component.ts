@@ -115,9 +115,13 @@ export class MapWrapperComponent
   // newRatio = 1;
 
   scaleFactor = 1;
+  iconRatio;
 
   largeImageServerSideRendering: boolean =
     this.appConfigService.getConfig().largeImageServerSideRendering ?? false;
+
+  destinationIcon;
+
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService,
@@ -682,17 +686,25 @@ export class MapWrapperComponent
             //   image: data.img,
             //   name: 'targetWaypoint'
             // });
+            this.iconRatio = this.newRatio < 1 ? 1 : 0.3;
+
+            this.destinationIcon = data;
 
             this.destinationPoint = new Konva.Image({
               x:
                 (Math.abs(x - targetX) / resolution) * this.newRatio -
-                (data.img.width * this.newRatio) / 2,
+                ((data.img.width / this.scale) *
+                  this.iconRatio *
+                  this.newRatio) /
+                  2,
               y:
                 (height - Math.abs((y - targetY) / resolution)) *
                   this.newRatio -
-                data.img.height * this.newRatio,
-              width: data.img.width * this.newRatio,
-              height: data.img.height * this.newRatio,
+                (data.img.height / this.scale) * this.iconRatio * this.newRatio,
+              width:
+                (data.img.width / this.scale) * this.iconRatio * this.newRatio,
+              height:
+                (data.img.height / this.scale) * this.iconRatio * this.newRatio,
               image: data.img,
               opacity: 0.7,
               name: 'targetWaypoint'
@@ -846,13 +858,13 @@ export class MapWrapperComponent
       x,
       y,
       text: `${degrees}°`,
-      fontSize: 50,
+      fontSize: 100 / this.scale,
       fontFamily:
         'Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace',
       fill: 'black',
       name: 'waypointAngleLabel',
       stroke: 'white',
-      strokeWidth: 2,
+      strokeWidth: 2 / this.scale,
       zIndex: 1
     });
 
@@ -930,6 +942,13 @@ export class MapWrapperComponent
             this.stage.position(newPos);
             this.scale = oldScale;
 
+            // const oldPosition = this.destinationPoint.position(); // Save the old position
+            // this.destinationPoint.scale({ x: oldScale, y: oldScale }); // Update the scale
+
+            if (this.destinationPoint) {
+              this.updateDestinationIconScale(oldScale);
+            }
+
             // const scaleFactor = this.scaleFactor * this.scaleMultiplier;
 
             // if (scaleFactor >= 1) {
@@ -971,6 +990,10 @@ export class MapWrapperComponent
 
           this.stage.position(newPos);
           this.scale = oldScale;
+
+          if (this.destinationPoint) {
+            this.updateDestinationIconScale(oldScale);
+          }
 
           // const scaleFactor = this.scaleFactor / this.scaleMultiplier;
 
@@ -1032,6 +1055,35 @@ export class MapWrapperComponent
   //   };
   //   return of(mousePointTo);
   // }
+
+  updateDestinationIconScale(oldScale) {
+    const { targetX, targetY } = this.waypointTargets;
+    const { x, y, height, resolution }: any = this.metaData;
+
+    const newPosition = {
+      x:
+        (Math.abs(x - targetX) / resolution) * this.newRatio -
+        (((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
+          this.newRatio) /
+          2,
+      y:
+        (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
+        ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
+          this.newRatio
+    };
+
+    this.destinationPoint.position(newPosition); // Set the new position
+
+    const newSize = {
+      width:
+        ((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
+        this.newRatio,
+      height:
+        ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
+        this.newRatio
+    };
+    this.destinationPoint.setSize(newSize);
+  }
 
   getXYAngle(): Observable<any> {
     const waypoint = this.mapLayer.find('.waypoint')[0].getAttrs();

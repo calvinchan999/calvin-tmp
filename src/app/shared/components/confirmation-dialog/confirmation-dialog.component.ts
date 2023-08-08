@@ -74,10 +74,10 @@ export class ConfirmationDialogComponent implements OnInit {
         componentRef.instance.mapImage = rosMapImage;
         componentRef.instance.metaData = metaData;
         componentRef.instance.disableEditorButton = true;
-        componentRef.location.nativeElement.style.width = '70vw';
+        componentRef.location.nativeElement.style.width = '100%';
         componentRef.location.nativeElement.style.height = '50vh';
       }
-    }, 0);
+    }, 1000);
   }
 
   onConfirm() {
