@@ -1,11 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  EMPTY,
-  Observable,
-  Subject,
-  timer
-} from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, Subject, timer } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -80,7 +74,11 @@ export class SharedService {
     LocalizationType.LIST
   );
 
-  public isRobotPairingPayloadBehaviorSubject = new BehaviorSubject<Modal>(null);
+  public isRobotPairingPayloadBehaviorSubject = new BehaviorSubject<Modal>(
+    null
+  );
+
+  public isRobotHeldBehaviorSubject = new BehaviorSubject<boolean>(false);
 
   constructor() {
     this.currentMap$

@@ -17,7 +17,7 @@ export class RobotGroupService {
     this.baseUrl = this.appConfigService.getConfig().server.endpoint;
   }
 
-  forkApi({ method, requestUri, body }): Observable<any> {
+  forwardApi({ method, requestUri, body }): Observable<any> {
     const url = `${this.baseUrl}${environment.api.forward}`;
     return this.http.post<any>(url, { method, requestUri, body });
   }
@@ -25,7 +25,7 @@ export class RobotGroupService {
   getRobots(queries): Observable<any> {
     const url = generateQueryUrl(`/robot/v1/robotInfo`, queries);
 
-    return this.forkApi({
+    return this.forwardApi({
       method: 'GET',
       requestUri: url,
       body: ''
@@ -58,7 +58,7 @@ export class RobotGroupService {
   }
 
   getRobotGroupById(groupId: number): Observable<any> {
-    return this.forkApi({
+    return this.forwardApi({
       method: 'GET',
       requestUri: `/robotGroup/v1/${groupId}`,
       body: ''
@@ -71,7 +71,7 @@ export class RobotGroupService {
       groupName,
       pairingRobotList
     });
-    return this.forkApi({
+    return this.forwardApi({
       method: 'POST',
       requestUri: '/robotGroup/v1',
       body: body
@@ -84,7 +84,7 @@ export class RobotGroupService {
         groupId: groupId
       }
     ]);
-    return this.forkApi({
+    return this.forwardApi({
       method: 'DELETE',
       requestUri: '/robotGroup/v1',
       body: body
@@ -93,7 +93,7 @@ export class RobotGroupService {
 
   getFmsFloorPlanCode(queries) {
     const url = generateQueryUrl('/map/v1', queries);
-    return this.forkApi({
+    return this.forwardApi({
       method: 'GET',
       requestUri: url,
       body: ''

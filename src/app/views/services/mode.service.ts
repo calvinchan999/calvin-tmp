@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
+import { RobotGroupService } from './robot-group.service';
 
 // export  type Mode = 'FOLLOW_ME' | 'NAVIGATION';
 export enum Mode {
@@ -29,7 +31,8 @@ export type PairingState = 'UNPAIRED' | 'PAIRED' | 'PAIRING' | 'REPAIRING';
 export class ModeService {
   constructor(
     private http: HttpClient,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private robotGroupService: RobotGroupService
   ) {}
 
   changeMode(mode: Mode): Observable<any> {
@@ -82,5 +85,15 @@ export class ModeService {
       environment.api.pairing
     }`;
     return this.http.get<PairingResponse>(url);
+  }
+
+  getRobotHeld(queries): Observable<any> {
+    const url = generateQueryUrl(`/robot/v1/hold`, queries);
+    // return of(false);
+    return this.robotGroupService.forwardApi({
+      method: 'GET',
+      requestUri: url,
+      body: ''
+    });
   }
 }

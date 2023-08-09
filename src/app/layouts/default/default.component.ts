@@ -199,13 +199,19 @@ export class DefaultComponent implements OnInit, OnDestroy {
             this.sharedService.response$.next({ type: 'normal', message });
 
             if (this.appConfigService.getConfig().enableTaskReleaseOrHold) {
-              this.sharedService.isOpenModal$.next({
-                modal: 'final-destination-dialog',
-                modalHeader: 'finalDestination',
-                isDisableClose: false,
-                metaData: null,
-                closeAfterRefresh: false
-              });
+              const robotHeld = this.sharedService.isRobotHeldBehaviorSubject
+                .value;
+              if (robotHeld) {
+                this.sharedService.isOpenModal$.next({
+                  modal: 'final-destination-dialog',
+                  modalHeader: 'finalDestination',
+                  isDisableClose: false,
+                  metaData: null,
+                  closeAfterRefresh: false
+                });
+              }else {
+                console.log(`robotHeld: ${robotHeld}`);
+              }
             } else {
               setTimeout(() => {
                 // this.sharedService.loading$.next(false);
@@ -244,6 +250,29 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.mqttService.departureSubject
       .pipe(
         map(departure => JSON.parse(departure)),
+        mergeMap(departure => {
+          const { robotId } = departure;
+          const param = { param: { robotCode: robotId } };
+          return this.modeService.getRobotHeld(param).pipe(
+            tap(res => {
+              console.log(`getRobotHeld:`);
+              console.log(res);
+              if (res) {
+                this.sharedService.isRobotHeldBehaviorSubject.next(true);
+              } else {
+                this.sharedService.isRobotHeldBehaviorSubject.next(false);
+              }
+            }),
+            map(() => {
+              return departure;
+            })
+          );
+          // return of(null).pipe(
+          //   map(() => {
+          //     return departure;
+          //   })
+          // );
+        }),
         tap(departure => this.getTaskWaypointPointer(departure))
       )
       .subscribe();
