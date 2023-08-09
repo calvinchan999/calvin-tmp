@@ -90,6 +90,7 @@ export class ModeService {
   getRobotHeld(queries): Observable<any> {
     const url = generateQueryUrl(`/robot/v1/hold`, queries);
     // return of(false);
+    
     return this.robotGroupService.forwardApi({
       method: 'GET',
       requestUri: url,

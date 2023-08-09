@@ -21,12 +21,14 @@
     "mode": true,
     "logs": false,
     "pairing": true,
-    "grouping": true
+    "grouping": true,
+    "reserve": true,
+    "release": true
   },
   "maxPx": 3080,
   "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5200",
   "largeImageServerSideRendering": true,
   "enableMap": true,
   "enableFloorPlanMode": false,
-  "enableTaskReleaseOrHold": true
+  "enableTaskReleaseOrHold": false
 }

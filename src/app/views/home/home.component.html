@@ -105,6 +105,26 @@
           (eventTrigger)="onClickFollowRobotGroup()"
         ></app-card>
       </div>
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="user?.length > 0 && features.reserve && robotReserveStatus"
+      >
+        <app-card
+          title="reserve"
+          icon="exclamation"
+          (eventTrigger)="onClickTaskReserve()"
+        ></app-card>
+      </div>
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="user?.length > 0 && features.release && robotReleaseStatus"
+      >
+        <app-card
+          title="release"
+          icon="exclamation"
+          (eventTrigger)="onClickTaskRelease()"
+        ></app-card>
+      </div>
     </div>
   </div>
 </div>

@@ -28,6 +28,8 @@ export interface Feature {
   logs: boolean;
   pairing: boolean;
   grouping: boolean;
+  reserve: boolean;
+  relase: boolean;
 }
 
 export interface AppConfig {

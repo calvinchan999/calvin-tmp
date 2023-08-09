@@ -14,6 +14,8 @@
   "destination": "目的地",
   "downloadLogs": "错误日志",
   "followRobotGroup": "车跟车",
+  "reserve": "开启占用",
+  "release": "解除占用",
   "robotStatus": {
     "followMe": "跟随模式",
     "navigation": "导航模式",

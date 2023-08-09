@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, mergeMap, tap, take } from 'rxjs/operators';
+import { EMPTY, Observable, of } from 'rxjs';
+import { map, mergeMap, tap, take, switchMap } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { ModeService } from '../services/mode.service';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   map: string;
@@ -21,12 +23,18 @@ export class HomeComponent implements OnInit {
   pairingState;
   followMePairingState$: Observable<boolean>;
   followMeUnPairingState$: Observable<boolean>;
+
+  robotReleaseStatus: boolean = false;
+  robotReserveStatus: boolean = false;
+
   constructor(
     public router: Router,
     private sharedService: SharedService,
     private authService: AuthService,
     // private indexedDbService: IndexedDbService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private modeService: ModeService,
+    private taskService: TaskService
   ) {
     this.features = this.appConfigService.getConfig().feature;
     this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
@@ -34,35 +42,37 @@ export class HomeComponent implements OnInit {
       console.log(`mode: ${mode}`);
     });
 
-    this.sharedService.currentMap$.pipe(take(1)).subscribe((currentMap: string) => {
-      this.map = currentMap;
-    });
+    this.sharedService.currentMap$
+      .pipe(take(1))
+      .subscribe((currentMap: string) => {
+        this.map = currentMap;
+      });
 
     this.sharedService.currentPairingStatus$
-      .pipe(map((data) => (data instanceof Object ? data : JSON.parse(data))))
-      .subscribe((data) => {
+      .pipe(map(data => (data instanceof Object ? data : JSON.parse(data))))
+      .subscribe(data => {
         if (data?.pairingState) {
           const { pairingState } = data;
           if (pairingState === 'UNPAIRED') {
-            this.followMePairingState$ = new Observable((observer) =>
+            this.followMePairingState$ = new Observable(observer =>
               observer.next(true)
             );
-            this.followMeUnPairingState$ = new Observable((observer) =>
+            this.followMeUnPairingState$ = new Observable(observer =>
               observer.next(false)
             );
           } else if (pairingState !== 'UNPAIRED') {
-            this.followMePairingState$ = new Observable((observer) =>
+            this.followMePairingState$ = new Observable(observer =>
               observer.next(false)
             );
-            this.followMeUnPairingState$ = new Observable((observer) =>
+            this.followMeUnPairingState$ = new Observable(observer =>
               observer.next(true)
             );
           }
         } else {
-          this.followMePairingState$ = new Observable((observer) =>
+          this.followMePairingState$ = new Observable(observer =>
             observer.next(false)
           );
-          this.followMeUnPairingState$ = new Observable((observer) =>
+          this.followMeUnPairingState$ = new Observable(observer =>
             observer.next(false)
           );
         }
@@ -77,10 +87,35 @@ export class HomeComponent implements OnInit {
     this.isAuthenticated();
   }
 
+  ngAfterViewInit() {
+    this.sharedService.robotIdBahaviorSubject
+      .pipe(
+        switchMap(robotId => {
+          if (robotId) {
+            const param = { param: { robotCode: robotId } };
+            return this.modeService.getRobotHeld(param).pipe(
+              tap(res => {
+                if (res) {
+                  this.robotReleaseStatus = true;
+                  this.robotReserveStatus = false;
+                } else {
+                  this.robotReleaseStatus = false;
+                  this.robotReserveStatus = true;
+                }
+              })
+            );
+          } else {
+            return of(EMPTY);
+          }
+        })
+      )
+      .subscribe();
+  }
+
   isAuthenticated() {
     this.authService.isAuthenticatedSubject
       .pipe(
-        map((payload) => {
+        map(payload => {
           return JSON.parse(payload);
         }),
         tap((payload: Auth) => {
@@ -108,7 +143,7 @@ export class HomeComponent implements OnInit {
     this.sharedService.isOpenModal$.next({
       modal: 'sos',
       modalHeader: 'sos',
-      isDisableClose: false,
+      isDisableClose: false
     });
   }
 
@@ -129,12 +164,12 @@ export class HomeComponent implements OnInit {
   }
 
   // onDownloadLogs() {
-    // this.indexedDbService
-    //   .getLogs()
-    //   .pipe(
-    //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
-    //   )
-    //   .subscribe();
+  // this.indexedDbService
+  //   .getLogs()
+  //   .pipe(
+  //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
+  //   )
+  //   .subscribe();
   // }
 
   onClickPairing() {
@@ -142,7 +177,7 @@ export class HomeComponent implements OnInit {
       modal: 'pair',
       modalHeader: 'pair',
       isDisableClose: true,
-      closeAfterRefresh: false,
+      closeAfterRefresh: false
     });
   }
 
@@ -151,11 +186,25 @@ export class HomeComponent implements OnInit {
       modal: 'unpair',
       modalHeader: 'unpair',
       isDisableClose: true,
-      closeAfterRefresh: false,
+      closeAfterRefresh: false
     });
   }
 
   onClickFollowRobotGroup() {
     this.router.navigate(['/robot-group']);
+  }
+
+  onClickTaskReserve() {
+    this.taskService
+      .holdTask()
+      .pipe(tap(() => this.router.navigate(['/'])))
+      .subscribe();
+  }
+
+  onClickTaskRelease() {
+    this.taskService
+      .releaseTask()
+      .pipe(tap(() => this.router.navigate(['/'])))
+      .subscribe();
   }
 }

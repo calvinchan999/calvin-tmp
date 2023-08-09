@@ -80,6 +80,10 @@ export class SharedService {
 
   public isRobotHeldBehaviorSubject = new BehaviorSubject<boolean>(false);
 
+  public robotIdBahaviorSubject = new BehaviorSubject<String>(null);
+
+  public arcsModeBahaviorSubject = new BehaviorSubject<boolean>(false);
+
   constructor() {
     this.currentMap$
       .pipe(

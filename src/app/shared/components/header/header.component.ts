@@ -192,9 +192,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .pipe(tap(() => this.sharedService.reset$.next(0)))
       .subscribe(battery => {
         if (battery) {
-          const { powerSupplyStatus, percentage } = JSON.parse(battery);
+          const { robotId, powerSupplyStatus, percentage } = JSON.parse(
+            battery
+          );
           this.powerSupplyStatus = powerSupplyStatus;
           this.percentage = Math.round(percentage * 100);
+          if (!this.sharedService.robotIdBahaviorSubject.value) {
+            this.sharedService.robotIdBahaviorSubject.next(robotId);
+          }
         }
       });
   }

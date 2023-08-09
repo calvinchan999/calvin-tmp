@@ -14,6 +14,8 @@
   "destination": "Destination",
   "downloadLogs": "Error Logs",
   "followRobotGroup": "Follow Robot Group",
+  "reserve": "Reserve Robot",
+  "release": "Release Robot",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",
