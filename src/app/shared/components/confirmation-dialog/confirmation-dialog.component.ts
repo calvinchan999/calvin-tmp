@@ -35,9 +35,7 @@ export class ConfirmationDialogComponent implements OnInit {
     private componentFactoryResolver: ComponentFactoryResolver
   ) {}
 
-  ngOnInit(): void {}
-
-  ngAfterViewInit() {
+  ngOnInit(): void {
     setTimeout(() => {
       const {
         message,
@@ -49,8 +47,22 @@ export class ConfirmationDialogComponent implements OnInit {
         editor,
         floorPlanImg,
         rosMapImage,
-        metaData
+        metaData,
+        newRatio,
+        mapName
       } = this.metaData;
+      console.log({
+        message,
+        submitButtonName,
+        width,
+        height,
+        fontSize,
+        component,
+        editor,
+        floorPlanImg,
+        rosMapImage,
+        metaData
+      });
       this.parentComponent = component;
       this.buttonWidth = width;
       this.buttonHeight = height;
@@ -73,12 +85,16 @@ export class ConfirmationDialogComponent implements OnInit {
         componentRef.instance.floorPlan = floorPlanImg;
         componentRef.instance.mapImage = rosMapImage;
         componentRef.instance.metaData = metaData;
+        componentRef.instance.newRatio = newRatio;
+        componentRef.instance.mapName = mapName;
         componentRef.instance.disableEditorButton = true;
         componentRef.location.nativeElement.style.width = '100%';
         componentRef.location.nativeElement.style.height = '50vh';
       }
-    }, 1000);
+    }, 0);
   }
+
+  ngAfterViewInit() {}
 
   onConfirm() {
     this.onClose.emit({ status: true, parentComponent: this.parentComponent });
@@ -86,5 +102,11 @@ export class ConfirmationDialogComponent implements OnInit {
 
   onCancel() {
     this.onClose.emit({ status: false, parentComponent: this.parentComponent });
+  }
+
+  ngOnDestroy() {
+    if (this.viewComponentRef) {
+      this.viewComponentRef.clear();
+    }
   }
 }

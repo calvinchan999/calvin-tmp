@@ -33,10 +33,21 @@
       {{ waypoint.targetName }}
     </h1>
   </div>
+
   <div class="map-subtitle" *ngIf="enableMap">
-    <h1 style="text-align: center;">
+    <h2 style="text-align: center;">
       {{ "goingToDestination" | translate }} {{ waypoint?.targetName }}
-    </h1>
+    </h2>
+    <div class="destination-content">
+      <div class="distance-label" *ngIf="distance > 0">
+        <label>{{ "distance" | translate }}</label>
+        <label>{{ distance }}{{ "meter" | translate }}</label>
+      </div>
+      <div class="time-label" *ngIf="arrivalTime">
+        <label>{{ "arrivalTime" | translate }}</label>
+        <label>{{ arrivalTime }}</label>
+      </div>
+    </div>
   </div>
   <div class="spuare-group">
     <div class="square-button cancel" (click)="onCancel()">

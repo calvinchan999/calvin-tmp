@@ -311,7 +311,9 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
                 editor: this.editor,
                 floorPlanImg: this.floorPlanImg,
                 rosMapImage: this.rosMapImage,
-                metaData: this.metaData
+                metaData: this.metaData,
+                mapName: this.mapName,
+                newRatio: this.newRatio
               }
             });
           }, 3000);

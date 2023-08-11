@@ -197,9 +197,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
           );
           this.powerSupplyStatus = powerSupplyStatus;
           this.percentage = Math.round(percentage * 100);
-          if (!this.sharedService.robotIdBahaviorSubject.value) {
-            this.sharedService.robotIdBahaviorSubject.next(robotId);
-          }
+          // if (!this.sharedService.robotIdBahaviorSubject.value) {
+          //   this.sharedService.robotIdBahaviorSubject.next(robotId);
+          // }
         }
       });
   }

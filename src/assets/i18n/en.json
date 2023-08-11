@@ -14,8 +14,8 @@
   "destination": "Destination",
   "downloadLogs": "Error Logs",
   "followRobotGroup": "Follow Robot Group",
-  "reserve": "Reserve Robot",
-  "release": "Release Robot",
+  "reserve": "Reserve",
+  "release": "Release",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",
@@ -57,7 +57,7 @@
     "failedMessage": "Update failed",
     "confirmation": "Could you please confirm if the current waypoint is suitable for localization ?",
     "poseDeviationSuccessMessage": "Localization succeed",
-    "poseDeviationFailedMessage":"Poor localization, please try to move mobile chair to other location or relocalization"
+    "poseDeviationFailedMessage": "Poor localization, please try to move mobile chair to other location or relocalization"
   },
   "resetWaypoint": "Reset waypoint",
   "clearWaypoint": "Clear Waypoint",
@@ -111,7 +111,7 @@
       "300002": "Door pin code not available"
     },
     "disconnect": "Connection Failed",
-    "wifiSignalDisconnect": "WiFi Signal has been disconnected, please connect again"
+    "wifiSignalDisconnect": "Network Signal has been disconnected, please connect again"
   },
   "yes": "Yes",
   "no": "No",
@@ -134,5 +134,8 @@
     "totalRobot": "Total Robot"
   },
   "broadcast": "Broadcast Message",
-  "goingToDestination": "Going To"
+  "goingToDestination": "Going To",
+  "distance": "Distance",
+  "arrivalTime": "Arrival Time",
+  "meter":"M"
 }

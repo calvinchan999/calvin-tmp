@@ -4,6 +4,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
 // import { IndexedDbService } from './indexed-db.service';
 import { SharedService } from './shared.service';
+import { map, tap } from 'rxjs/operators';
 
 export interface Mqtt {
   ip_address: string;
@@ -26,7 +27,7 @@ export class MqttService {
   public completionSubject = new Subject<any>();
   // public $mapActive = new Subject<any>();
   // public $state = new Subject<any>();
-  public poseSubject = new Subject<any>();
+  // public poseSubject = new Subject<any>();
   public pauseResumeSubject = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
   // public pairing$ = new BehaviorSubject<any>(null);
@@ -133,15 +134,13 @@ export class MqttService {
       //     this.$state.next(new TextDecoder('utf-8').decode(message.payload));
       //   });
 
-      this._mqttService
-        .observe('rvautotech/fobo/pose')
-        .subscribe((message: IMqttMessage) => {
-          // console.log('rvautotech/fobo/pose');
-          // console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.poseSubject.next(
-            new TextDecoder('utf-8').decode(message.payload)
-          );
-        });
+      // this._mqttService
+      //   .observe('rvautotech/fobo/pose')
+      //   .subscribe((message: IMqttMessage) => {
+      //     this.poseSubject.next(
+      //       new TextDecoder('utf-8').decode(message.payload)
+      //     );
+      //   });
 
       this._mqttService
         .observe('rvautotech/fobo/baseController/pauseResume')
@@ -245,6 +244,18 @@ export class MqttService {
           );
         });
     }
+  }
+
+  getPoseMq(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/pose')
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
+  getDistanceMq(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/distance')
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
   }
 
   public unsafePublish(topic: string, payload: string): Observable<void> {

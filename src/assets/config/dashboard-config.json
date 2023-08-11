@@ -25,10 +25,10 @@
     "reserve": true,
     "release": true
   },
-  "maxPx": 3080,
+  "maxPx": 4080,
   "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5200",
   "largeImageServerSideRendering": true,
   "enableMap": true,
   "enableFloorPlanMode": false,
-  "enableTaskReleaseOrHold": false
+  "enableTaskReleaseOrHold": true
 }

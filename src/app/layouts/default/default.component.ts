@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { EMPTY, iif, of, Subject, Subscription } from 'rxjs';
+import { EMPTY, iif, Observable, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -199,11 +199,13 @@ export class DefaultComponent implements OnInit, OnDestroy {
             // this.sharedService.loading$.next(true);
             this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
-
+            console.log(
+              this.appConfigService.getConfig().enableTaskReleaseOrHold
+            );
             if (this.appConfigService.getConfig().enableTaskReleaseOrHold) {
-              const robotHeld = this.sharedService.isRobotHeldBehaviorSubject
-                .value;
-              if (robotHeld) {
+              const robotHeldApiResult = this.sharedService
+                .isRobotHeldBehaviorSubject.value;
+              if (robotHeldApiResult) {
                 this.sharedService.isOpenModal$.next({
                   modal: 'final-destination-dialog',
                   modalHeader: 'finalDestination',
@@ -212,7 +214,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
                   closeAfterRefresh: false
                 });
               } else {
-                console.log(`robotHeld: ${robotHeld}`);
+                console.log(`robotHeld: ${robotHeldApiResult}`);
               }
             } else {
               setTimeout(() => {
@@ -252,37 +254,32 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.mqttService.departureSubject
       .pipe(
         map(departure => JSON.parse(departure)),
-        mergeMap(departure => {
-          const { robotId } = departure;
-          const param = { param: { robotCode: robotId } };
-          if (this.sharedService.arcsModeBahaviorSubject.value) {
-            return this.modeService.getRobotHeld(param).pipe(
-              tap(res => {
-                console.log(`getRobotHeld:`);
-                console.log(res);
-                if (res) {
-                  this.sharedService.isRobotHeldBehaviorSubject.next(true);
-                } else {
-                  this.sharedService.isRobotHeldBehaviorSubject.next(false);
-                }
-              }),
-              map(() => {
-                return departure;
-              })
-            );
-          } else {
-            return of(null).pipe(
-              map(() => {
-                return departure;
-              })
-            );
-          }
-          // return of(null).pipe(
-          //   map(() => {
-          //     return departure;
-          //   })
-          // );
-        }),
+        // mergeMap(departure => {
+        //   const { robotId } = departure;
+        //   const param = { param: { robotCode: robotId } };
+        //   if (this.sharedService.arcsModeBahaviorSubject.value) {
+        //     return this.modeService.getRobotHeld(param).pipe(
+        //       tap(response => {
+        //         console.log(`getRobotHeld:`);
+        //         console.log(response);
+        //         if (response == true) {
+        //           this.sharedService.isRobotHeldBehaviorSubject.next(true);
+        //         } else if (response == false) {
+        //           this.sharedService.isRobotHeldBehaviorSubject.next(false);
+        //         }
+        //       }),
+        //       map(() => {
+        //         return departure;
+        //       })
+        //     );
+        //   } else {
+        //     return of(null).pipe(
+        //       map(() => {
+        //         return departure;
+        //       })
+        //     );
+        //   }
+        // }),
         tap(departure => this.getTaskWaypointPointer(departure))
       )
       .subscribe();
@@ -506,11 +503,12 @@ export class DefaultComponent implements OnInit, OnDestroy {
             prevUrl: this.prevUrl
           })
         ),
-        tap(() => this.getProfile()),
-        tap(() => this.getCurrentMode()),
-        tap(() => this.getCurrentMap()),
-        tap(() => this.getTaskStatus()),
-        tap(() => this.getFollowRobotStatus())
+        mergeMap(() => this.getProfile()),
+        mergeMap(() => this.getCurrentMode()),
+        mergeMap(() => this.getCurrentMap()),
+        mergeMap(() => this.getTaskStatus()),
+        mergeMap(() => this.getFollowRobotStatus()),
+        mergeMap(() => this.getRobotHeld())
       )
       .subscribe();
   }
@@ -519,43 +517,78 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.initializeErrors();
   }
 
-  getProfile() {
-    this.robotProfileService.getRobotProfile().subscribe(response => {
-      const { fms } = response;
-      this.sharedService.arcsModeBahaviorSubject.next(
-        fms?.enabled ? true : false
-      );
-    });
+  getProfile(): Observable<any> {
+    // this.robotProfileService.getRobotProfile().subscribe(response => {
+    //   const { robotId, fms } = response;
+    //   this.sharedService.robotIdBahaviorSubject.next(robotId);
+    //   this.sharedService.arcsModeBahaviorSubject.next(
+    //     fms?.enabled ? true : false
+    //   );
+    // });
+
+    return this.robotProfileService.getRobotProfile().pipe(
+      tap(response => {
+        const { robotId, fms } = response;
+        this.sharedService.robotIdBahaviorSubject.next(robotId);
+        this.sharedService.arcsModeBahaviorSubject.next(
+          fms?.enabled ? true : false
+        );
+      })
+    );
   }
 
-  getCurrentMap() {
-    this.mapService.getActiveMap().subscribe((response: MapResponse) => {
-      console.log('Get Active Map:');
-      console.log(response);
-      const { name } = response;
-      this.sharedService.currentMap$.next(name);
-      this.sharedService.loading$.next(false);
-    });
+  getCurrentMap(): Observable<any> {
+    // this.mapService.getActiveMap().subscribe((response: MapResponse) => {
+    //   console.log('Get Active Map:');
+    //   console.log(response);
+    //   const { name } = response;
+    //   this.sharedService.currentMap$.next(name);
+    //   this.sharedService.loading$.next(false);
+    // });
+
+    return this.mapService.getActiveMap().pipe(
+      tap((response: MapResponse) => {
+        console.log('Get Active Map:');
+        console.log(response);
+        const { name } = response;
+        this.sharedService.currentMap$.next(name);
+        this.sharedService.loading$.next(false);
+      })
+    );
   }
 
-  getCurrentMode() {
-    this.modeService
-      .getMode()
-      .pipe(
-        tap((response: ModeResponse) => {
-          console.log('Get Mode: ', response);
-          const { robotId, state, manual } = response;
-          this.sharedService.currentMode$.next(state);
-          this.sharedService.currentManualStatus$.next(manual);
-          this.sharedService.currentRobotId.next(robotId);
-          if (state !== `FOLLOW_ME`) {
-            this.sharedService.currentPairingStatus$.next(null);
-          } else {
-            this.getPairingStatus();
-          }
-        })
-      )
-      .subscribe();
+  getCurrentMode(): Observable<any> {
+    // this.modeService
+    //   .getMode()
+    //   .pipe(
+    //     tap((response: ModeResponse) => {
+    //       console.log('Get Mode: ', response);
+    //       const { robotId, state, manual } = response;
+    //       this.sharedService.currentMode$.next(state);
+    //       this.sharedService.currentManualStatus$.next(manual);
+    //       this.sharedService.currentRobotId.next(robotId);
+    //       if (state !== `FOLLOW_ME`) {
+    //         this.sharedService.currentPairingStatus$.next(null);
+    //       } else {
+    //         this.getPairingStatus();
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
+    return this.modeService.getMode().pipe(
+      tap((response: ModeResponse) => {
+        console.log('Get Mode: ', response);
+        const { robotId, state, manual } = response;
+        this.sharedService.currentMode$.next(state);
+        this.sharedService.currentManualStatus$.next(manual);
+        this.sharedService.currentRobotId.next(robotId);
+        if (state !== `FOLLOW_ME`) {
+          this.sharedService.currentPairingStatus$.next(null);
+        } else {
+          this.getPairingStatus();
+        }
+      })
+    );
   }
 
   getPairingStatus() {
@@ -612,55 +645,103 @@ export class DefaultComponent implements OnInit, OnDestroy {
     }
   }
 
-  getTaskStatus() {
-    this.taskService
-      .getTaskStatus()
-      .pipe(
-        mergeMap(data => {
-          if (
-            data.taskDepartureDTO !== null &&
-            data.taskCompletionDTO === null &&
-            !data.actionExecuting
-          ) {
-            const robotId = this.sharedService.currentRobotId.value;
-            const param = { param: { robotCode: robotId } };
-            if (this.sharedService.arcsModeBahaviorSubject.value) {
-              return this.modeService.getRobotHeld(param).pipe(
-                tap(res => {
-                  console.log(`getRobotHeld:`);
-                  console.log(res);
-                  if (res) {
-                    this.sharedService.isRobotHeldBehaviorSubject.next(true);
-                  } else {
-                    this.sharedService.isRobotHeldBehaviorSubject.next(false);
-                  }
-                }),
-                map(() => {
-                  return data;
-                }),
-                tap(data => {
-                  return this.getTaskWaypointPointer(data.taskDepartureDTO);
-                })
-              );
-            } else {
-              return of(null).pipe(tap(data => {
-                return  this.getTaskWaypointPointer(data.taskDepartureDTO);
-              }));
-            }
+  getTaskStatus(): Observable<any> {
+    // this.taskService
+    //   .getTaskStatus()
+    //   .pipe(
+    //     mergeMap(data => {
+    //       if (
+    //         data.taskDepartureDTO !== null &&
+    //         data.taskCompletionDTO === null &&
+    //         !data.actionExecuting
+    //       ) {
+    //         // const robotId = this.sharedService.currentRobotId.value;
+    //         // const param = { param: { robotCode: robotId } };
+    //         // if (this.sharedService.arcsModeBahaviorSubject.value) {
+    //         //   return this.modeService.getRobotHeld(param).pipe(
+    //         //     tap(response => {
+    //         //       if (response == true) {
+    //         //         this.sharedService.isRobotHeldBehaviorSubject.next(true);
+    //         //       } else if (response == false) {
+    //         //         this.sharedService.isRobotHeldBehaviorSubject.next(false);
+    //         //       }
+    //         //     }),
+    //         //     map(() => {
+    //         //       return data;
+    //         //     }),
+    //         //     tap(data => {
+    //         //       return this.getTaskWaypointPointer(data.taskDepartureDTO);
+    //         //     })
+    //         //   );
+    //         // } else {
+    //         //   return of(null).pipe(
+    //         //     tap(data => {
+    //         //       return this.getTaskWaypointPointer(data.taskDepartureDTO);
+    //         //     })
+    //         //   );
+    //         // }
 
-            // return of(this.getTaskWaypointPointer(data.taskDepartureDTO));
-          } else {
-            return of(null);
-          }
-        })
-      )
-      .subscribe();
+    //         return of(this.getTaskWaypointPointer(data.taskDepartureDTO));
+    //       } else {
+    //         return of(null);
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
+
+    return this.taskService.getTaskStatus().pipe(
+      mergeMap(data => {
+        if (
+          data.taskDepartureDTO !== null &&
+          data.taskCompletionDTO === null &&
+          !data.actionExecuting
+        ) {
+          return of(this.getTaskWaypointPointer(data.taskDepartureDTO));
+        } else {
+          return of(null);
+        }
+      })
+    );
   }
 
-  getFollowRobotStatus() {
-    this.sub.add(
-      this.robotGroupService.followRobot().subscribe(res => {
+  getFollowRobotStatus(): Observable<any> {
+    // this.sub.add(
+    //   this.robotGroupService.followRobot().subscribe(res => {
+    //     this.robotPairDialogConditionChecker(res);
+    //   })
+    // );
+    return this.robotGroupService.followRobot().pipe(
+      tap(res => {
         this.robotPairDialogConditionChecker(res);
+      })
+    );
+  }
+
+  getRobotHeld(): Observable<any> {
+    const robotId = this.sharedService.currentRobotId.value;
+    const param = { param: { robotCode: robotId } };
+    // this.sub.add(
+    //   this.modeService
+    //     .getRobotHeld(param)
+    //     .pipe(
+    //       tap(status => {
+    //         if (status == true) {
+    //           this.sharedService.isRobotHeldBehaviorSubject.next(true);
+    //         } else {
+    //           this.sharedService.isRobotHeldBehaviorSubject.next(false);
+    //         }
+    //       })
+    //     )
+    //     .subscribe()
+    // );
+
+    return this.modeService.getRobotHeld(param).pipe(
+      tap(status => {
+        if (status === true) {
+          this.sharedService.isRobotHeldBehaviorSubject.next(true);
+        } else {
+          this.sharedService.isRobotHeldBehaviorSubject.next(false);
+        }
       })
     );
   }

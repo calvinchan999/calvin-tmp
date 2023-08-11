@@ -10,6 +10,7 @@ import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { Metadata } from '../localization-form/localization-form.component';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
@@ -24,6 +25,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
   robotPose: any;
 
   sub = new Subscription();
+  poseMqSub = new Subscription();
+  distanceMqSub = new Subscription();
   waypoint;
   editor = EditorType['POSITIONLISTENER'];
   mapName: string;
@@ -32,6 +35,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
   enableMap: boolean = this.appConfigService.getConfig().enableMap ?? false;
 
   floorPlanData: any;
+
+  distance: number = 0;
+  arrivalTime: string;
 
   constructor(
     private waypointService: WaypointService,
@@ -119,14 +125,22 @@ export class DestinationComponent implements OnInit, OnDestroy {
         }
       );
 
-    this.sub.add(
-      this.mqttService.poseSubject
-        .pipe(
-          map(pose => JSON.parse(pose)),
-          tap(pose => (this.robotPose = pose))
-        )
-        .subscribe()
-    );
+    // this.sub.add(
+    //   this.mqttService.poseSubject
+    //     .pipe(
+    //       map(pose => JSON.parse(pose)),
+    //       tap(pose => (this.robotPose = pose))
+    //     )
+    //     .subscribe()
+    // );
+
+    this.poseMqSub = this.mqttService
+      .getPoseMq()
+      .pipe(
+        map(pose => JSON.parse(pose)),
+        tap(pose => (this.robotPose = pose))
+      )
+      .subscribe();
 
     this.sub.add(
       this.mqttService.pauseResumeSubject
@@ -173,6 +187,25 @@ export class DestinationComponent implements OnInit, OnDestroy {
     // }, 3000);
   }
 
+  ngAfterViewInit() {
+    this.distanceMqSub = this.mqttService
+      .getDistanceMq()
+      .pipe(
+        map(mq => JSON.parse(mq)),
+        tap(message => {
+          const { distance, time } = message;
+          const duration = moment.duration(time, 'seconds');
+          this.arrivalTime = moment
+            .utc(duration.asMilliseconds())
+            .format('H:mm');
+          this.distance = distance.toFixed(2);
+        })
+      )
+      .subscribe(res => {
+        console.log(res);
+      });
+  }
+
   onPause() {
     this.waypointService
       .pause()
@@ -204,5 +237,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+    this.poseMqSub.unsubscribe();
+    this.distanceMqSub.unsubscribe();
   }
 }

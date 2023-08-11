@@ -1,6 +1,6 @@
 <div class="confirmation-dialog">
   <ng-container #viewComponentRef></ng-container>
-  <div class="confirmation-dialog-title">
+  <div class="confirmation-dialog-title" *ngIf="message">
     <label [innerHTML]="message"></label>
   </div>
   <div class="confirmation-dialog-btn-container">

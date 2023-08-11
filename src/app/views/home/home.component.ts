@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EMPTY, Observable, of } from 'rxjs';
-import { map, mergeMap, tap, take, switchMap } from 'rxjs/operators';
+import { EMPTY, Observable, Subscription, iif, of } from 'rxjs';
+import {
+  map,
+  mergeMap,
+  tap,
+  take,
+  switchMap,
+  catchError,
+  takeUntil
+} from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
@@ -26,6 +34,8 @@ export class HomeComponent implements OnInit {
 
   robotReleaseStatus: boolean = false;
   robotReserveStatus: boolean = false;
+
+  sub = new Subscription();
 
   constructor(
     public router: Router,
@@ -85,32 +95,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.isAuthenticated();
+    this.isRobotHeld();
   }
 
-  ngAfterViewInit() {
-    this.sharedService.robotIdBahaviorSubject
-      .pipe(
-        switchMap(robotId => {
-          if (robotId) {
-            const param = { param: { robotCode: robotId } };
-            return this.modeService.getRobotHeld(param).pipe(
-              tap(res => {
-                if (res) {
-                  this.robotReleaseStatus = true;
-                  this.robotReserveStatus = false;
-                } else {
-                  this.robotReleaseStatus = false;
-                  this.robotReserveStatus = true;
-                }
-              })
-            );
-          } else {
-            return of(EMPTY);
-          }
-        })
-      )
-      .subscribe();
-  }
+  ngAfterViewInit() {}
 
   isAuthenticated() {
     this.authService.isAuthenticatedSubject
@@ -206,5 +194,25 @@ export class HomeComponent implements OnInit {
       .releaseTask()
       .pipe(tap(() => this.router.navigate(['/'])))
       .subscribe();
+  }
+
+  isRobotHeld() {
+    this.sub = this.sharedService.isRobotHeldBehaviorSubject
+      .pipe(
+        tap(status => {
+          if (status) {
+            this.robotReleaseStatus = true;
+            this.robotReserveStatus = false;
+          } else {
+            this.robotReleaseStatus = false;
+            this.robotReserveStatus = true;
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  ngOnDestroy() {
+    if (this.sub) this.sub.unsubscribe();
   }
 }

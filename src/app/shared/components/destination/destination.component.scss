@@ -77,12 +77,12 @@
   color: #fff;
 }
 
-.map-container{
-  height: 70%;
+.map-container {
+  height: 60%;
   width: 100%;
 }
 
-.waypoint-title{
+.waypoint-title {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,16 +91,34 @@
   justify-content: center;
 }
 
+.destination-content {
+  display: flex;
+  text-align: center;
+  font-size: 25px;
+}
+
+.distance-label {
+  flex: 1;
+  display: flex;
+  flex-direction: column
+}
+
+.time-label {
+  flex: 1;
+  display: flex;
+  flex-direction: column
+}
+
 @media only screen and (max-width: 900px) {
   .map-item {
-    font-size: 35px !important;
+    font-size: 25 !important;
   }
 
   .map-cancel-button {
-    font-size: 35px;
+    font-size: 25px;
   }
 
   .map-confirm-button {
-    font-size: 35px;
+    font-size: 25px;
   }
 }

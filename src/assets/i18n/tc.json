@@ -14,8 +14,8 @@
   "destination": "目的地",
   "downloadLogs": "錯誤日誌",
   "followRobotGroup": "車跟車",
-  "reserve": "開啟佔用",
-  "release": "解除占用",
+  "reserve": "預留",
+  "release": "取消預留",
   "robotStatus": {
     "followMe": "跟隨模式",
     "navigation": "導航模式",
@@ -111,7 +111,7 @@
       "300002": "驗證碼錯誤"
     },
     "disconnect": "系統斷開連接",
-    "wifiSignalDisconnect":"WiFi信號已斷開,請重新連接"
+    "wifiSignalDisconnect":"網絡信號已斷開,請重新連接"
   },
   "yes": "是",
   "no": "不是",
@@ -134,5 +134,8 @@
     "totalRobot": "總機器數"
   },
   "broadcast": "廣播",
-  "goingToDestination": "前往目的地"
+  "goingToDestination": "前往目的地",
+  "distance": "距離",
+  "arrivalTime": "到達時間",
+  "meter":"米"
 }
