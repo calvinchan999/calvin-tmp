@@ -78,7 +78,7 @@
 }
 
 .map-container {
-  height: 60%;
+  height: 50%;
   width: 100%;
 }
 
@@ -100,16 +100,26 @@
 .distance-label {
   flex: 1;
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 
 .time-label {
   flex: 1;
   display: flex;
-  flex-direction: column
+  flex-direction: column;
+}
+
+.waypoint-name {
+  display: flex;
+  justify-content: center;
+  font-size: 50px;
 }
 
 @media only screen and (max-width: 900px) {
+  // .waypoint-name {
+  //   font-size: 35px;
+  // }
+
   .map-item {
     font-size: 25 !important;
   }
