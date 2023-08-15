@@ -107,6 +107,16 @@
       </div>
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="user?.length > 0 && features.cache"
+      >
+        <app-card
+          title="cacheClear"
+          icon="cached"
+          (eventTrigger)="onClickClearCache()"
+        ></app-card>
+      </div>
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.reserve && robotReserveStatus"
       >
         <app-card

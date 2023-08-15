@@ -16,6 +16,7 @@
   "followRobotGroup": "Follow Robot Group",
   "reserve": "Reserve",
   "release": "Release",
+  "cacheClear":"Clear Cache",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",
@@ -137,5 +138,6 @@
   "goingToDestination": "Going To",
   "distance": "Distance",
   "arrivalTime": "Arrival Time",
-  "meter":"M"
+  "meter":"M",
+  "cacheClearSuccessful": "localStorage has been cleared"
 }

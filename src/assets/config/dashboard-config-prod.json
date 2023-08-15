@@ -23,7 +23,8 @@
     "pairing": true,
     "grouping": true,
     "reserve": true,
-    "release": true
+    "release": true,
+    "cache": true
   },
   "maxPx": 2048,
   "imageScalingServer": "http://rv-arcs-image-resizer.dzdue5gdfwc9drha.eastasia.azurecontainer.io:5100",

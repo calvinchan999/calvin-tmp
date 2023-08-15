@@ -23,7 +23,8 @@
     "pairing": true,
     "grouping": true,
     "reserve": true,
-    "release": true
+    "release": true,
+    "cache": true
   },
   "maxPx": 4080,
   "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5200",

@@ -8,7 +8,8 @@ import {
   take,
   switchMap,
   catchError,
-  takeUntil
+  takeUntil,
+  finalize
 } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
@@ -208,6 +209,20 @@ export class HomeComponent implements OnInit {
             this.robotReserveStatus = true;
           }
         })
+      )
+      .subscribe();
+  }
+
+  onClickClearCache() {
+    of(EMPTY)
+      .pipe(
+        tap(() => localStorage.clear()),
+        finalize(() =>
+          this.sharedService.response$.next({
+            type: 'normal',
+            message: 'cacheClearSuccessful'
+          })
+        )
       )
       .subscribe();
   }

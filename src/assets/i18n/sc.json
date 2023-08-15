@@ -16,6 +16,7 @@
   "followRobotGroup": "车跟车",
   "reserve": "预留",
   "release": "取消预留",
+  "cacheClear":"清除缓存",
   "robotStatus": {
     "followMe": "跟随模式",
     "navigation": "导航模式",
@@ -137,5 +138,6 @@
   "goingToDestination": "前往目的地",
   "distance": "距离",
   "arrivalTime": "到达时间",
-  "meter":"米"
+  "meter":"米",
+  "cacheClearSuccessful": "本地存储已被清除"
 }
