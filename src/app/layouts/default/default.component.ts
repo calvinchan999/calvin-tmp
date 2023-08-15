@@ -17,7 +17,9 @@ import {
   tap,
   distinctUntilChanged,
   take,
-  switchMap
+  switchMap,
+  delay,
+  finalize
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -79,13 +81,9 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private appConfigService: AppConfigService,
     private robotProfileService: RobotProfileService
   ) {
+    this.sharedService.isRobotHeldBehaviorSubject.next(undefined); // pass undefined to reset variables to avoid triggering other functions
     this.sharedService.timer$.subscribe(i => {
       if (i > 0) {
-        // this.response = {
-        //   type: 'warning',
-        //   message: 'error.disconnect',
-        // };
-
         this.closeDialogAfterRefresh = false;
         if (!this.disconnectResponseDialog.isExist()) {
           this.disconnectMessage = 'error.disconnect';
@@ -508,6 +506,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
         mergeMap(() => this.getCurrentMap()),
         mergeMap(() => this.getTaskStatus()),
         mergeMap(() => this.getFollowRobotStatus()),
+        delay(2000),
         mergeMap(() => this.getRobotHeld())
       )
       .subscribe();

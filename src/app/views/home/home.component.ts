@@ -203,7 +203,7 @@ export class HomeComponent implements OnInit {
           if (status) {
             this.robotReleaseStatus = true;
             this.robotReserveStatus = false;
-          } else {
+          } else if (status == false) {
             this.robotReleaseStatus = false;
             this.robotReserveStatus = true;
           }

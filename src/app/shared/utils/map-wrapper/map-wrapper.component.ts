@@ -633,7 +633,7 @@ export class MapWrapperComponent
               this.mapLayer.findOne('.targetWaypoint').destroy();
             }
 
-            this.iconRatio = this.newRatio < 1 ? 1 : 0.3;
+          
             this.destinationPoint = new Konva.Image({
               x:
                 data.GuiX * this.newRatio -
@@ -692,7 +692,7 @@ export class MapWrapperComponent
             //   image: data.img,
             //   name: 'targetWaypoint'
             // });
-            this.iconRatio = this.newRatio < 1 ? 1 : 0.3;
+            this.iconRatio = this.newRatio < 1 ? 1 : 0.15;
 
             this.destinationPoint = new Konva.Image({
               x:
@@ -1131,7 +1131,7 @@ export class MapWrapperComponent
         });
 
         sub.unsubscribe();
-    } else {
+    } else { // Fixed destination icons are scalable in the floorplan.
       const { targetX, targetY } = this.waypointTargets;
       const { x, y, height, resolution }: any = this.metaData;
 
