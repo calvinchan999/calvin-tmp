@@ -26,7 +26,7 @@
     "release": true
   },
   "maxPx": 2048,
-  "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5100",
+  "imageScalingServer": "http://rv-arcs-image-resizer.dzdue5gdfwc9drha.eastasia.azurecontainer.io:5100",
   "largeImageServerSideRendering": true,
   "enableMap": true,
   "enableFloorPlanMode": false,

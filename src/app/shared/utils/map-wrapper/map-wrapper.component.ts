@@ -127,14 +127,7 @@ export class MapWrapperComponent
     private mapService: MapService,
     private appConfigService: AppConfigService,
     private sharedService: SharedService // private indexedDbService: IndexedDbService
-  ) {
-    // if (/android/i.test(this.userAgent)) {
-    //   this.platform = 'android';
-    // }
-    // if (/iPad|iPhone|iPod/i.test(this.userAgent)) {
-    //   this.platform = 'ios';
-    // }
-  }
+  ) {}
 
   ngOnInit() {}
 
@@ -590,6 +583,7 @@ export class MapWrapperComponent
 
       if (this.floorPlan) {
         return ob.pipe(
+          tap(data => (this.destinationIcon = data)),
           mergeMap(data => {
             // const { x, y, height } = this.metaData;
             const {
@@ -629,8 +623,7 @@ export class MapWrapperComponent
                   return of({
                     GuiX: floorPlanPoint.GuiX,
                     GuiY: floorPlanPoint.GuiY,
-                    GuiAngle: floorPlanPoint.GuiAngle,
-                    floorPlan: data
+                    GuiAngle: floorPlanPoint.GuiAngle
                   });
                 })
               );
@@ -640,16 +633,28 @@ export class MapWrapperComponent
               this.mapLayer.findOne('.targetWaypoint').destroy();
             }
 
+            this.iconRatio = this.newRatio < 1 ? 1 : 0.3;
             this.destinationPoint = new Konva.Image({
               x:
                 data.GuiX * this.newRatio -
-                (data.floorPlan.img.width * this.newRatio) / 2,
+                (((this.destinationIcon.img.width * this.iconRatio) /
+                  this.scale) *
+                  this.newRatio) /
+                  2,
               y:
                 data.GuiY * this.newRatio -
-                data.floorPlan.img.height * this.newRatio,
-              width: data.floorPlan.img.width * this.newRatio,
-              height: data.floorPlan.img.height * this.newRatio,
-              image: data.floorPlan.img,
+                ((this.destinationIcon.img.height * this.iconRatio) /
+                  this.scale) *
+                  this.newRatio,
+              width:
+                ((this.destinationIcon.img.width * this.iconRatio) /
+                  this.scale) *
+                this.newRatio,
+              height:
+                ((this.destinationIcon.img.height * this.iconRatio) /
+                  this.scale) *
+                this.newRatio,
+              image: this.destinationIcon.img,
               opacity: 0.7,
               name: 'targetWaypoint'
             });
@@ -659,6 +664,7 @@ export class MapWrapperComponent
         );
       } else {
         return ob.pipe(
+          tap(data => (this.destinationIcon = data)),
           tap(data => {
             if (this.mapLayer.findOne('.targetWaypoint')?.getAttrs()) {
               this.mapLayer.findOne('.targetWaypoint').destroy();
@@ -687,8 +693,6 @@ export class MapWrapperComponent
             //   name: 'targetWaypoint'
             // });
             this.iconRatio = this.newRatio < 1 ? 1 : 0.3;
-
-            this.destinationIcon = data;
 
             this.destinationPoint = new Konva.Image({
               x:
@@ -1057,32 +1061,104 @@ export class MapWrapperComponent
   // }
 
   updateDestinationIconScale(oldScale) {
-    const { targetX, targetY } = this.waypointTargets;
-    const { x, y, height, resolution }: any = this.metaData;
+    if (this.floorPlan) {
+      const { targetX, targetY } = this.waypointTargets;
+      const {
+        transformedAngle,
+        resolution,
+        originX,
+        originY,
+        imageHeight,
+        imageWidth,
+        transformedScale,
+        transformedPositionX,
+        transformedPositionY
+      } = this.floorPlan;
 
-    const newPosition = {
-      x:
-        (Math.abs(x - targetX) / resolution) * this.newRatio -
-        (((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
-          this.newRatio) /
-          2,
-      y:
-        (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
-        ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
+      const map = {
+        transformedAngle,
+        resolution,
+        originX,
+        originY,
+        imageHeight,
+        imageWidth,
+        transformedScale,
+        transformedPositionX,
+        transformedPositionY
+      };
+
+      const destinationPoint = {
+        angle: 0,
+        positionX: targetX,
+        positionY: targetY
+      };
+
+      const sub = this.mapService
+        .getFloorPlanPointFromMapPoint(map, destinationPoint)
+        .pipe(
+          mergeMap(floorPlanPoint => {
+            return of({
+              GuiX: floorPlanPoint.GuiX,
+              GuiY: floorPlanPoint.GuiY,
+              GuiAngle: floorPlanPoint.GuiAngle
+            });
+          })
+        )
+        .subscribe(point => {
+          const newPosition = {
+            x:
+              point.GuiX * this.newRatio -
+              (((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
+                this.newRatio) /
+                2,
+            y:
+              point.GuiY * this.newRatio -
+              ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
+                this.newRatio
+          };
+
+          const newSize = {
+            width:
+              ((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
+              this.newRatio,
+            height:
+              ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
+              this.newRatio
+          };
+
+          this.destinationPoint.position(newPosition);
+          this.destinationPoint.setSize(newSize);
+        });
+
+        sub.unsubscribe();
+    } else {
+      const { targetX, targetY } = this.waypointTargets;
+      const { x, y, height, resolution }: any = this.metaData;
+
+      const newPosition = {
+        x:
+          (Math.abs(x - targetX) / resolution) * this.newRatio -
+          (((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
+            this.newRatio) /
+            2,
+        y:
+          (height - Math.abs((y - targetY) / resolution)) * this.newRatio -
+          ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
+            this.newRatio
+      };
+
+      this.destinationPoint.position(newPosition); // Set the new position
+
+      const newSize = {
+        width:
+          ((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
+          this.newRatio,
+        height:
+          ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
           this.newRatio
-    };
-
-    this.destinationPoint.position(newPosition); // Set the new position
-
-    const newSize = {
-      width:
-        ((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
-        this.newRatio,
-      height:
-        ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
-        this.newRatio
-    };
-    this.destinationPoint.setSize(newSize);
+      };
+      this.destinationPoint.setSize(newSize);
+    }
   }
 
   getXYAngle(): Observable<any> {
