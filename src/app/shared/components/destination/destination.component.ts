@@ -194,11 +194,11 @@ export class DestinationComponent implements OnInit, OnDestroy {
         map(mq => JSON.parse(mq)),
         tap(message => {
           const { distance, time } = message;
-          const duration = moment.duration(time, 'seconds');
-          this.arrivalTime = moment
-            .utc(duration.asMilliseconds())
-            .format('H:mm');
-          this.distance = distance.toFixed(2);
+          const duration = time >= 0 ? moment.duration(time, 'seconds') : null;
+          this.arrivalTime = duration
+            ? moment.utc(duration.asMilliseconds()).format('H:mm')
+            : '--';
+          this.distance = duration ? distance.toFixed(2) : '--';
         })
       )
       .subscribe(res => {

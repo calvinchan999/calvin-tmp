@@ -274,13 +274,15 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
             msg = this.translateService.instant(
               'localizationDialog.poseDeviationSuccessMessage'
             );
+            this.toastrService.success(msg);
           } else {
             msg = this.translateService.instant(
               'localizationDialog.poseDeviationFailedMessage'
             );
+            this.toastrService.warning(msg);
           }
 
-          this.toastrService.warning(msg);
+          
         })
       )
       .subscribe(

@@ -40,9 +40,11 @@
       <label class="waypoint-name">{{ waypoint?.targetName }}</label>
     </h2>
     <div class="destination-content">
-      <div class="distance-label" *ngIf="distance > 0">
+      <div class="distance-label" *ngIf="distance">
         <label>{{ "distance" | translate }}</label>
-        <label>{{ distance }}{{ "meter" | translate }}</label>
+        <label *ngIf="distance >= 0; else distanceNotFound"
+          >{{ distance }}{{ "meter" | translate }}</label
+        >
       </div>
       <div class="time-label" *ngIf="arrivalTime">
         <label>{{ "arrivalTime" | translate }}</label>
@@ -65,3 +67,8 @@
     </div>
   </div>
 </div>
+<ng-template #distanceNotFound>
+  <ng-container>
+    <label>{{ distance }}</label>
+  </ng-container>
+</ng-template>
