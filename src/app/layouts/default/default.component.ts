@@ -213,6 +213,9 @@ export class DefaultComponent implements OnInit, OnDestroy {
                 });
               } else {
                 console.log(`robotHeld: ${robotHeldApiResult}`);
+                setTimeout(() => {
+                  this.router.navigate(['/']);
+                }, 3000);
               }
             } else {
               setTimeout(() => {

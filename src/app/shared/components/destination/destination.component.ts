@@ -196,7 +196,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
           const { distance, time } = message;
           const duration = time >= 0 ? moment.duration(time, 'seconds') : null;
           this.arrivalTime = duration
-            ? moment.utc(duration.asMilliseconds()).format('H:mm')
+            ? moment.utc(duration.asMilliseconds()).format('H:mm:ss')
             : '--';
           this.distance = duration ? distance.toFixed(2) : '--';
         })
