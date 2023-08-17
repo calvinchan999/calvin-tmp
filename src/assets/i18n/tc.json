@@ -139,5 +139,7 @@
   "distance": "距離",
   "arrivalTime": "到達時間",
   "meter":"米",
-  "cacheClearSuccessful": "本地存儲已被清除"
+  "cacheClearSuccessful": "本地存儲已被清除",
+  "minutes":"分",
+  "obstacleDetected": "檢測到障礙物"
 }

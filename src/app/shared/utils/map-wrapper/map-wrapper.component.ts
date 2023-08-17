@@ -633,7 +633,6 @@ export class MapWrapperComponent
               this.mapLayer.findOne('.targetWaypoint').destroy();
             }
 
-          
             this.destinationPoint = new Konva.Image({
               x:
                 data.GuiX * this.newRatio -
@@ -792,6 +791,8 @@ export class MapWrapperComponent
   createRobotCurrentPointToRosMap(): Observable<any> {
     // currentRobotPose mqtt
     // robotCurrentPosition http request
+
+    const pointRatio = this.newRatio < 1 ? 3 : 1;
     return of(null).pipe(
       tap(() => {
         const { x, y, height, resolution } = this.metaData;
@@ -809,7 +810,7 @@ export class MapWrapperComponent
 
         this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
-          fill: 'blue',
+          fill: '#FF0000',
           x: Math.abs(
             ((x - (this.robotPose?.x ?? this.robotCurrentPosition?.x ?? x)) *
               this.newRatio) /
@@ -822,7 +823,10 @@ export class MapWrapperComponent
                   resolution
               )) *
             this.newRatio,
-          radius: 15 * this.newRatio
+          radius: 15 * pointRatio * this.newRatio,
+          stroke: 'black',
+          strokeWidth: 7 * this.newRatio,
+          opacity: 0.8
         });
         this.mapLayer.add(this.robotCurrentPositionPoint);
       }),
@@ -953,6 +957,10 @@ export class MapWrapperComponent
               this.updateDestinationIconScale(oldScale);
             }
 
+            // if (this.robotCurrentPositionPoint) {
+            //   this.updateRobotCurrentPointScale(oldScale);
+            // }
+
             // const scaleFactor = this.scaleFactor * this.scaleMultiplier;
 
             // if (scaleFactor >= 1) {
@@ -998,6 +1006,10 @@ export class MapWrapperComponent
           if (this.destinationPoint) {
             this.updateDestinationIconScale(oldScale);
           }
+
+          // if (this.robotCurrentPositionPoint) {
+          //   this.updateRobotCurrentPointScale(oldScale);
+          // }
 
           // const scaleFactor = this.scaleFactor / this.scaleMultiplier;
 
@@ -1058,6 +1070,13 @@ export class MapWrapperComponent
   //       this.scale
   //   };
   //   return of(mousePointTo);
+  // }
+
+  // updateRobotCurrentPointScale(oldScale) {
+  //   const pointRatio = this.newRatio < 1 ? 10 : 1;
+  //   this.robotCurrentPositionPoint.radius(
+  //     (15 * pointRatio * this.newRatio) / oldScale
+  //   );
   // }
 
   updateDestinationIconScale(oldScale) {
@@ -1130,8 +1149,9 @@ export class MapWrapperComponent
           this.destinationPoint.setSize(newSize);
         });
 
-        sub.unsubscribe();
-    } else { // Fixed destination icons are scalable in the floorplan.
+      sub.unsubscribe();
+    } else {
+      // Fixed destination icons are scalable in the floorplan.
       const { targetX, targetY } = this.waypointTargets;
       const { x, y, height, resolution }: any = this.metaData;
 

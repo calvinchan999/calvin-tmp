@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { EMPTY, iif, Observable, of, Subject, Subscription } from 'rxjs';
+import {  iif, Observable, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -19,7 +19,6 @@ import {
   take,
   switchMap,
   delay,
-  finalize
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -29,7 +28,7 @@ import { ToastrService } from 'src/app/services/toastr.service';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { MapResponse, MapService } from 'src/app/views/services/map.service';
 import { ModeResponse, ModeService } from 'src/app/views/services/mode.service';
-import { TaskService, TaskStatus } from 'src/app/views/services/task.service';
+import { TaskService } from 'src/app/views/services/task.service';
 import { WaypointService } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { RobotGroupService } from 'src/app/views/services/robot-group.service';
@@ -51,6 +50,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   @ViewChild('robotGroupPairingDialog') robotPairingDialog: ModalComponent;
+
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
   public routerSub = new Subscription();
@@ -892,8 +892,10 @@ export class DefaultComponent implements OnInit, OnDestroy {
         this.sharedService.isClosedModal$.next(dialogName);
       }
       if (status && parentComponent === 'localization') {
+        this.sharedService.poseDeviationConnectionBahaviorSubject.next(true);
         this.router.navigate(['/']);
       } else if (!status && parentComponent === 'localization') {
+        this.sharedService.poseDeviationConnectionBahaviorSubject.next(true);
         this.router.navigate(['/localization']);
       }
     });

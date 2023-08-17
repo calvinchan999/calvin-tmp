@@ -23,6 +23,7 @@ import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { ToastrService } from 'ngx-toastr';
+import { MqttService } from 'src/app/services/mqtt.service';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 export interface Metadata {
@@ -73,6 +74,8 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   mapName: string;
   newRatio: number = 1;
 
+  poseDeviationSub = new Subscription();
+
   constructor(
     private modalComponent: ModalComponent,
     private sharedService: SharedService,
@@ -80,6 +83,7 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     private mapService: MapService,
     private waypointService: WaypointService,
     private router: Router,
+    private mqttService: MqttService,
     private toastrService: ToastrService // private indexedDbService: IndexedDbService
   ) {
     this.setMessage();
@@ -158,6 +162,53 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
         .pipe(tap(type => (this.type = LocalizationType[type])))
         .subscribe()
     );
+
+    this.sharedService.poseDeviationConnectionBahaviorSubject.subscribe(
+      status => {
+        if (status) {
+          this.cancelPoseDeviation();
+        }
+      }
+    );
+
+    // this.poseDeviationSub = this.sharedService.openPoseDeviationConnectionSubject
+    //   .pipe(
+    //     mergeMap(status => {
+    //       console.log(`debug: ${status}`);
+    //       if (status) {
+    //         return this.mqttService.getPoseDeviation().pipe(
+    //           map(result => JSON.parse(result)),
+    //           tap(result => {
+    //             const { poseValid } = result;
+    //             let msg;
+
+    //             if (poseValid) {
+    //               msg = this.translateService.instant(
+    //                 'localizationDialog.poseDeviationSuccessMessage'
+    //               );
+    //               this.toastrService.success(msg, '', {
+    //                 timeOut: 2000,
+    //                 progressBar: true,
+    //                 closeButton: true
+    //               });
+    //             } else {
+    //               msg = this.translateService.instant(
+    //                 'localizationDialog.poseDeviationFailedMessage'
+    //               );
+    //               this.toastrService.warning(msg, '', {
+    //                 timeOut: 2000,
+    //                 progressBar: true,
+    //                 closeButton: true
+    //               });
+    //             }
+    //           })
+    //         );
+    //       } else {
+    //         return of(EMPTY);
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
   }
 
   setMessage() {
@@ -248,42 +299,27 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     this.waypointService
       .initialPose({ x, y, angle })
       .pipe(
-        delay(0),
-        tap(() => this.sharedService.loading$.next(true)),
-        delay(15000), //Use a 15s delay after calling the Pose Deviation API, as the robot does not update its status immediately
-        mergeMap(() => this.waypointService.poseDeviation()),
-        tap(deviationRes => {
-          const {
-            poseValid,
-            translationDeviation,
-            angleDeviation
-          } = deviationRes;
+        // delay(0),
+        // tap(() => this.sharedService.loading$.next(true)),
+        // delay(15000), //Use a 15s delay after calling the Pose Deviation API, as the robot does not update its status immediately
+        // mergeMap(() => this.waypointService.poseDeviation()),
+        // tap(deviationRes => {
+        //   const { poseValid } = deviationRes;
+        //   let msg;
 
-          let msg;
-
-          // const msg = this.translateService.instant(
-          //   'toast.inconnectLocalization',
-          //   {
-          //     poseValid,
-          //     translationDeviation,
-          //     angleDeviation
-          //   }
-          // );
-
-          if (poseValid) {
-            msg = this.translateService.instant(
-              'localizationDialog.poseDeviationSuccessMessage'
-            );
-            this.toastrService.success(msg);
-          } else {
-            msg = this.translateService.instant(
-              'localizationDialog.poseDeviationFailedMessage'
-            );
-            this.toastrService.warning(msg);
-          }
-
-          
-        })
+        //   if (poseValid) {
+        //     msg = this.translateService.instant(
+        //       'localizationDialog.poseDeviationSuccessMessage'
+        //     );
+        //     this.toastrService.success(msg);
+        //   } else {
+        //     msg = this.translateService.instant(
+        //       'localizationDialog.poseDeviationFailedMessage'
+        //     );
+        //     this.toastrService.warning(msg);
+        //   }
+        // })
+        tap(() => this.triggerPoseDeviation())
       )
       .subscribe(
         () => {
@@ -329,6 +365,43 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
       );
   }
 
+  triggerPoseDeviation() {
+    this.poseDeviationSub = this.mqttService
+      .getPoseDeviation()
+      .pipe(
+        map(result => JSON.parse(result)),
+        tap(result => {
+          const { poseValid } = result;
+          let msg;
+
+          if (poseValid) {
+            msg = this.translateService.instant(
+              'localizationDialog.poseDeviationSuccessMessage'
+            );
+            this.toastrService.success(msg, '', {
+              timeOut: 2000,
+              progressBar: true,
+              closeButton: true
+            });
+          } else {
+            msg = this.translateService.instant(
+              'localizationDialog.poseDeviationFailedMessage'
+            );
+            this.toastrService.warning(msg, '', {
+              timeOut: 2000,
+              progressBar: true,
+              closeButton: true
+            });
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  cancelPoseDeviation() {
+    this.poseDeviationSub.unsubscribe();
+  }
+
   onCloseModel() {
     this.modalComponent.closeTrigger$.next();
   }
@@ -336,6 +409,9 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.sub) {
       this.sub.unsubscribe();
+    }
+    if (this.poseDeviationSub) {
+      this.poseDeviationSub.unsubscribe();
     }
   }
 }

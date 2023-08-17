@@ -258,6 +258,18 @@ export class MqttService {
       .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
   }
 
+  getPoseDeviation(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/poseDeviation')
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
+  getObstacleDetection(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/obstacle/detection')
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
   public unsafePublish(topic: string, payload: string): Observable<void> {
     return of(
       this._mqttService.unsafePublish(topic, payload, { qos: 2, retain: true })

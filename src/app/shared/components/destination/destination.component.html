@@ -42,13 +42,13 @@
     <div class="destination-content">
       <div class="distance-label" *ngIf="distance">
         <label>{{ "distance" | translate }}</label>
-        <label *ngIf="distance >= 0; else distanceNotFound"
-          >{{ distance }}{{ "meter" | translate }}</label
+        <label *ngIf="distance > 0; else distanceNotFound"
+          >{{ distance }} {{ "meter" | translate }}</label
         >
       </div>
       <div class="time-label" *ngIf="arrivalTime">
         <label>{{ "arrivalTime" | translate }}</label>
-        <label>{{ arrivalTime }}</label>
+        <label *ngIf="arrivalTime >= 0; else arrivalTimeIsZero">{{ arrivalTime }} {{ "minutes" | translate }}</label>
       </div>
     </div>
   </div>
@@ -69,6 +69,11 @@
 </div>
 <ng-template #distanceNotFound>
   <ng-container>
-    <label>{{ distance }}</label>
+    <label>{{ '--' }}</label>
+  </ng-container>
+</ng-template>
+<ng-template #arrivalTimeIsZero>
+  <ng-container>
+    <label>{{ '--' }}</label>
   </ng-container>
 </ng-template>

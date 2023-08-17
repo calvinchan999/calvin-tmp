@@ -39,6 +39,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
   distance: number = 0;
   arrivalTime: string;
 
+  obstacleDetectionSub = new Subscription();
+
   constructor(
     private waypointService: WaypointService,
     private sharedService: SharedService,
@@ -177,6 +179,22 @@ export class DestinationComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.obstacleDetectionSub = this.mqttService
+      .getObstacleDetection()
+      .pipe(
+        map(mq => JSON.parse(mq)),
+        tap(mq => {
+          const { detected } = mq;
+          if (detected) {
+            this.sharedService.response$.next({
+              type: 'warning',
+              message: 'obstacleDetected'
+            });
+          }
+        })
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
@@ -194,11 +212,16 @@ export class DestinationComponent implements OnInit, OnDestroy {
         map(mq => JSON.parse(mq)),
         tap(message => {
           const { distance, time } = message;
-          const duration = time >= 0 ? moment.duration(time, 'seconds') : null;
+          const duration =
+            time >= 0 && time <= 3600 ? moment.duration(time, 'seconds') : null;
           this.arrivalTime = duration
-            ? moment.utc(duration.asMilliseconds()).format('H:mm:ss')
+            ? duration.asSeconds() >= 60
+              ? moment.utc(duration.asMilliseconds()).format('m')
+              : duration.asSeconds() >= 1
+              ? '1'
+              : '--'
             : '--';
-          this.distance = duration ? distance.toFixed(2) : '--';
+          this.distance = distance.toFixed(0) > 0 ? distance.toFixed(0) : '--';
         })
       )
       .subscribe(res => {
@@ -239,5 +262,6 @@ export class DestinationComponent implements OnInit, OnDestroy {
     }
     this.poseMqSub.unsubscribe();
     this.distanceMqSub.unsubscribe();
+    this.obstacleDetectionSub.unsubscribe();
   }
 }

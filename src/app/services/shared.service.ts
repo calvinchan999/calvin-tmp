@@ -84,6 +84,8 @@ export class SharedService {
 
   public arcsModeBahaviorSubject = new BehaviorSubject<boolean>(false);
 
+  public poseDeviationConnectionBahaviorSubject = new BehaviorSubject<boolean>(false)
+
   constructor() {
     this.currentMap$
       .pipe(

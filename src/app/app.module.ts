@@ -78,7 +78,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-full-width',
       preventDuplicates: true,
-      disableTimeOut: true,
+      // disableTimeOut: true,
     }),
     HammerModule
   ],

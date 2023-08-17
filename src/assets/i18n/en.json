@@ -138,6 +138,8 @@
   "goingToDestination": "Going To",
   "distance": "Distance",
   "arrivalTime": "Arrival Time",
-  "meter":"M",
-  "cacheClearSuccessful": "localStorage has been cleared"
+  "meter":"m",
+  "cacheClearSuccessful": "localStorage has been cleared",
+  "minutes":"mins",
+  "obstacleDetected": "Obstacle Detected"
 }
