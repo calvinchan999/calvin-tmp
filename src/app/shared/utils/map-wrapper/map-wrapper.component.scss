@@ -11,7 +11,9 @@
   overflow: hidden;
   position: relative;
   border: solid black;
-  background: whitesmoke;
+  border-radius: 5px;
+  // background: whitesmoke;
+  background: transparent;
 }
 
 // .preview-wrapper::-webkit-scrollbar {

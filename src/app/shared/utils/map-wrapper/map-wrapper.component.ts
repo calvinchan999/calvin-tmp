@@ -825,8 +825,13 @@ export class MapWrapperComponent
             this.newRatio,
           radius: 15 * pointRatio * this.newRatio,
           stroke: 'black',
-          strokeWidth: 7 * this.newRatio,
-          opacity: 0.8
+          // strokeWidth: 7 * this.newRatio,
+          opacity: 0.8,
+          // shadowColor: 'black',
+          // shadowOffset: {
+          //   x: 1,
+          //   y: 1
+          // }
         });
         this.mapLayer.add(this.robotCurrentPositionPoint);
       }),
