@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import {  iif, Observable, of, Subject, Subscription } from 'rxjs';
+import { EMPTY, iif, Observable, of, Subject, Subscription } from 'rxjs';
 import {
   catchError,
   filter,
@@ -18,7 +18,7 @@ import {
   distinctUntilChanged,
   take,
   switchMap,
-  delay,
+  delay
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -301,20 +301,26 @@ export class DefaultComponent implements OnInit, OnDestroy {
     });
 
     this.mqttService.stateSubject
-      .pipe(map(state => JSON.parse(state)))
-      .subscribe((response: any) => {
-        if (response) {
-          const { robotId, state, manual } = response;
-          this.sharedService.currentRobotId.next(robotId);
-          this.sharedService.currentMode$.next(state);
-          this.sharedService.currentManualStatus$.next(manual);
-          if (state !== `FOLLOW_ME`) {
-            this.sharedService.currentPairingStatus$.next(null);
+      .pipe(
+        map(state => JSON.parse(state)),
+        mergeMap(result => {
+          if (result) {
+            const { robotId, state, manual } = result;
+            this.sharedService.currentRobotId.next(robotId);
+            this.sharedService.currentMode$.next(state);
+            this.sharedService.currentManualStatus$.next(manual);
+            if (state !== `FOLLOW_ME`) {
+              this.sharedService.currentPairingStatus$.next(null);
+              return this.getFollowRobotStatus();
+            } else {
+              return this.getFollowMePairingStatus();
+            }
           } else {
-            this.getPairingStatus();
+            return of(EMPTY);
           }
-        }
-      });
+        })
+      )
+      .subscribe();
 
     this.sharedService.isOpenModal$.subscribe((response: any) => {
       if (!this.dialog) return;
@@ -508,7 +514,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
         mergeMap(() => this.getCurrentMode()),
         mergeMap(() => this.getCurrentMap()),
         mergeMap(() => this.getTaskStatus()),
-        mergeMap(() => this.getFollowRobotStatus()),
+        // mergeMap(() => this.getFollowRobotStatus()),
         delay(2000),
         mergeMap(() => this.getRobotHeld())
       )
@@ -578,30 +584,28 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //   )
     //   .subscribe();
     return this.modeService.getMode().pipe(
-      tap((response: ModeResponse) => {
-        console.log('Get Mode: ', response);
-        const { robotId, state, manual } = response;
+      mergeMap((result: ModeResponse) => {
+        console.log('Get Mode: ', result);
+        const { robotId, state, manual } = result;
         this.sharedService.currentMode$.next(state);
         this.sharedService.currentManualStatus$.next(manual);
         this.sharedService.currentRobotId.next(robotId);
         if (state !== `FOLLOW_ME`) {
           this.sharedService.currentPairingStatus$.next(null);
+          return this.getFollowRobotStatus();
         } else {
-          this.getPairingStatus();
+          return this.getFollowMePairingStatus();
         }
       })
     );
   }
 
-  getPairingStatus() {
-    this.modeService
-      .getPairingStatus()
-      .pipe(
-        tap(data => {
-          this.sharedService.currentPairingStatus$.next(data);
-        })
-      )
-      .subscribe();
+  getFollowMePairingStatus(): Observable<any> {
+    return this.modeService.getPairingStatus().pipe(
+      tap(data => {
+        this.sharedService.currentPairingStatus$.next(data);
+      })
+    );
   }
 
   getTaskWaypointPointer(departurePayload) {
@@ -720,32 +724,22 @@ export class DefaultComponent implements OnInit, OnDestroy {
   }
 
   getRobotHeld(): Observable<any> {
-    const robotId = this.sharedService.currentRobotId.value;
-    const param = { param: { robotCode: robotId } };
-    // this.sub.add(
-    //   this.modeService
-    //     .getRobotHeld(param)
-    //     .pipe(
-    //       tap(status => {
-    //         if (status == true) {
-    //           this.sharedService.isRobotHeldBehaviorSubject.next(true);
-    //         } else {
-    //           this.sharedService.isRobotHeldBehaviorSubject.next(false);
-    //         }
-    //       })
-    //     )
-    //     .subscribe()
-    // );
+    if (this.appConfigService.getConfig().enableTaskReleaseOrHold) {
+      const robotId = this.sharedService.currentRobotId.value;
+      const param = { param: { robotCode: robotId } };
 
-    return this.modeService.getRobotHeld(param).pipe(
-      tap(status => {
-        if (status === true) {
-          this.sharedService.isRobotHeldBehaviorSubject.next(true);
-        } else {
-          this.sharedService.isRobotHeldBehaviorSubject.next(false);
-        }
-      })
-    );
+      return this.modeService.getRobotHeld(param).pipe(
+        tap(status => {
+          if (status === true) {
+            this.sharedService.isRobotHeldBehaviorSubject.next(true);
+          } else {
+            this.sharedService.isRobotHeldBehaviorSubject.next(false);
+          }
+        })
+      );
+    } else {
+      return of(EMPTY);
+    }
   }
 
   robotPairDialogConditionChecker({ group, master, client, value }) {
