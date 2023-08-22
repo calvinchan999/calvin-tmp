@@ -619,7 +619,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
             return this.waypointService.getWaypoint({ filter }).pipe(
               map(waypoints => {
                 for (const waypoint of waypoints) {
-                  if (waypoint.name.indexOf(waypointName) > -1) {
+                  if (waypoint.name === waypointName) { // waypoint.name.indexOf(waypointName) > -1 
                     return waypoint;
                   }
                 }
