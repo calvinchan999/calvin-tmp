@@ -28,7 +28,7 @@ export class MqttService {
   // public $mapActive = new Subject<any>();
   // public $state = new Subject<any>();
   // public poseSubject = new Subject<any>();
-  public pauseResumeSubject = new Subject<any>();
+  // public pauseResumeSubject = new Subject<any>();
   // public $obstacleDetction = new Subject<any>();
   // public pairing$ = new BehaviorSubject<any>(null);
   public executionSubject = new Subject<any>();
@@ -142,15 +142,15 @@ export class MqttService {
       //     );
       //   });
 
-      this._mqttService
-        .observe('rvautotech/fobo/baseController/pauseResume')
-        .subscribe((message: IMqttMessage) => {
-          console.log('rvautotech/fobo/baseController/pauseResume');
-          console.log(new TextDecoder('utf-8').decode(message.payload));
-          this.pauseResumeSubject.next(
-            new TextDecoder('utf-8').decode(message.payload)
-          );
-        });
+      // this._mqttService
+      //   .observe('rvautotech/fobo/baseController/pauseResume')
+      //   .subscribe((message: IMqttMessage) => {
+      //     console.log('rvautotech/fobo/baseController/pauseResume');
+      //     console.log(new TextDecoder('utf-8').decode(message.payload));
+      //     this.pauseResumeSubject.next(
+      //       new TextDecoder('utf-8').decode(message.payload)
+      //     );
+      //   });
 
       // this._mqttService
       // .observe('rvautotech/fobo/obstacle/detection')
@@ -267,6 +267,12 @@ export class MqttService {
   getObstacleDetection(): Observable<any> {
     return this._mqttService
       .observe('rvautotech/fobo/obstacle/detection')
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
+  getBaseControllerPauseResume(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/baseController/pauseResume')
       .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
   }
 

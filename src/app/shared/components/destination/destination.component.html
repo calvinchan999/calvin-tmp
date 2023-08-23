@@ -26,54 +26,81 @@
     ></app-map-wrapper>
   </div>
 
-  <div class="waypoint-title" *ngIf="!enableMap">
-    <h1 style="text-align: center;">{{ "goingToDestination" | translate }}</h1>
-    <br />
-    <h1 style="text-align: center;" *ngIf="waypoint">
-      {{ waypoint.targetName }}
-    </h1>
-  </div>
+  <div class="destination-content">
+    <div class="waypoint-title" *ngIf="!enableMap">
+      <h1 style="text-align: center;">
+        {{ "goingToDestination" | translate }}
+      </h1>
+      <br />
+      <h1 style="text-align: center;" *ngIf="waypoint">
+        {{ waypoint.targetName }}
+      </h1>
+    </div>
 
-  <div class="map-subtitle" *ngIf="enableMap">
-    <h2 style="text-align: center;">
-      {{ "goingToDestination" | translate }}
-      <label class="waypoint-name">{{ waypoint?.targetName }}</label>
-    </h2>
-    <div class="destination-content">
-      <div class="distance-label" *ngIf="distance">
-        <label>{{ "distance" | translate }}</label>
-        <label *ngIf="distance > 0; else distanceNotFound"
-          >{{ distance }} {{ "meter" | translate }}</label
-        >
+    <div class="map-subtitle" *ngIf="enableMap">
+      <h2 style="text-align: center;">
+        {{ "goingToDestination" | translate }}
+        <label class="waypoint-name">{{ waypoint?.targetName }}</label>
+      </h2>
+      <div class="destination-info">
+        <div class="distance-label" *ngIf="distance">
+          <label>{{ "distance" | translate }}</label>
+          <label *ngIf="distance > 0; else distanceNotFound"
+            >{{ distance }} {{ "meter" | translate }}</label
+          >
+        </div>
+        <div class="time-label" *ngIf="arrivalTime">
+          <label>{{ "arrivalTime" | translate }}</label>
+          <label *ngIf="arrivalTime >= 0; else arrivalTimeIsZero"
+            >{{ arrivalTime }} {{ "minutes" | translate }}</label
+          >
+        </div>
       </div>
-      <div class="time-label" *ngIf="arrivalTime">
-        <label>{{ "arrivalTime" | translate }}</label>
-        <label *ngIf="arrivalTime >= 0; else arrivalTimeIsZero">{{ arrivalTime }} {{ "minutes" | translate }}</label>
+    </div>
+    <div class="spuare-group">
+      <div class="square-button cancel" (click)="onCancel()">
+        <i class="mdi mdi-stop icon"></i>
+        <h3 class="title">{{ "cancel" | translate }}</h3>
       </div>
-    </div>
-  </div>
-  <div class="spuare-group">
-    <div class="square-button cancel" (click)="onCancel()">
-      <i class="mdi mdi-stop icon"></i>
-      <h3 class="title">{{ "cancel" | translate }}</h3>
-    </div>
-    <div class="square-button pause" (click)="onPause()">
-      <i class="mdi mdi-pause icon"></i>
-      <h3 class="title">{{ "pause" | translate }}</h3>
-    </div>
-    <div class="square-button resume" (click)="onResume()">
-      <i class="mdi mdi-play icon"></i>
-      <h3 class="title">{{ "resume" | translate }}</h3>
+      <div
+        class="square-button pause"
+        (click)="onPause()"
+        *ngIf="pauseResumeState !== 'PAUSE'; else currentPause"
+      >
+        <i class="mdi mdi-pause icon"></i>
+        <h3 class="title">{{ "pause" | translate }}</h3>
+      </div>
+      <div
+        class="square-button resume"
+        (click)="onResume()"
+        *ngIf="pauseResumeState !== 'RESUME'; else currentResume"
+      >
+        <i class="mdi mdi-play icon"></i>
+        <h3 class="title">{{ "resume" | translate }}</h3>
+      </div>
     </div>
   </div>
 </div>
 <ng-template #distanceNotFound>
   <ng-container>
-    <label>{{ '--' }}</label>
+    <label>{{ "--" }}</label>
   </ng-container>
 </ng-template>
 <ng-template #arrivalTimeIsZero>
   <ng-container>
-    <label>{{ '--' }}</label>
+    <label>{{ "--" }}</label>
   </ng-container>
+</ng-template>
+
+<ng-template #currentPause>
+  <div class="square-button pause-disabled">
+    <i class="mdi mdi-pause icon"></i>
+    <h3 class="title">{{ "pause" | translate }}</h3>
+  </div>
+</ng-template>
+<ng-template #currentResume>
+  <div class="square-button resume-disabled">
+    <i class="mdi mdi-play icon"></i>
+    <h3 class="title">{{ "resume" | translate }}</h3>
+  </div>
 </ng-template>

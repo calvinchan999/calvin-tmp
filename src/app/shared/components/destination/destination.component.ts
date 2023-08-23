@@ -39,7 +39,10 @@ export class DestinationComponent implements OnInit, OnDestroy {
   distance: number = 0;
   arrivalTime: string;
 
+  pauseResumeState: string;
+
   obstacleDetectionSub = new Subscription();
+  baseControllerPauseResumeSub = new Subscription();
 
   constructor(
     private waypointService: WaypointService,
@@ -144,27 +147,27 @@ export class DestinationComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.sub.add(
-      this.mqttService.pauseResumeSubject
-        .pipe(
-          map(pauseResume => {
-            let data = JSON.parse(pauseResume);
-            const { pauseResumeState } = data;
-            if (pauseResumeState === 'RESUME') {
-              data = { ...data, ...{ tranlateMessageKey: 'resumeMessage' } };
-            } else if (pauseResumeState === 'PAUSE') {
-              data = { ...data, ...{ tranlateMessageKey: 'pauseMessage' } };
-            }
-            return data;
-          })
-        )
-        .subscribe(data => {
-          const { tranlateMessageKey } = data;
-          this.translateService.get(tranlateMessageKey).subscribe(message => {
-            this.sharedService.response$.next({ type: 'normal', message });
-          });
-        })
-    );
+    // this.sub.add(
+    //   this.mqttService.pauseResumeSubject
+    //     .pipe(
+    //       map(pauseResume => {
+    //         let data = JSON.parse(pauseResume);
+    //         const { pauseResumeState } = data;
+    //         if (pauseResumeState === 'RESUME') {
+    //           data = { ...data, ...{ tranlateMessageKey: 'resumeMessage' } };
+    //         } else if (pauseResumeState === 'PAUSE') {
+    //           data = { ...data, ...{ tranlateMessageKey: 'pauseMessage' } };
+    //         }
+    //         return data;
+    //       })
+    //     )
+    //     .subscribe(data => {
+    //       const { tranlateMessageKey } = data;
+    //       this.translateService.get(tranlateMessageKey).subscribe(message => {
+    //         this.sharedService.response$.next({ type: 'normal', message });
+    //       });
+    //     })
+    // );
 
     this.sub.add(
       this.sharedService.departureWaypoint$.subscribe(data => {
@@ -227,6 +230,35 @@ export class DestinationComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         console.log(res);
       });
+
+    this.baseControllerPauseResumeSub = this.mqttService
+      .getBaseControllerPauseResume()
+      .pipe(
+        map(mq => JSON.parse(mq)),
+        tap(data => {
+          const { pauseResumeState } = data;
+          if (pauseResumeState) {
+            this.pauseResumeState = pauseResumeState;
+          } else {
+            this.pauseResumeState = '';
+          }
+        }),
+        map(data => {
+          const { pauseResumeState } = data;
+          if (pauseResumeState === 'RESUME') {
+            data = { ...data, ...{ tranlateMessageKey: 'resumeMessage' } };
+          } else if (pauseResumeState === 'PAUSE') {
+            data = { ...data, ...{ tranlateMessageKey: 'pauseMessage' } };
+          }
+          return data;
+        })
+      )
+      .subscribe(data => {
+        const { tranlateMessageKey } = data;
+        this.translateService.get(tranlateMessageKey).subscribe(message => {
+          this.sharedService.response$.next({ type: 'normal', message });
+        });
+      });
   }
 
   onPause() {
@@ -263,5 +295,6 @@ export class DestinationComponent implements OnInit, OnDestroy {
     this.poseMqSub.unsubscribe();
     this.distanceMqSub.unsubscribe();
     this.obstacleDetectionSub.unsubscribe();
+    this.baseControllerPauseResumeSub.unsubscribe();
   }
 }
