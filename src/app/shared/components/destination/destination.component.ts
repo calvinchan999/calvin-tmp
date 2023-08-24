@@ -27,7 +27,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
   sub = new Subscription();
   poseMqSub = new Subscription();
   distanceMqSub = new Subscription();
-  waypoint;
+  waypoint = null;
   editor = EditorType['POSITIONLISTENER'];
   mapName: string;
   newRatio: number = 1;
@@ -170,7 +170,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
     // );
 
     this.sub.add(
-      this.sharedService.departureWaypoint$.subscribe(data => {
+      this.sharedService.departureWaypointSubject.subscribe(data => {
         if (data) {
           const { x, y, name } = data;
           this.waypoint = {

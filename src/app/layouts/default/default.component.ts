@@ -377,7 +377,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    this.sharedService.departureWaypoint$
+    this.sharedService.departureWaypointSubject
       .pipe(
         tap(data => {
           if (data) {
@@ -627,7 +627,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
               tap(waypoint => {
                 if (waypoint) {
                   const { name, x, y } = waypoint;
-                  this.sharedService.departureWaypoint$.next({ x, y, name });
+                  this.sharedService.departureWaypointSubject.next({ x, y, name });
                 } else {
                   this.translateService
                     .get('destinationNotFoundError', {

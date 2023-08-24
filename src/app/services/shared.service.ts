@@ -64,8 +64,8 @@ export class SharedService {
   public isOpenModal$ = new Subject<Modal>();
   public isClosedModal$ = new Subject<String>();
 
-  public departureWaypoint$ = new BehaviorSubject<DepartureWaypoint>(null);
-  public taskCompletionType$ = new BehaviorSubject<any>(null);
+  public departureWaypointSubject = new Subject<DepartureWaypoint>();
+  // public taskCompletionType$ = new BehaviorSubject<any>(null);
 
   public reset$ = new Subject<number>();
   public timer$: Observable<any> = EMPTY;

@@ -40,7 +40,9 @@
     <div class="map-subtitle" *ngIf="enableMap">
       <h2 style="text-align: center;">
         {{ "goingToDestination" | translate }}
-        <label class="waypoint-name">{{ waypoint?.targetName }}</label>
+        <label class="waypoint-name" *ngIf="waypoint">{{
+          waypoint?.targetName
+        }}</label>
       </h2>
       <div class="destination-info">
         <div class="distance-label" *ngIf="distance">
