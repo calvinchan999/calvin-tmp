@@ -52,6 +52,7 @@ export enum LocalizationType {
   providedIn: 'root'
 })
 export class SharedService {
+  public mqBrokerConnection = new BehaviorSubject<boolean>(false);
   public currentRobotId = new BehaviorSubject<string>('');
   public currentMapBehaviorSubject$ = new BehaviorSubject<string>('');
   public currentMode$ = new Subject<string>();
@@ -95,11 +96,11 @@ export class SharedService {
       )
       .subscribe();
 
-    if (environment.production) {
-      this.timer$ = this.reset$.pipe(
-        startWith(0),
-        switchMap(() => timer(0, 20000)) //  20000, Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
-      );
-    }
+    // if (environment.production) {
+    //   this.timer$ = this.reset$.pipe(
+    //     startWith(0),
+    //     switchMap(() => timer(0, 20000)) //  20000, Set a timer to check the mqtt connection, and reset the timer if the mqtt battery topic has posted some data.
+    //   );
+    // }
   }
 }

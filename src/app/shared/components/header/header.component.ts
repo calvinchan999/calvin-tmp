@@ -188,8 +188,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   getBattery() {
     // @todo check connection
+    // mqtt heartbeat 
+    //
     this.mqttService.batterySubject
-      .pipe(tap(() => this.sharedService.reset$.next(0)))
+      // .pipe(tap(() => this.sharedService.reset$.next(0)))
       .subscribe(battery => {
         if (battery) {
           const { robotId, powerSupplyStatus, percentage } = JSON.parse(
@@ -197,9 +199,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
           );
           this.powerSupplyStatus = powerSupplyStatus;
           this.percentage = Math.round(percentage * 100);
-          // if (!this.sharedService.robotIdBahaviorSubject.value) {
-          //   this.sharedService.robotIdBahaviorSubject.next(robotId);
-          // }
         }
       });
   }

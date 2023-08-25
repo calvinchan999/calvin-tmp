@@ -82,17 +82,19 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private robotProfileService: RobotProfileService
   ) {
     this.sharedService.isRobotHeldBehaviorSubject.next(undefined); // pass undefined to reset variables to avoid triggering other functions
-    this.sharedService.timer$.subscribe(i => {
-      if (i > 0) {
-        this.closeDialogAfterRefresh = false;
-        if (!this.disconnectResponseDialog.isExist()) {
-          this.disconnectMessage = 'error.disconnect';
-          this.disconnectResponseDialog.open();
-        }
-      } else {
-        this.disconnectResponseDialog.onCloseWithoutRefresh();
-      }
-    });
+
+    // redesign keep alive mqtt broker connection
+    // this.sharedService.timer$.subscribe(i => {
+    //   if (i > 0) {
+    //     this.closeDialogAfterRefresh = false;
+    //     if (!this.disconnectResponseDialog.isExist()) {
+    //       this.disconnectMessage = 'error.disconnect';
+    //       this.disconnectResponseDialog.open();
+    //     }
+    //   } else {
+    //     this.disconnectResponseDialog.onCloseWithoutRefresh();
+    //   }
+    // });
 
     this.mqttService.actionExecutionSubject
       .pipe(
@@ -142,60 +144,35 @@ export class DefaultComponent implements OnInit, OnDestroy {
 
     this.mqttService.completionSubject
       .pipe(
-        map(feedback => JSON.parse(feedback)),
-        mergeMap(data =>
-          this.translateService
-            .get('completedTask')
-            .pipe(map(completedTask => ({ ...data, completedTask })))
-        ),
-        mergeMap(data =>
-          this.translateService
-            .get('cancelledTask')
-            .pipe(map(cancelledTask => ({ ...data, cancelledTask })))
-        )
-        // mergeMap(data => {
-        //   if (data) {
-        //     const { completed, cancelled, completedTask, cancelledTask } = data;
-        //     let message = '';
-        //     if (completed) {
-        //       if (!cancelled) {
-        //         message = completedTask;
-        //       } else {
-        //         message = cancelledTask;
-        //       }
-        //     } else if (cancelled) {
-        //       message = cancelledTask;
-        //     }
-        //     if (message.length > 0) {
-        //       this.sharedService.loading$.next(true);
-        //       this.dialog.onCloseWithoutRefresh();
-        //       this.sharedService.response$.next({ type: 'normal', message });
-        //       setTimeout(() => {
-        //         this.sharedService.loading$.next(false);
-        //         this.router.navigate(['/']);
-        //       }, 3000);
-        //     }
-        //   }
-        //   return of(EMPTY);
-        // })
+        map(feedback => JSON.parse(feedback))
+        // mergeMap(data =>
+        //   this.translateService
+        //     .get('completedTask')
+        //     .pipe(map(completedTask => ({ ...data, completedTask })))
+        // ),
+        // mergeMap(data =>
+        //   this.translateService
+        //     .get('cancelledTask')
+        //     .pipe(map(cancelledTask => ({ ...data, cancelledTask })))
+        // )
       )
       .subscribe(data => {
         if (data) {
-          const { completed, cancelled, completedTask, cancelledTask } = data;
+          const { completed, cancelled } = data;
           let message = '';
           if (completed) {
             if (!cancelled) {
-              message = completedTask;
+              message = this.translateService.instant('completedTask');
             } else {
-              message = cancelledTask;
+              message = this.translateService.instant('cancelledTask');
             }
           } else if (cancelled) {
-            message = cancelledTask;
+            message = this.translateService.instant('cancelledTask');
           }
 
           if (message.length > 0) {
             // this.sharedService.loading$.next(true);
-            this.dialog.onCloseWithoutRefresh();
+            // this.dialog.onCloseWithoutRefresh();
             this.sharedService.response$.next({ type: 'normal', message });
             console.log(
               this.appConfigService.getConfig().enableTaskReleaseOrHold
@@ -525,6 +502,20 @@ export class DefaultComponent implements OnInit, OnDestroy {
     this.initializeErrors();
   }
 
+  ngAfterViewInit() {
+    this.sharedService.mqBrokerConnection.subscribe(status => {
+      if (status) {
+        this.disconnectResponseDialog.onCloseWithoutRefresh();
+      } else {
+        this.closeDialogAfterRefresh = false;
+        if (!this.disconnectResponseDialog.isExist()) {
+          this.disconnectMessage = 'error.disconnect';
+          setTimeout(() => this.disconnectResponseDialog.open(), 0);
+        }
+      }
+    });
+  }
+
   getProfile(): Observable<any> {
     // this.robotProfileService.getRobotProfile().subscribe(response => {
     //   const { robotId, fms } = response;
@@ -613,13 +604,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
       const { waypointName } = departurePayload.movement;
       this.sharedService.currentMapBehaviorSubject$
         .pipe(
-          take(1),
+          // take(1),
           mergeMap(mapName => {
             const filter = _.pickBy({ mapName }, _.identity);
             return this.waypointService.getWaypoint({ filter }).pipe(
               map(waypoints => {
                 for (const waypoint of waypoints) {
-                  if (waypoint.name === waypointName) { // waypoint.name.indexOf(waypointName) > -1 
+                  if (waypoint.name === waypointName) {
+                    // waypoint.name.indexOf(waypointName) > -1
                     return waypoint;
                   }
                 }
@@ -627,7 +619,11 @@ export class DefaultComponent implements OnInit, OnDestroy {
               tap(waypoint => {
                 if (waypoint) {
                   const { name, x, y } = waypoint;
-                  this.sharedService.departureWaypointSubject.next({ x, y, name });
+                  this.sharedService.departureWaypointSubject.next({
+                    x,
+                    y,
+                    name
+                  });
                 } else {
                   this.translateService
                     .get('destinationNotFoundError', {
@@ -884,13 +880,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
       if (status && parentComponent === 'waypoint') {
         const dialogName = this.modal;
         this.sharedService.isClosedModal$.next(dialogName);
-      }
-      if (status && parentComponent === 'localization') {
-        this.sharedService.poseDeviationConnectionBahaviorSubject.next(true);
+      } else if (status && parentComponent === 'localization') {
+        this.sharedService.poseDeviationConnectionBahaviorSubject.next(true); // cancel localize pose deviation toastr
         this.router.navigate(['/']);
       } else if (!status && parentComponent === 'localization') {
-        this.sharedService.poseDeviationConnectionBahaviorSubject.next(true);
+        this.sharedService.poseDeviationConnectionBahaviorSubject.next(true); // cancel localize pose deviation toastr
         this.router.navigate(['/localization']);
+      } else {
+        this.router.navigate(['/']);
       }
     });
   }
