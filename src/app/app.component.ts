@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subject } from 'rxjs';
 import { Config, MqttService } from './services/mqtt.service';
@@ -7,6 +7,7 @@ import { SharedService } from './services/shared.service';
 import { LanguageService } from './services/language.service';
 import { environment } from 'src/environments/environment';
 import { tap } from 'rxjs/operators';
+import { ModalComponent } from './shared/components/modal/modal.component';
 // import { IndexedDbService } from './services/indexed-db.service';
 
 @Component({
@@ -15,9 +16,13 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  @ViewChild('disconnectResponseDialog')
+  disconnectResponseDialog: ModalComponent;
   private ngUnsubscribe = new Subject();
   point: number = 0;
   db: any;
+
+  disconnectMessage: string;
   constructor(
     private appConfigService: AppConfigService,
     private mqttService: MqttService,
@@ -49,6 +54,16 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const appVersion: string = environment.appVersion;
     console.log(`appVersion: ${appVersion}`);
+     this.sharedService.mqBrokerConnection.subscribe(status => {
+      if (status) {
+        this.disconnectResponseDialog.onCloseWithoutRefresh();
+      } else {
+        if (!this.disconnectResponseDialog?.isExist()) {
+          this.disconnectMessage = 'error.disconnect';
+          setTimeout(() => this.disconnectResponseDialog.open(), 0);
+        }
+      }
+    });
   }
 
   ngOnDestroy() {

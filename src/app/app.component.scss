@@ -1,0 +1,17 @@
+// ::ng-deep .loader {
+//   //   background-color: no-repeat #eff1f6;
+//   background: darkgray;
+// }
+
+.modal-title {
+  max-width: 50vw;
+  word-wrap: break-word;
+}
+
+.modal-body {
+  overflow-y: auto;
+  word-wrap: break-word;
+  height: auto;
+  max-height: 400px;
+  font-size: 25px;
+}

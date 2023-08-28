@@ -30,8 +30,6 @@ import { ToastrModule } from 'ngx-toastr';
 import { SignInComponent } from './views/sign-in/sign-in.component';
 // import { RobotGroupComponent } from './views/robot-group/robot-group.component';
 
-
-
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }

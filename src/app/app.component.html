@@ -1,3 +1,17 @@
 <router-outlet></router-outlet>
 <ngx-spinner [fullScreen]="true" type="ball-clip-rotate" size="large">
 </ngx-spinner>
+<app-modal
+  #disconnectResponseDialog
+  [disableClose]="false"
+  [closeAfterRefresh]="false"
+>
+  <ng-template #modalHeader
+    ><h2 class="modal-title">{{ "warning" | translate }}</h2></ng-template
+  >
+  <ng-template #modalResponse
+    ><label class="modal-body">{{
+      disconnectMessage | translate
+    }}</label></ng-template
+  >
+</app-modal>
