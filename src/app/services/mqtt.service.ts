@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IMqttMessage, MqttService as NgxMqttService } from 'ngx-mqtt';
-import { interval, Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { UUID } from 'angular2-uuid';
 // import { IndexedDbService } from './indexed-db.service';
 import { SharedService } from './shared.service';
@@ -67,13 +67,16 @@ export class MqttService {
         path: '/mqtt',
         clientId: this.clientId,
         protocol: config.mqtt.protocol,
-        keepalive: 1
+        keepalive: 1,
+        clean: false
       });
 
       this.getConnection();
       this.getError();
       this.getOffline();
       this.globalTopic(qos);
+      // this._mqttService.onReconnect.subscribe(connect => console.log(connect));
+      // this._mqttService.onClose.subscribe(close => console.log(close));
     }
   }
 

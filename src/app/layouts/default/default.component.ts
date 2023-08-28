@@ -258,7 +258,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
         //     );
         //   }
         // }),
-        tap(departure => this.getTaskWaypointPointer(departure))
+        mergeMap(departure => this.getTaskWaypointPointer(departure))
       )
       .subscribe();
 
@@ -599,51 +599,61 @@ export class DefaultComponent implements OnInit, OnDestroy {
     );
   }
 
-  getTaskWaypointPointer(departurePayload) {
+  getTaskWaypointPointer(departurePayload): Observable<any> {
     if (departurePayload?.movement) {
       const { waypointName } = departurePayload.movement;
-      this.sharedService.currentMapBehaviorSubject$
-        .pipe(
-          // take(1),
-          mergeMap(mapName => {
-            const filter = _.pickBy({ mapName }, _.identity);
-            return this.waypointService.getWaypoint({ filter }).pipe(
-              map(waypoints => {
-                for (const waypoint of waypoints) {
-                  if (waypoint.name === waypointName) {
-                    // waypoint.name.indexOf(waypointName) > -1
-                    return waypoint;
-                  }
+      const currentMap = this.sharedService.currentMapBehaviorSubject$.value;
+      return of(EMPTY).pipe(
+        map(() => currentMap),
+        // take(1),
+        mergeMap(mapName => {
+          const filter = _.pickBy({ mapName }, _.identity);
+          return this.waypointService.getWaypoint({ filter }).pipe(
+            map(waypoints => {
+              for (const waypoint of waypoints) {
+                if (waypoint.name === waypointName) {
+                  // waypoint.name.indexOf(waypointName) > -1
+                  return waypoint;
                 }
-              }),
-              tap(waypoint => {
-                if (waypoint) {
-                  const { name, x, y } = waypoint;
-                  this.sharedService.departureWaypointSubject.next({
-                    x,
-                    y,
-                    name
-                  });
-                } else {
-                  this.translateService
-                    .get('destinationNotFoundError', {
-                      mapName,
-                      waypointName
-                    })
-                    .subscribe(msg => {
-                      this.sharedService.response$.next({
-                        type: 'warning',
-                        message: msg,
-                        closeAfterRefresh: true
-                      });
-                    });
-                }
-              })
-            );
-          })
-        )
-
-        .subscribe();
+              }
+            }),
+            tap(waypoint => {
+              if (waypoint) {
+                const { name, x, y } = waypoint;
+                this.sharedService.departureWaypointSubject.next({
+                  x,
+                  y,
+                  name
+                });
+              } else {
+                //   this.translateService
+                //     .get('destinationNotFoundError', {
+                //       mapName,
+                //       waypointName
+                //     })
+                //     .subscribe(msg => {
+                //       this.sharedService.response$.next({
+                //         type: 'warning',
+                //         message: msg,
+                //         closeAfterRefresh: true
+                //       });
+                //     });
+                const msg = this.translateService.instant(
+                  'destinationNotFoundError',
+                  { mapName, waypointName }
+                );
+                this.sharedService.response$.next({
+                  type: 'warning',
+                  message: msg,
+                  closeAfterRefresh: true
+                });
+              }
+            })
+          );
+        })
+      );
+    } else {
+      return of(EMPTY);
     }
   }
 
@@ -698,9 +708,9 @@ export class DefaultComponent implements OnInit, OnDestroy {
           data.taskCompletionDTO === null &&
           !data.actionExecuting
         ) {
-          return of(this.getTaskWaypointPointer(data.taskDepartureDTO));
+          return this.getTaskWaypointPointer(data.taskDepartureDTO);
         } else {
-          return of(null);
+          return of(EMPTY);
         }
       })
     );

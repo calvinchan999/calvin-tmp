@@ -20,5 +20,9 @@ export class RobotProfileService {
     const url = `${this.baseUrl}${environment.api.profile}`;
     return this.http.get<any>(url);
   }
-  
+
+  getRobotPauseResumeStatus(): Observable<any> {
+    const url = `${this.baseUrl}${environment.api.pauseResume}`;
+    return this.http.get<any>(url);
+  }
 }

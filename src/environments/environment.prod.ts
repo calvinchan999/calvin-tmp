@@ -33,6 +33,7 @@ export const environment = {
     poseDeviation: '/api/localization/v1/pose/deviation',
     floorPlan: (mapCode: string) => `/api/floorPlan/v1/${mapCode}`,
     assistance: '/api/baseControl/v1/assistance',
-    profile: '/api/baseControl/v1/profile'
+    profile: '/api/baseControl/v1/profile',
+    pauseResume: '/api/baseControl/v1/pauseResume'
   }
 };

@@ -12,6 +12,7 @@ import { Metadata } from '../localization-form/localization-form.component';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { RobotProfileService } from 'src/app/views/services/robot-profile.service';
 
 @Component({
   selector: 'app-destination',
@@ -51,7 +52,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
     private mqttService: MqttService,
     private translateService: TranslateService,
     private router: Router,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private robotProfileService: RobotProfileService
   ) {
     this.sub = this.sharedService.currentMap$
       .pipe(
@@ -228,7 +230,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(res => {
-        console.log(res);
+        console.log(res); // debug
       });
 
     this.baseControllerPauseResumeSub = this.mqttService
@@ -255,10 +257,18 @@ export class DestinationComponent implements OnInit, OnDestroy {
       )
       .subscribe(data => {
         const { tranlateMessageKey } = data;
-        this.translateService.get(tranlateMessageKey).subscribe(message => {
-          this.sharedService.response$.next({ type: 'normal', message });
-        });
+        const message = this.translateService.instant(tranlateMessageKey);
+        this.sharedService.response$.next({ type: 'normal', message });
       });
+
+    this.robotProfileService.getRobotPauseResumeStatus().subscribe(data => {
+      const { pauseResumeState } = data;
+      if (pauseResumeState) {
+        this.pauseResumeState = pauseResumeState;
+      } else {
+        this.pauseResumeState = '';
+      }
+    });
   }
 
   onPause() {

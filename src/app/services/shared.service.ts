@@ -52,7 +52,7 @@ export enum LocalizationType {
   providedIn: 'root'
 })
 export class SharedService {
-  public mqBrokerConnection = new BehaviorSubject<boolean>(false);
+  public mqBrokerConnection = new BehaviorSubject<boolean>(undefined);
   public currentRobotId = new BehaviorSubject<string>('');
   public currentMapBehaviorSubject$ = new BehaviorSubject<string>('');
   public currentMode$ = new Subject<string>();
