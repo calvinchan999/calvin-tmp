@@ -42,7 +42,7 @@ export class MqttService {
 
   public clientId: string = '';
 
-  qos: any = 2;
+  qos: any = 0;
 
   constructor(
     private _mqttService: NgxMqttService,
