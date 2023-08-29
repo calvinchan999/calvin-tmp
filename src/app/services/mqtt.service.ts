@@ -68,7 +68,7 @@ export class MqttService {
         clientId: this.clientId,
         protocol: config.mqtt.protocol,
         keepalive: 1,
-        clean: false
+        // clean: true
       });
 
       this.getConnection();
@@ -102,7 +102,7 @@ export class MqttService {
 
   globalTopic(qos) {
     this._mqttService
-      .observe('rvautotech/fobo/battery', { qos })
+      .observe('rvautotech/fobo/battery', { qos})
       .subscribe((message: IMqttMessage) => {
         // console.log('rvautotech/fobo/battery');
         // console.log(new TextDecoder('utf-8').decode(message.payload));
