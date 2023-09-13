@@ -1,8 +1,9 @@
 <div class="camera-container">
   <webcam
-    allowCameraSwitch="true"
+    [allowCameraSwitch]="allowCameraSwitch"
     (initError)="handleInitError($event)"
     [width]="srcWeight"
     [height]="srcHeight"
+    videoOptions="user"
   ></webcam>
 </div>

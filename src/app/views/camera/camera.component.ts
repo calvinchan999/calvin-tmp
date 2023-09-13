@@ -6,18 +6,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./camera.component.scss']
 })
 export class CameraComponent implements OnInit {
-
+  allowCameraSwitch: boolean = false;
   srcHeight: number = window.innerHeight;
   srcWeight: number = window.innerWidth;
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   public handleInitError(error): void {
     if (error) {
-     alert(JSON.stringify(error))
+      alert(JSON.stringify(error));
     }
   }
-
 }
