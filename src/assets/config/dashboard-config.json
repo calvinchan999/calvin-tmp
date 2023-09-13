@@ -1,35 +1,37 @@
 {
-  "server": {
-    "endpoint": "http://rv-dev.eastasia.cloudapp.azure.com:8081",
-    "envirmonent": "development"
-  },
-  "mqtt": {
-    "ip_address": "20.189.76.3",
-    "port_no": 61614,
-    "protocol": "ws"
-  },
-  "battery": {
-    "upperLimit": "0.9",
-    "duration": "28800000"
-  },
-  "feature": {
-    "waypoint": true,
-    "docking": true,
-    "sos": true,
-    "map": true,
-    "localization": true,
-    "mode": true,
-    "logs": false,
-    "pairing": true,
-    "grouping": true,
-    "reserve": true,
-    "release": true,
-    "cache": true
-  },
-  "maxPx": 4080,
-  "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5200",
-  "largeImageServerSideRendering": true,
-  "enableMap": true,
-  "enableFloorPlanMode": false,
-  "enableTaskReleaseOrHold": true
-}
+    "server": {
+      "endpoint": "http://rv-dev.eastasia.cloudapp.azure.com:8081",
+      "envirmonent": "development"
+    },
+    "mqtt": {
+      "ip_address": "20.189.76.3",
+      "port_no": 61614,
+      "protocol": "ws"
+    },
+    "battery": {
+      "upperLimit": "0.9",
+      "duration": "28800000"
+    },
+    "feature": {
+      "waypoint": true,
+      "docking": true,
+      "sos": true,
+      "map": true,
+      "localization": true,
+      "mode": true,
+      "logs": false,
+      "pairing": true,
+      "grouping": true,
+      "reserve": true,
+      "release": true,
+      "cache": true,
+      "camera": true
+    },
+    "maxPx": 4080,
+    "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5200",
+    "largeImageServerSideRendering": true,
+    "enableMap": true,
+    "enableFloorPlanMode": true,
+    "enableTaskReleaseOrHold": false
+  }
+  

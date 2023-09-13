@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
       });
 
     this.sharedService.currentPairingStatus$
-      .pipe(map(data => (data instanceof Object ? data : JSON.parse(data))))
+      // .pipe(map(data => (data instanceof Object ? data : JSON.parse(data))))
       .subscribe(data => {
         if (data?.pairingState) {
           const { pairingState } = data;
@@ -225,6 +225,10 @@ export class HomeComponent implements OnInit {
         )
       )
       .subscribe();
+  }
+
+  onClickCamera() {
+    this.router.navigate(['/camera']);
   }
 
   ngOnDestroy() {

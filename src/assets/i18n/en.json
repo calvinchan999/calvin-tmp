@@ -17,6 +17,7 @@
   "reserve": "Reserve",
   "release": "Release",
   "cacheClear":"Clear Cache",
+  "camera": "Camera",
   "robotStatus": {
     "followMe": "FollowMe",
     "navigation": "Navigation",

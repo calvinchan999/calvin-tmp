@@ -4,6 +4,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { DefaultComponent } from './layouts/default/default.component';
 import { HomeComponent } from './views/home/home.component';
 import { SignInComponent } from './views/sign-in/sign-in.component';
+import { CameraComponent } from './views/camera/camera.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -63,7 +64,12 @@ const routes: Routes = [
         path: 'login',
         data: { title: 'signIn' },
         component: SignInComponent
-      }
+      },
+      {
+        path: 'camera',
+        data: { title: 'camera' },
+        component: CameraComponent
+      },
     ]
   }
 ];

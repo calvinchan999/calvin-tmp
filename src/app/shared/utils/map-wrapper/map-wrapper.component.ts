@@ -794,7 +794,8 @@ export class MapWrapperComponent
         const pointRatio = this.newRatio < 1 ? 3 : 1;
         this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
-          fill: 'blue',
+          fill: '#FF0000',
+          stroke: 'black',
           x: GuiX * this.newRatio,
           y: GuiY * this.newRatio,
           radius: 15 * pointRatio * this.newRatio

@@ -28,6 +28,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { ToastrModule } from 'ngx-toastr';
 
 import { SignInComponent } from './views/sign-in/sign-in.component';
+import { CameraComponent } from './views/camera/camera.component';
+import { WebcamModule } from 'ngx-webcam';
 // import { RobotGroupComponent } from './views/robot-group/robot-group.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -54,7 +56,7 @@ const appInitializerFn = (appConfig: AppConfigService) => {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, SignInComponent],
+  declarations: [AppComponent, HomeComponent, SignInComponent, CameraComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -78,7 +80,8 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       preventDuplicates: true,
       // disableTimeOut: true,
     }),
-    HammerModule
+    HammerModule,
+    WebcamModule
   ],
   providers: [
     HttpClientModule,

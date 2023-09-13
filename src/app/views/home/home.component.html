@@ -135,6 +135,16 @@
           (eventTrigger)="onClickTaskRelease()"
         ></app-card>
       </div>
+      <div
+        class="col-md-12 col-xs-12 col-md-offset-2"
+        *ngIf="features.camera"
+      >
+        <app-card
+          title="camera"
+          icon="camera"
+          (eventTrigger)="onClickCamera()"
+        ></app-card>
+      </div>
     </div>
   </div>
 </div>

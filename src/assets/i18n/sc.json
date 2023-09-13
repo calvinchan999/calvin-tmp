@@ -17,6 +17,7 @@
   "reserve": "预留",
   "release": "取消预留",
   "cacheClear":"清除缓存",
+  "camera": "攝影機",
   "robotStatus": {
     "followMe": "跟随模式",
     "navigation": "导航模式",
