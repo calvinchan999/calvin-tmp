@@ -63,7 +63,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
           if (!enableFloorPlanMode) {
             const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
             const queries = { param };
-            const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
+            const rosOb1$ = this.mapService.getMap(currentMap, queries).pipe(
               tap(mapInfo => {
                 const { base64Image } = mapInfo;
                 this.rosMapImage = base64Image;
@@ -75,7 +75,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
               )
             );
 
-            const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
+            const rosOb2$ = this.mapService.getMapMetadata(currentMap).pipe(
               tap(metaData => {
                 this.metaData = metaData;
                 const { image, newRatio } = JSON.parse(
@@ -91,10 +91,10 @@ export class DestinationComponent implements OnInit, OnDestroy {
               : false;
 
             return of(EMPTY).pipe(
-              mergeMap(() => iif(() => isExist, ob2$, ob1$))
+              mergeMap(() => iif(() => isExist, rosOb2$, rosOb1$))
             );
           } else {
-            const ob3$ = this.mapService.getFloorPlan(currentMap).pipe(
+            const floorPlanOb1$ = this.mapService.getFloorPlan(currentMap).pipe(
               map((info: any) => {
                 return {
                   floorPlanImage: info.base64Image,
@@ -121,7 +121,24 @@ export class DestinationComponent implements OnInit, OnDestroy {
               )
             );
 
-            return of(EMPTY).pipe(mergeMap(() => ob3$));
+
+            const floorPlanOb2$ = this.mapService.getMapMetadata(currentMap).pipe(
+              tap(metaData => {
+                this.metaData = metaData;
+                const { floorPlanData, newRatio } = JSON.parse(
+                  localStorage.getItem(`floorPlan_${currentMap}`)
+                );
+                this.floorPlanData = floorPlanData;
+                this.newRatio = newRatio;
+              })
+            );
+            const isExist = localStorage.getItem(`floorPlan_${currentMap}`)
+              ? true
+              : false;
+
+            return of(EMPTY).pipe(
+              mergeMap(() => iif(() => isExist, floorPlanOb2$, floorPlanOb1$))
+            );
           }
         })
       )
@@ -230,7 +247,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(res => {
-        console.log(res); // debug
+        // console.log(res); // debug
       });
 
     this.baseControllerPauseResumeSub = this.mqttService

@@ -172,8 +172,7 @@ export class MapWrapperComponent
             observer.error(err);
           };
           const { floorPlanImage, transformedScale } = this.floorPlan;
-          // this.scale = transformedScale;
-          img.src = floorPlanImage;
+          img.src = `data:image/jpeg;base64,${floorPlanImage}`;
         }),
         new Observable<HTMLImageElement>(observer => {
           const img = new Image();
@@ -218,7 +217,8 @@ export class MapWrapperComponent
           const imgWidth = img.width;
           const imgHeight = img.height;
 
-          if ((imgWidth > maxPx || imgHeight > maxPx) && !this.floorPlan) {
+          if (imgWidth > maxPx || imgHeight > maxPx) {
+            //  && !this.floorPlan
             let newRatio = maxPx / Math.max(img.width, img.height);
             this.newRatio = newRatio;
             this.scale /= newRatio;
@@ -234,16 +234,32 @@ export class MapWrapperComponent
               // Resizing large image on the server side
               const result = await this.mapService
                 .resizeImage({
-                  img: `data:image/jpeg;base64,${this.mapImage}`,
+                  img: !this.floorPlan
+                    ? `data:image/jpeg;base64,${this.mapImage}`
+                    : `data:image/jpeg;base64,${this.floorPlan.floorPlanImage}`,
                   newRatio
                 })
                 .toPromise();
-              const jsonData = {
-                image: result.image,
+
+              let jsonData: any = {
                 newRatio
               };
+
+              if (this.floorPlan) {
+                let floorPlanData = this.floorPlan;
+                delete floorPlanData.floorPlanImage; // reduce json size
+                floorPlanData = {
+                  ...floorPlanData,
+                  ...{ floorPlanImage: result.image }
+                };
+                jsonData = { ...jsonData, floorPlanData };
+              } else {
+                jsonData = { image: result.image };
+              }
               localStorage.setItem(
-                `map_${this.mapName}`,
+                !this.floorPlan
+                  ? `map_${this.mapName}`
+                  : `floorPlan_${this.mapName}`,
                 JSON.stringify(jsonData)
               );
               canvas = result.image;
@@ -580,7 +596,6 @@ export class MapWrapperComponent
       });
 
       img.src = './assets/images/location-svg.svg';
-
       if (this.floorPlan) {
         return ob.pipe(
           tap(data => (this.destinationIcon = data)),
@@ -633,18 +648,20 @@ export class MapWrapperComponent
               this.mapLayer.findOne('.targetWaypoint').destroy();
             }
 
+            this.iconRatio = this.newRatio < 1 ? 1 : 0.15;
+
             this.destinationPoint = new Konva.Image({
               x:
                 data.GuiX * this.newRatio -
-                (((this.destinationIcon.img.width * this.iconRatio) /
-                  this.scale) *
+                ((this.destinationIcon.img.width * this.iconRatio) /
+                  this.scale *
                   this.newRatio) /
                   2,
               y:
                 data.GuiY * this.newRatio -
                 ((this.destinationIcon.img.height * this.iconRatio) /
-                  this.scale) *
-                  this.newRatio,
+                  this.scale *
+                  this.newRatio),
               width:
                 ((this.destinationIcon.img.width * this.iconRatio) /
                   this.scale) *
@@ -774,13 +791,13 @@ export class MapWrapperComponent
       }),
       tap(floorPlanPoint => {
         const { GuiX, GuiY } = floorPlanPoint;
-        // console.log(floorPlanPoint);
+        const pointRatio = this.newRatio < 1 ? 3 : 1;
         this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
           fill: 'blue',
-          x: GuiX,
-          y: GuiY,
-          radius: 15 * this.newRatio
+          x: GuiX * this.newRatio,
+          y: GuiY * this.newRatio,
+          radius: 15 * pointRatio * this.newRatio
         });
         this.mapLayer.add(this.robotCurrentPositionPoint);
         this.flyToRobotPoint();
@@ -796,17 +813,17 @@ export class MapWrapperComponent
     return of(null).pipe(
       tap(() => {
         const { x, y, height, resolution } = this.metaData;
-        console.log({
-          x,
-          y,
-          height,
-          resolution,
-          robotPoseX: this.robotPose?.x,
-          robotPoseY: this.robotPose?.y,
-          robotCurrentPositionX: this.robotCurrentPosition?.x,
-          robotCurrentPositionY: this.robotCurrentPosition?.y,
-          newRatio: this.newRatio
-        });
+        // console.log({
+        //   x,
+        //   y,
+        //   height,
+        //   resolution,
+        //   robotPoseX: this.robotPose?.x,
+        //   robotPoseY: this.robotPose?.y,
+        //   robotCurrentPositionX: this.robotCurrentPosition?.x,
+        //   robotCurrentPositionY: this.robotCurrentPosition?.y,
+        //   newRatio: this.newRatio
+        // });
 
         this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
@@ -826,7 +843,7 @@ export class MapWrapperComponent
           radius: 15 * pointRatio * this.newRatio,
           stroke: 'black',
           // strokeWidth: 7 * this.newRatio,
-          opacity: 0.8,
+          opacity: 0.8
           // shadowColor: 'black',
           // shadowOffset: {
           //   x: 1,
@@ -1131,23 +1148,42 @@ export class MapWrapperComponent
         .subscribe(point => {
           const newPosition = {
             x:
-              point.GuiX * this.newRatio -
+              (point.GuiX * this.newRatio) -
               (((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
                 this.newRatio) /
-                2,
+                2
+                ? (point.GuiX * this.newRatio) -
+                  (((this.destinationIcon.img.width * this.iconRatio) /
+                    oldScale) *
+                    this.newRatio) /
+                    2
+                : 0,
             y:
-              point.GuiY * this.newRatio -
+              (point.GuiY * this.newRatio) -
               ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
                 this.newRatio
+                ? (point.GuiY * this.newRatio) -
+                  ((this.destinationIcon.img.height * this.iconRatio) /
+                    oldScale) *
+                    this.newRatio
+                : 0
           };
 
           const newSize = {
             width:
               ((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
-              this.newRatio,
+              this.newRatio
+                ? ((this.destinationIcon.img.width * this.iconRatio) /
+                    oldScale) *
+                  this.newRatio
+                : 0,
             height:
               ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
               this.newRatio
+                ? ((this.destinationIcon.img.height * this.iconRatio) /
+                    oldScale) *
+                  this.newRatio
+                : 0
           };
 
           this.destinationPoint.position(newPosition);
@@ -1156,7 +1192,7 @@ export class MapWrapperComponent
 
       sub.unsubscribe();
     } else {
-      // Fixed destination icons are scalable in the floorplan.
+      // Fixed destination icons are scalable in the floorPlan.
       const { targetX, targetY } = this.waypointTargets;
       const { x, y, height, resolution }: any = this.metaData;
 
