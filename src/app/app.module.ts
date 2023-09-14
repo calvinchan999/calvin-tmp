@@ -23,8 +23,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { MatIconModule } from '@angular/material/icon';
-
 import { ToastrModule } from 'ngx-toastr';
 
 import { SignInComponent } from './views/sign-in/sign-in.component';
@@ -91,7 +89,6 @@ const dbConfig: DBConfig = {
         deps: [HttpClient]
       }
     }),
-    MatIconModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-full-width',
       preventDuplicates: true
