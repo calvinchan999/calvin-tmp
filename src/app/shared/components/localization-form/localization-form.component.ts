@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { ToastrService } from 'ngx-toastr';
 import { MqttService } from 'src/app/services/mqtt.service';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 export interface Metadata {
@@ -84,7 +85,8 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     private waypointService: WaypointService,
     private router: Router,
     private mqttService: MqttService,
-    private toastrService: ToastrService // private indexedDbService: IndexedDbService
+    private toastrService: ToastrService, // private indexedDbService: IndexedDbService
+    private dbService: NgxIndexedDBService
   ) {
     this.setMessage();
   }
@@ -92,67 +94,69 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.sub = this.sharedService.currentMap$
       .pipe(
+        tap(currentMap => (this.mapName = currentMap)),
         mergeMap((currentMap: any) => {
           // if (currentMap) {
 
-          // this.mapService
-          //   .getMapImage(currentMap)
-          //   .pipe(
-          //     mergeMap(async data => {
-          //       // const img: string = URL.createObjectURL(data);
-          //       // return (this.floorPlanImg = ''), (this.rosMapImage = img);
+          // const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+          // const queries = { param };
 
-          //     }),
-          const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
-          const queries = { param };
+          // const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
+          //   tap(mapInfo => {
+          //     const { base64Image } = mapInfo;
+          //     this.rosMapImage = base64Image;
+          //   }),
+          //   mergeMap(() =>
+          //     this.mapService
+          //       .getMapMetadata(currentMap)
+          //       .pipe(tap(metaData => (this.metaData = metaData)))
+          //   )
+          // );
 
-          this.mapName = currentMap;
+          // const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
+          //   tap(metaData => {
+          //     this.metaData = metaData;
+          //     const { image, newRatio } = JSON.parse(
+          //       localStorage.getItem(`map_${currentMap}`)
+          //     );
+          //     this.rosMapImage = image;
+          //     this.newRatio = newRatio;
+          //   })
+          // );
+          // const isExist = localStorage.getItem(`map_${currentMap}`)
+          //   ? true
+          //   : false;
 
-          const ob1$ = this.mapService.getMap(currentMap, queries).pipe(
-            tap(mapInfo => {
-              const { base64Image } = mapInfo;
-              this.rosMapImage = base64Image;
-              // this.floorPlanImg = '';
-            }),
-            mergeMap(() =>
-              this.mapService
-                .getMapMetadata(currentMap)
-                .pipe(tap(metaData => (this.metaData = metaData)))
-            )
-          );
+          // return of(EMPTY).pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)));
 
-          const ob2$ = this.mapService.getMapMetadata(currentMap).pipe(
-            tap(metaData => {
-              this.metaData = metaData;
-              const { image, newRatio } = JSON.parse(
-                localStorage.getItem(`map_${currentMap}`)
-              );
-              this.rosMapImage = image;
-              this.newRatio = newRatio;
+          return this.dbService.getByKey('map', `ros_${currentMap}`).pipe(
+            mergeMap((data: any) => {
+              if (data) {
+                return this.mapService.getMapMetadata(currentMap).pipe(
+                  tap(metaData => {
+                    this.metaData = metaData;
+                    const { image, newRatio } = JSON.parse(data.payload);
+                    this.rosMapImage = image;
+                    this.newRatio = newRatio;
+                  })
+                );
+              } else {
+                const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+                const queries = { param };
+                return this.mapService.getMap(currentMap, queries).pipe(
+                  tap(mapInfo => {
+                    const { base64Image } = mapInfo;
+                    this.rosMapImage = base64Image;
+                  }),
+                  mergeMap(() =>
+                    this.mapService
+                      .getMapMetadata(currentMap)
+                      .pipe(tap(metaData => (this.metaData = metaData)))
+                  )
+                );
+              }
             })
           );
-          const isExist = localStorage.getItem(`map_${currentMap}`)
-            ? true
-            : false;
-
-          return of(EMPTY).pipe(mergeMap(() => iif(() => isExist, ob2$, ob1$)));
-
-          // this.mapService
-          //   .getMap(currentMap, queries)
-          //   .pipe(
-          //     tap(mapInfo => {
-          //       const { base64Image } = mapInfo;
-          //       this.rosMapImage = base64Image;
-          //       // this.floorPlanImg = '';
-          //     }),
-          //     mergeMap(() =>
-          //       this.mapService
-          //         .getMapMetadata(currentMap)
-          //         .pipe(tap(metaData => (this.metaData = metaData)))
-          //     )
-          //   )
-          //   .subscribe();
-          // }
         })
       )
       .subscribe();

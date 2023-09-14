@@ -45,8 +45,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
   // @HostListener('touchstart') onTouchStartEvent() {
 
   // }
-  @ViewChild('disconnectResponseDialog')
-  disconnectResponseDialog: ModalComponent;
+  // @ViewChild('disconnectResponseDialog')
+  // disconnectResponseDialog: ModalComponent;
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   @ViewChild('robotGroupPairingDialog') robotPairingDialog: ModalComponent;
@@ -500,20 +500,31 @@ export class DefaultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeErrors();
+    // this.sharedService.mqBrokerConnection.subscribe(status => {
+    //   if (status) {
+    //     this.disconnectResponseDialog.onCloseWithoutRefresh();
+    //   } else {
+    //     this.closeDialogAfterRefresh = false;
+    //     if (!this.disconnectResponseDialog?.isExist()) {
+    //       this.disconnectMessage = 'error.disconnect';
+    //       setTimeout(() => this.disconnectResponseDialog.open(), 0);
+    //     }
+    //   }
+    // });
   }
 
   ngAfterViewInit() {
-    this.sharedService.mqBrokerConnection.subscribe(status => {
-      if (status) {
-        this.disconnectResponseDialog.onCloseWithoutRefresh();
-      } else {
-        this.closeDialogAfterRefresh = false;
-        if (!this.disconnectResponseDialog.isExist()) {
-          this.disconnectMessage = 'error.disconnect';
-          setTimeout(() => this.disconnectResponseDialog.open(), 0);
-        }
-      }
-    });
+    // this.sharedService.mqBrokerConnection.subscribe(status => {
+    //   if (status) {
+    //     this.disconnectResponseDialog.onCloseWithoutRefresh();
+    //   } else {
+    //     this.closeDialogAfterRefresh = false;
+    //     if (!this.disconnectResponseDialog.isExist()) {
+    //       this.disconnectMessage = 'error.disconnect';
+    //       setTimeout(() => this.disconnectResponseDialog.open(), 0);
+    //     }
+    //   }
+    // });
   }
 
   getProfile(): Observable<any> {
@@ -847,6 +858,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
           const message =
             statusCodeMsg || errorCodeMsg
               ? ` ${statusCodeMsg} ${errorCodeMsg} - ${errorMsg}`
+              : this.authService.isAuthenticated()
+              ? errors?.url + '<p>' + `${errorMsg}`
               : `${errorMsg}`;
           if (errors.errorCode !== 403) {
             this.sharedService.response$.next({ type: 'warning', message });
@@ -862,6 +875,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
         currentUrl.indexOf('/'),
         currentUrl.lastIndexOf('?')
       );
+
       const payload = decodeURI(currentUrl).substring(
         currentUrl.lastIndexOf('=') + 1
       );

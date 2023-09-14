@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Subscription, iif, of } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -13,6 +13,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { RobotProfileService } from 'src/app/views/services/robot-profile.service';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 @Component({
   selector: 'app-destination',
@@ -53,7 +54,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private router: Router,
     private appConfigService: AppConfigService,
-    private robotProfileService: RobotProfileService
+    private robotProfileService: RobotProfileService,
+    private dbService: NgxIndexedDBService
   ) {
     this.sub = this.sharedService.currentMap$
       .pipe(
@@ -61,84 +63,176 @@ export class DestinationComponent implements OnInit, OnDestroy {
           this.mapName = currentMap;
           const { enableFloorPlanMode } = this.appConfigService.getConfig();
           if (!enableFloorPlanMode) {
-            const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
-            const queries = { param };
-            const rosOb1$ = this.mapService.getMap(currentMap, queries).pipe(
-              tap(mapInfo => {
-                const { base64Image } = mapInfo;
-                this.rosMapImage = base64Image;
-              }),
-              mergeMap(() =>
-                this.mapService
-                  .getMapMetadata(currentMap)
-                  .pipe(tap(metaData => (this.metaData = metaData)))
-              )
-            );
+            // const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+            // const queries = { param };
+            // const rosOb1$ = this.mapService.getMap(currentMap, queries).pipe(
+            //   tap(mapInfo => {
+            //     const { base64Image } = mapInfo;
+            //     this.rosMapImage = base64Image;
+            //   }),
+            //   mergeMap(() =>
+            //     this.mapService
+            //       .getMapMetadata(currentMap)
+            //       .pipe(tap(metaData => (this.metaData = metaData)))
+            //   )
+            // );
 
-            const rosOb2$ = this.mapService.getMapMetadata(currentMap).pipe(
-              tap(metaData => {
-                this.metaData = metaData;
-                const { image, newRatio } = JSON.parse(
-                  localStorage.getItem(`map_${currentMap}`)
-                );
-                this.rosMapImage = image;
-                this.newRatio = newRatio;
+            // const rosOb2$ = this.mapService.getMapMetadata(currentMap).pipe(
+            //   tap(metaData => {
+            //     this.metaData = metaData;
+            //     const { image, newRatio } = JSON.parse(
+            //       localStorage.getItem(`map_${currentMap}`)
+            //     );
+            //     this.rosMapImage = image;
+            //     this.newRatio = newRatio;
+            //   })
+            // );
+
+            // const isExist = localStorage.getItem(`map_${currentMap}`)
+            //   ? true
+            //   : false;
+
+            // return of(EMPTY).pipe(
+            //   mergeMap(() => iif(() => isExist, rosOb2$, rosOb1$))
+            // );
+
+            return this.dbService.getByKey('map', `ros_${currentMap}`).pipe(
+              mergeMap((data: any) => {
+                if (data) {
+                  return this.mapService.getMapMetadata(currentMap).pipe(
+                    tap(metaData => {
+                      this.metaData = metaData;
+                      const { image, newRatio } = JSON.parse(data.payload);
+                      this.rosMapImage = image;
+                      this.newRatio = newRatio;
+                    })
+                  );
+                } else {
+                  const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
+                  const queries = { param };
+                  return this.mapService.getMap(currentMap, queries).pipe(
+                    tap(mapInfo => {
+                      const { base64Image } = mapInfo;
+                      this.rosMapImage = base64Image;
+                    }),
+                    mergeMap(() =>
+                      this.mapService
+                        .getMapMetadata(currentMap)
+                        .pipe(tap(metaData => (this.metaData = metaData)))
+                    )
+                  );
+                }
               })
-            );
-
-            const isExist = localStorage.getItem(`map_${currentMap}`)
-              ? true
-              : false;
-
-            return of(EMPTY).pipe(
-              mergeMap(() => iif(() => isExist, rosOb2$, rosOb1$))
             );
           } else {
-            const floorPlanOb1$ = this.mapService.getFloorPlan(currentMap).pipe(
-              map((info: any) => {
-                return {
-                  floorPlanImage: info.base64Image,
-                  mapCode: info.mapList[0].mapCode,
-                  floorPlanCode: info.floorPlanCode,
-                  originX: info.mapList[0].originX,
-                  originY: info.mapList[0].originY,
-                  resolution: info.mapList[0].resolution,
-                  imageWidth: info.mapList[0].imageWidth,
-                  imageHeight: info.mapList[0].imageHeight,
-                  transformedPositionX: info.mapList[0].transformedPositionX,
-                  transformedPositionY: info.mapList[0].transformedPositionY,
-                  transformedScale: info.mapList[0].transformedScale,
-                  transformedAngle: info.mapList[0].transformedAngle
-                };
-              }),
-              tap(result => (this.floorPlanData = result)),
-              mergeMap(() =>
-                this.mapService.getMapMetadata(currentMap).pipe(
-                  tap(metaData => {
-                    this.metaData = metaData;
-                  })
-                )
-              )
-            );
+            // const floorPlanOb1$ = this.mapService.getFloorPlan(currentMap).pipe(
+            //   map((info: any) => {
+            //     return {
+            //       floorPlanImage: info.base64Image,
+            //       mapCode: info.mapList[0].mapCode,
+            //       floorPlanCode: info.floorPlanCode,
+            //       originX: info.mapList[0].originX,
+            //       originY: info.mapList[0].originY,
+            //       resolution: info.mapList[0].resolution,
+            //       imageWidth: info.mapList[0].imageWidth,
+            //       imageHeight: info.mapList[0].imageHeight,
+            //       transformedPositionX: info.mapList[0].transformedPositionX,
+            //       transformedPositionY: info.mapList[0].transformedPositionY,
+            //       transformedScale: info.mapList[0].transformedScale,
+            //       transformedAngle: info.mapList[0].transformedAngle
+            //     };
+            //   }),
+            //   tap(result => (this.floorPlanData = result)),
+            //   mergeMap(() =>
+            //     this.mapService.getMapMetadata(currentMap).pipe(
+            //       tap(metaData => {
+            //         this.metaData = metaData;
+            //       })
+            //     )
+            //   )
+            // );
 
+            // const floorPlanOb2$ = this.mapService
+            //   .getMapMetadata(currentMap)
+            //   .pipe(
+            //     tap(metaData => {
+            //       this.metaData = metaData;
+            //       const { floorPlanData, newRatio } = JSON.parse(
+            //         localStorage.getItem(`floorPlan_${currentMap}`)
+            //       );
+            //       this.floorPlanData = floorPlanData;
+            //       this.newRatio = newRatio;
+            //     })
+            //   );
+            // const isExist = localStorage.getItem(`floorPlan_${currentMap}`)
+            //   ? true
+            //   : false;
 
-            const floorPlanOb2$ = this.mapService.getMapMetadata(currentMap).pipe(
-              tap(metaData => {
-                this.metaData = metaData;
-                const { floorPlanData, newRatio } = JSON.parse(
-                  localStorage.getItem(`floorPlan_${currentMap}`)
-                );
-                this.floorPlanData = floorPlanData;
-                this.newRatio = newRatio;
-              })
-            );
-            const isExist = localStorage.getItem(`floorPlan_${currentMap}`)
-              ? true
-              : false;
+            // // hotfix
+            // // let isExist = false;
+            // // this.dbService.getByKey('map', `floorPlan_${currentMap}`).subscribe((data: any) => {
+            // //   if(data){
+            // //     isExist = true;
+            // //     const { floorPlanData, newRatio } = JSON.parse(
+            // //       data.payload
+            // //     );
+            // //     console.log(floorPlanData)
+            // //     this.floorPlanData = floorPlanData;
+            // //     this.newRatio = newRatio;
+            // //   }
+            // // })
 
-            return of(EMPTY).pipe(
-              mergeMap(() => iif(() => isExist, floorPlanOb2$, floorPlanOb1$))
-            );
+            //  return of(EMPTY).pipe(
+            //   mergeMap(() => iif(() => isExist, floorPlanOb2$, floorPlanOb1$))
+            // );
+
+            return this.dbService
+              .getByKey('map', `floorPlan_${currentMap}`)
+              .pipe(
+                mergeMap((data: any) => {
+                  if (data) {
+                    return this.mapService.getMapMetadata(currentMap).pipe(
+                      tap(metaData => {
+                        this.metaData = metaData;
+                        const { floorPlanData, newRatio } = JSON.parse(
+                          data.payload
+                        );
+                        this.floorPlanData = floorPlanData;
+                        this.newRatio = newRatio;
+                      })
+                    );
+                  } else {
+                    return this.mapService.getFloorPlan(currentMap).pipe(
+                      map((info: any) => {
+                        return {
+                          floorPlanImage: info.base64Image,
+                          mapCode: info.mapList[0].mapCode,
+                          floorPlanCode: info.floorPlanCode,
+                          originX: info.mapList[0].originX,
+                          originY: info.mapList[0].originY,
+                          resolution: info.mapList[0].resolution,
+                          imageWidth: info.mapList[0].imageWidth,
+                          imageHeight: info.mapList[0].imageHeight,
+                          transformedPositionX:
+                            info.mapList[0].transformedPositionX,
+                          transformedPositionY:
+                            info.mapList[0].transformedPositionY,
+                          transformedScale: info.mapList[0].transformedScale,
+                          transformedAngle: info.mapList[0].transformedAngle
+                        };
+                      }),
+                      tap(result => (this.floorPlanData = result)),
+                      mergeMap(() =>
+                        this.mapService.getMapMetadata(currentMap).pipe(
+                          tap(metaData => {
+                            this.metaData = metaData;
+                          })
+                        )
+                      )
+                    );
+                  }
+                })
+              );
           }
         })
       )

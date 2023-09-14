@@ -7,7 +7,7 @@ import { DefaultModule } from './layouts/default/default.module';
 import {
   HttpClient,
   HttpClientModule,
-  HTTP_INTERCEPTORS,
+  HTTP_INTERCEPTORS
 } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
@@ -31,6 +31,7 @@ import { SignInComponent } from './views/sign-in/sign-in.component';
 import { CameraComponent } from './views/camera/camera.component';
 import { WebcamModule } from 'ngx-webcam';
 // import { RobotGroupComponent } from './views/robot-group/robot-group.component';
+import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -38,7 +39,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 // const config: Config = AppConfigService.getConfig();
 
 const MQTT_SERVICE_OPTIONS: IMqttServiceOptions = {
-  connectOnCreate: false,
+  connectOnCreate: false
 };
 
 const appInitializerFn = (appConfig: AppConfigService) => {
@@ -53,6 +54,22 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       return;
     }
   };
+};
+
+const dbConfig: DBConfig = {
+  name: 'RvDb',
+  version: 1,
+  objectStoresMeta: [
+    {
+      store: 'map',
+      storeConfig: { keyPath: 'name', autoIncrement: false },
+      storeSchema: [
+        { name: 'name', keypath: 'name', options: { unique: true } },
+        { name: 'type', keypath: 'type', options: { unique: false } },
+        { name: 'payload', keypath: 'payload', options: { unique: false } }
+      ]
+    }
+  ]
 };
 
 @NgModule({
@@ -71,17 +88,18 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       loader: {
         provide: TranslateLoader,
         useFactory: createTranslateLoader,
-        deps: [HttpClient],
-      },
+        deps: [HttpClient]
+      }
     }),
     MatIconModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-full-width',
-      preventDuplicates: true,
+      preventDuplicates: true
       // disableTimeOut: true,
     }),
     HammerModule,
-    WebcamModule
+    WebcamModule,
+    NgxIndexedDBModule.forRoot(dbConfig)
   ],
   providers: [
     HttpClientModule,
@@ -89,21 +107,21 @@ const appInitializerFn = (appConfig: AppConfigService) => {
       provide: APP_INITIALIZER,
       useFactory: appInitializerFn,
       multi: true,
-      deps: [AppConfigService],
+      deps: [AppConfigService]
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AppHttpInterceptor,
-      multi: true,
+      multi: true
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpStatusInterceptor,
-      multi: true,
+      multi: true
     },
     { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}
 

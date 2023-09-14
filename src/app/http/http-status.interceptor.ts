@@ -19,9 +19,8 @@ export class HttpStatusInterceptor implements HttpInterceptor {
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
-    private sharedService: SharedService
-  ) // private indexedDbService: IndexedDbService
-  {}
+    private sharedService: SharedService // private indexedDbService: IndexedDbService
+  ) {}
 
   removeRequest(req: HttpRequest<any>) {
     const i = this.requests.indexOf(req);
@@ -164,11 +163,14 @@ export class HttpStatusInterceptor implements HttpInterceptor {
         setTimeout(() => this.sharedService.refresh$.next(true), 1000);
         break;
       default:
+        let url = response?.url;
+        if (url) url = url.substring(url.indexOf('/api'));
         this.status.setHttpStatus(
           true,
           httpStatusCode,
           httpErrorCode,
-          httpErrorText
+          httpErrorText,
+          url
         );
         break;
     }

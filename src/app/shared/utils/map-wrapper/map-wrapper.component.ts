@@ -35,6 +35,7 @@ import { WaypointService } from 'src/app/views/services/waypoint.service';
 import { MapService } from 'src/app/views/services/map.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { NgxIndexedDBService } from 'ngx-indexed-db';
 
 export interface Point {
   x: number;
@@ -126,7 +127,8 @@ export class MapWrapperComponent
     private waypointService: WaypointService,
     private mapService: MapService,
     private appConfigService: AppConfigService,
-    private sharedService: SharedService // private indexedDbService: IndexedDbService
+    private sharedService: SharedService, // private indexedDbService: IndexedDbService
+    private dbService: NgxIndexedDBService
   ) {}
 
   ngOnInit() {}
@@ -216,7 +218,6 @@ export class MapWrapperComponent
           const maxPx = this.maxPx;
           const imgWidth = img.width;
           const imgHeight = img.height;
-
           if (imgWidth > maxPx || imgHeight > maxPx) {
             //  && !this.floorPlan
             let newRatio = maxPx / Math.max(img.width, img.height);
@@ -254,14 +255,18 @@ export class MapWrapperComponent
                 };
                 jsonData = { ...jsonData, floorPlanData };
               } else {
-                jsonData = { image: result.image };
+                jsonData = {  ...jsonData, image: result.image };
               }
-              localStorage.setItem(
-                !this.floorPlan
-                  ? `map_${this.mapName}`
-                  : `floorPlan_${this.mapName}`,
-                JSON.stringify(jsonData)
-              );
+
+              this.dbService
+                .add('map', {
+                  name: !this.floorPlan
+                    ? `ros_${this.mapName}`
+                    : `floorPlan_${this.mapName}`,
+                  payload: JSON.stringify(jsonData)
+                })
+                .subscribe();
+
               canvas = result.image;
             }
 
@@ -306,7 +311,6 @@ export class MapWrapperComponent
           mapLayer.add(rosMap);
 
           this.mapLayer = mapLayer;
-
           if (this.editor === EditorType.LOCALIZATIONEDITOR) {
             this.lidarGroup = new Konva.Group({
               x: 0,
@@ -556,12 +560,19 @@ export class MapWrapperComponent
                   const redpoint = new Konva.Circle({
                     x:
                       Math.abs((x - pointList[i]['x']) / resolution) *
-                      this.newRatio,
+                      this.newRatio
+                        ? Math.abs((x - pointList[i]['x']) / resolution) *
+                          this.newRatio
+                        : 0,
                     y:
                       (height -
                         Math.abs((y - pointList[i]['y']) / resolution)) *
-                      this.newRatio,
-                    radius: 2 * this.newRatio,
+                      this.newRatio
+                        ? (height -
+                            Math.abs((y - pointList[i]['y']) / resolution)) *
+                          this.newRatio
+                        : 0,
+                    radius: 2 * this.newRatio ? 2 * this.newRatio : 0,
                     fill: 'red',
                     name: 'redpoint'
                   });
@@ -648,20 +659,20 @@ export class MapWrapperComponent
               this.mapLayer.findOne('.targetWaypoint').destroy();
             }
 
-            this.iconRatio = this.newRatio < 1 ? 1 : 0.15;
+            this.iconRatio = this.newRatio < 1 ? 0.4 : 0.15;
 
             this.destinationPoint = new Konva.Image({
               x:
                 data.GuiX * this.newRatio -
-                ((this.destinationIcon.img.width * this.iconRatio) /
-                  this.scale *
+                (((this.destinationIcon.img.width * this.iconRatio) /
+                  this.scale) *
                   this.newRatio) /
                   2,
               y:
                 data.GuiY * this.newRatio -
                 ((this.destinationIcon.img.height * this.iconRatio) /
-                  this.scale *
-                  this.newRatio),
+                  this.scale) *
+                  this.newRatio,
               width:
                 ((this.destinationIcon.img.width * this.iconRatio) /
                   this.scale) *
@@ -814,18 +825,6 @@ export class MapWrapperComponent
     return of(null).pipe(
       tap(() => {
         const { x, y, height, resolution } = this.metaData;
-        // console.log({
-        //   x,
-        //   y,
-        //   height,
-        //   resolution,
-        //   robotPoseX: this.robotPose?.x,
-        //   robotPoseY: this.robotPose?.y,
-        //   robotCurrentPositionX: this.robotCurrentPosition?.x,
-        //   robotCurrentPositionY: this.robotCurrentPosition?.y,
-        //   newRatio: this.newRatio
-        // });
-
         this.robotCurrentPositionPoint.setAttrs({
           name: 'currentPosition',
           fill: '#FF0000',
@@ -1149,21 +1148,21 @@ export class MapWrapperComponent
         .subscribe(point => {
           const newPosition = {
             x:
-              (point.GuiX * this.newRatio) -
+              point.GuiX * this.newRatio -
               (((this.destinationIcon.img.width * this.iconRatio) / oldScale) *
                 this.newRatio) /
                 2
-                ? (point.GuiX * this.newRatio) -
+                ? point.GuiX * this.newRatio -
                   (((this.destinationIcon.img.width * this.iconRatio) /
                     oldScale) *
                     this.newRatio) /
                     2
                 : 0,
             y:
-              (point.GuiY * this.newRatio) -
+              point.GuiY * this.newRatio -
               ((this.destinationIcon.img.height * this.iconRatio) / oldScale) *
                 this.newRatio
-                ? (point.GuiY * this.newRatio) -
+                ? point.GuiY * this.newRatio -
                   ((this.destinationIcon.img.height * this.iconRatio) /
                     oldScale) *
                     this.newRatio

@@ -15,9 +15,10 @@ export class HttpStatusService {
     inFlight: boolean,
     statusCode,
     errorCode?: any,
-    errorMsg?: string
+    errorMsg?: string,
+    url?: string
   ) {
-    this.requestInFlight$.next({ inFlight, statusCode, errorCode, errorMsg });
+    this.requestInFlight$.next({ inFlight, statusCode, errorCode, errorMsg, url });
   }
 
   getHttpStatus(): Observable<boolean> {
