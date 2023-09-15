@@ -11,6 +11,7 @@ import { Observable, TimeoutError } from 'rxjs';
 import { HttpStatusService } from 'src/app/services/http-status.service';
 import { SharedService } from '../services/shared.service';
 import { catchError, finalize, timeout } from 'rxjs/operators';
+import { ErrorLogService } from '../services/error-log.service';
 // import { IndexedDbService } from '../services/indexed-db.service';
 
 @Injectable()
@@ -19,7 +20,8 @@ export class HttpStatusInterceptor implements HttpInterceptor {
   private requests: HttpRequest<any>[] = [];
   constructor(
     private status: HttpStatusService,
-    private sharedService: SharedService // private indexedDbService: IndexedDbService
+    private sharedService: SharedService, // private indexedDbService: IndexedDbService
+    private errorLogsService: ErrorLogService
   ) {}
 
   removeRequest(req: HttpRequest<any>) {
@@ -51,6 +53,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
                 console.error('Timeout has occurred', req.url);
                 return this.timeoutHandler(req);
               } else {
+                this.errorLogsService.logError(err);
                 return this.errorHandler(err);
               }
             }),

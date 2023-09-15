@@ -140,7 +140,7 @@
   "distance": "Distance",
   "arrivalTime": "Arrival Time",
   "meter":"m",
-  "cacheClearSuccessful": "localStorage has been cleared",
+  "cacheClearSuccessful": "cache has been cleared",
   "minutes":"min(s)",
   "obstacleDetected": "Obstacle Detected"
 }

@@ -9,6 +9,7 @@ import { SharedService } from 'src/app/services/shared.service';
 import { ModeService } from '../services/mode.service';
 import { TaskService } from '../services/task.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
+import { ErrorLogService } from 'src/app/services/error-log.service';
 
 @Component({
   selector: 'app-home',
@@ -38,7 +39,8 @@ export class HomeComponent implements OnInit {
     private appConfigService: AppConfigService,
     // private modeService: ModeService,
     private taskService: TaskService,
-    private dbService: NgxIndexedDBService
+    private dbService: NgxIndexedDBService,
+    private errorLogService: ErrorLogService
   ) {
     this.features = this.appConfigService.getConfig().feature;
     this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
@@ -145,14 +147,15 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/mode']);
   }
 
-  // onDownloadLogs() {
+  onDownloadLogs() {
+    this.errorLogService.downloadRecords();
   // this.indexedDbService
   //   .getLogs()
   //   .pipe(
   //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
   //   )
   //   .subscribe();
-  // }
+  }
 
   onClickPairing() {
     this.sharedService.isOpenModal$.next({

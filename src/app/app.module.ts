@@ -66,6 +66,14 @@ const dbConfig: DBConfig = {
         { name: 'type', keypath: 'type', options: { unique: false } },
         { name: 'payload', keypath: 'payload', options: { unique: false } }
       ]
+    },
+    {
+      store: 'errorLogs',
+      storeConfig: { keyPath: 'createdAt', autoIncrement: false },
+      storeSchema: [
+        { name: 'error', keypath: 'createdAt', options: { unique: false } },
+        { name: 'createdAt', keypath: 'createdAt', options: { unique: false } },
+      ]
     }
   ]
 };
