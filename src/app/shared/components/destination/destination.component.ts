@@ -125,67 +125,6 @@ export class DestinationComponent implements OnInit, OnDestroy {
               })
             );
           } else {
-            // const floorPlanOb1$ = this.mapService.getFloorPlan(currentMap).pipe(
-            //   map((info: any) => {
-            //     return {
-            //       floorPlanImage: info.base64Image,
-            //       mapCode: info.mapList[0].mapCode,
-            //       floorPlanCode: info.floorPlanCode,
-            //       originX: info.mapList[0].originX,
-            //       originY: info.mapList[0].originY,
-            //       resolution: info.mapList[0].resolution,
-            //       imageWidth: info.mapList[0].imageWidth,
-            //       imageHeight: info.mapList[0].imageHeight,
-            //       transformedPositionX: info.mapList[0].transformedPositionX,
-            //       transformedPositionY: info.mapList[0].transformedPositionY,
-            //       transformedScale: info.mapList[0].transformedScale,
-            //       transformedAngle: info.mapList[0].transformedAngle
-            //     };
-            //   }),
-            //   tap(result => (this.floorPlanData = result)),
-            //   mergeMap(() =>
-            //     this.mapService.getMapMetadata(currentMap).pipe(
-            //       tap(metaData => {
-            //         this.metaData = metaData;
-            //       })
-            //     )
-            //   )
-            // );
-
-            // const floorPlanOb2$ = this.mapService
-            //   .getMapMetadata(currentMap)
-            //   .pipe(
-            //     tap(metaData => {
-            //       this.metaData = metaData;
-            //       const { floorPlanData, newRatio } = JSON.parse(
-            //         localStorage.getItem(`floorPlan_${currentMap}`)
-            //       );
-            //       this.floorPlanData = floorPlanData;
-            //       this.newRatio = newRatio;
-            //     })
-            //   );
-            // const isExist = localStorage.getItem(`floorPlan_${currentMap}`)
-            //   ? true
-            //   : false;
-
-            // // hotfix
-            // // let isExist = false;
-            // // this.dbService.getByKey('map', `floorPlan_${currentMap}`).subscribe((data: any) => {
-            // //   if(data){
-            // //     isExist = true;
-            // //     const { floorPlanData, newRatio } = JSON.parse(
-            // //       data.payload
-            // //     );
-            // //     console.log(floorPlanData)
-            // //     this.floorPlanData = floorPlanData;
-            // //     this.newRatio = newRatio;
-            // //   }
-            // // })
-
-            //  return of(EMPTY).pipe(
-            //   mergeMap(() => iif(() => isExist, floorPlanOb2$, floorPlanOb1$))
-            // );
-
             return this.dbService
               .getByKey('map', `floorPlan_${currentMap}`)
               .pipe(
@@ -239,6 +178,12 @@ export class DestinationComponent implements OnInit, OnDestroy {
       .subscribe(
         () => {},
         error => {
+          if (error) {
+            this.sharedService.response$.next({
+              type: 'warning',
+              message: error
+            });
+          }
           setTimeout(() => this.router.navigate(['/']), 5000);
         }
       );

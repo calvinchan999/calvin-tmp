@@ -62,7 +62,7 @@ const dbConfig: DBConfig = {
       store: 'map',
       storeConfig: { keyPath: 'name', autoIncrement: false },
       storeSchema: [
-        { name: 'name', keypath: 'name', options: { unique: true } },
+        { name: 'name', keypath: 'name', options: { unique: false } },
         { name: 'type', keypath: 'type', options: { unique: false } },
         { name: 'payload', keypath: 'payload', options: { unique: false } }
       ]

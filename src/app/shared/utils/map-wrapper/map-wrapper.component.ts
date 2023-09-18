@@ -174,7 +174,12 @@ export class MapWrapperComponent
             observer.error(err);
           };
           const { floorPlanImage, transformedScale } = this.floorPlan;
-          img.src = `data:image/jpeg;base64,${floorPlanImage}`;
+          if(floorPlanImage.indexOf('data:image/jpeg;base64,') > -1){
+            img.src = floorPlanImage
+          }else {
+            img.src = `data:image/jpeg;base64,${floorPlanImage}`;
+          }
+         
         }),
         new Observable<HTMLImageElement>(observer => {
           const img = new Image();
@@ -232,12 +237,20 @@ export class MapWrapperComponent
                 img.height * newRatio
               );
             } else {
+              const callback = (floorPlanImage) => {
+                if(floorPlanImage.indexOf('data:image/jpeg;base64,') > -1){
+                  return floorPlanImage;
+                }else {
+                  return `data:image/jpeg;base64,${floorPlanImage}`;
+                }
+              }
+              
               // Resizing large image on the server side
               const result = await this.mapService
                 .resizeImage({
                   img: !this.floorPlan
                     ? `data:image/jpeg;base64,${this.mapImage}`
-                    : `data:image/jpeg;base64,${this.floorPlan.floorPlanImage}`,
+                    : callback(this.floorPlan.floorPlanImage),
                   newRatio
                 })
                 .toPromise();

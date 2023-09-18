@@ -49,7 +49,7 @@ export class ErrorLogService {
     );
   }
 
-  saveTextFile(content: string): void {
+  saveTextFile(content: string, robotId: string): void {
     const element = document.createElement('a');
     element.setAttribute(
       'href',
@@ -57,7 +57,7 @@ export class ErrorLogService {
     );
     element.setAttribute(
       'download',
-      `errorLogs_${moment
+      `errorLogs_${robotId ? robotId : 'undefined'}_${moment
         .utc(new Date())
         .format('YYYY-MM-DD_HH-mm-ss(ZZ)')}.txt`
     );
@@ -70,13 +70,13 @@ export class ErrorLogService {
     document.body.removeChild(element);
   }
 
-  downloadRecords(): void {
+  downloadRecords(robotId: any): void {
     this.dbService.getAll('errorLogs').subscribe(
       records => {
         const content = records
           .map(records => JSON.stringify(records))
           .join('\n');
-        this.saveTextFile(content);
+        this.saveTextFile(content, robotId);
       },
       error => {
         console.error('Error retriening records:', error);

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, Observable, Subscription, iif, of } from 'rxjs';
-import { map, tap, take, finalize, switchMap } from 'rxjs/operators';
+import { map, tap, take, finalize, switchMap, delay, mergeMap } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
@@ -10,6 +10,7 @@ import { ModeService } from '../services/mode.service';
 import { TaskService } from '../services/task.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { ErrorLogService } from 'src/app/services/error-log.service';
+
 
 @Component({
   selector: 'app-home',
@@ -148,7 +149,8 @@ export class HomeComponent implements OnInit {
   }
 
   onDownloadLogs() {
-    this.errorLogService.downloadRecords();
+    const robotId: any = this.sharedService.robotIdBahaviorSubject.value;
+    this.errorLogService.downloadRecords(robotId);
   // this.indexedDbService
   //   .getLogs()
   //   .pipe(
@@ -212,21 +214,25 @@ export class HomeComponent implements OnInit {
   onClickClearCache() {
     of(EMPTY)
       .pipe(
-        // tap(() => localStorage.clear()),
-        switchMap(() => this.dbService.deleteDatabase()),
-        finalize(() =>
+        switchMap(() => this.dbService.clear('map')),
+        tap(() =>
           this.sharedService.response$.next({
             type: 'normal',
             message: 'cacheClearSuccessful'
           })
-        )
+        ),
+        delay(2000),
       )
-      .subscribe(() => location.reload());
+      .subscribe(() => this.router.navigate(['/dashboard']));
   }
 
   onClickCamera() {
     this.router.navigate(['/camera']);
   }
+
+  // debugMap(){
+  //   this.router.navigate(['/waypoint/destination']);
+  // }
 
   ngOnDestroy() {
     if (this.sub) this.sub.unsubscribe();

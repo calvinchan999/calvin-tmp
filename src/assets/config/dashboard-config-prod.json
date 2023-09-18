@@ -32,5 +32,6 @@
   "largeImageServerSideRendering": true,
   "enableMap": true,
   "enableFloorPlanMode": false,
-  "enableTaskReleaseOrHold": false
+  "enableTaskReleaseOrHold": false,
+  "loggerServer":""
 }
