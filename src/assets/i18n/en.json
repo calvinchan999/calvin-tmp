@@ -142,5 +142,6 @@
   "meter":"m",
   "cacheClearSuccessful": "cache has been cleared",
   "minutes":"min(s)",
-  "obstacleDetected": "Obstacle Detected"
+  "obstacleDetected": "Obstacle Detected",
+  "publishLogsSuccessful": "The error logs has been published to server"
 }

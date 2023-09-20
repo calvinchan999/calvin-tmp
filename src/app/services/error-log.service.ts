@@ -94,7 +94,11 @@ export class ErrorLogService {
         }),
         switchMap((res: any) => {
           const { status } = res;
-          if (status) return this.dbService.clear('errorLogs');
+
+          if (status) {
+            this.sharedService.response$.next({type: 'normal', message: 'publishLogsSuccessful'})
+            return this.dbService.clear('errorLogs')
+          };
           return of(EMPTY);
         })
       )

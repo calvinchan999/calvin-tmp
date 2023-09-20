@@ -142,5 +142,6 @@
   "meter":"米",
   "cacheClearSuccessful": "本地存储已被清除",
   "minutes":"分钟",
-  "obstacleDetected": "检测到障碍物"
+  "obstacleDetected": "检测到障碍物",
+  "publishLogsSuccessful": "错误日志已发布到服务器"
 }
