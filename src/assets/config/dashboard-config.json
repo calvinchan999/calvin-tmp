@@ -1,6 +1,6 @@
 {
   "server": {
-    "endpoint": "http://calvinchan999.eastasia.cloudapp.azure.com:8081",
+    "endpoint": "http://rv-dev.eastasia.cloudapp.azure.com:8081",
     "envirmonent": "development"
   },
   "mqtt": {
@@ -33,5 +33,5 @@
   "enableMap": true,
   "enableFloorPlanMode": true,
   "enableTaskReleaseOrHold": false,
-  "loggerServer":""
+  "loggerServer":"http://calvinchan999.eastasia.cloudapp.azure.com:3100/api/logs"
 }

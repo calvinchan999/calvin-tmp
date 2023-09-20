@@ -9,7 +9,7 @@
           title="waypoint"
           icon="map-marker-distance"
           [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
-          (eventTrigger)="onSubmitWaypont()"
+          (eventTrigger)="onSumbit('waypoint')"
         ></app-card>
       </div>
       <div
@@ -19,14 +19,14 @@
         <app-card
           title="docking"
           icon="battery-charging"
-          (eventTrigger)="onDockToStation()"
+          (eventTrigger)="onSumbit('docking')"
         ></app-card>
       </div>
       <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.sos">
         <app-card
           title="sos"
           icon="bell-ring-outline"
-          (eventTrigger)="onSubmitSOS()"
+          (eventTrigger)="onSumbit('sos')"
         ></app-card>
       </div>
       <div
@@ -37,7 +37,7 @@
           title="map"
           icon="map"
           [disable]="!mode || mode === 'UNDEFINED' ? true : false"
-          (eventTrigger)="onChangeMap()"
+          (eventTrigger)="onSumbit('map')"
         ></app-card>
       </div>
       <div
@@ -48,7 +48,7 @@
           title="localization"
           icon="map-marker-radius-outline"
           [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
-          (eventTrigger)="onSubmitLocalization()"
+          (eventTrigger)="onSumbit('localization')"
         ></app-card>
       </div>
       <ng-container *ngIf="user?.length > 0">
@@ -59,7 +59,7 @@
           <app-card
             title="pair"
             icon="gesture-tap"
-            (eventTrigger)="onClickPairing()"
+            (eventTrigger)="onSumbit('pairing')"
           ></app-card>
         </div>
       </ng-container>
@@ -71,7 +71,7 @@
           <app-card
             title="unpair"
             icon="gesture-tap"
-            (eventTrigger)="onClickUnPairing()"
+            (eventTrigger)="onSumbit('unpairing')"
           ></app-card>
         </div>
       </ng-container>
@@ -82,7 +82,7 @@
         <app-card
           title="mode"
           icon="map-marker-path"
-          (eventTrigger)="onChangeMode()"
+          (eventTrigger)="onSumbit('mode')"
         ></app-card>
       </div>
       <div
@@ -92,7 +92,7 @@
         <app-card
           title="downloadLogs"
           icon="math-log"
-          (eventTrigger)="onDownloadLogs()"
+          (eventTrigger)="onSumbit('logs')"
         ></app-card>
       </div>
       <div
@@ -102,7 +102,7 @@
         <app-card
           title="followRobotGroup"
           icon="car-multiple"
-          (eventTrigger)="onClickFollowRobotGroup()"
+          (eventTrigger)="onSumbit('followRobotGroup')"
         ></app-card>
       </div>
       <div
@@ -112,7 +112,7 @@
         <app-card
           title="cacheClear"
           icon="cached"
-          (eventTrigger)="onClickClearCache()"
+          (eventTrigger)="onSumbit('clearCache')"
         ></app-card>
       </div>
       <div
@@ -122,7 +122,7 @@
         <app-card
           title="reserve"
           icon="exclamation"
-          (eventTrigger)="onClickTaskReserve()"
+          (eventTrigger)="onSumbit('taskReserve')"
         ></app-card>
       </div>
       <div
@@ -132,14 +132,14 @@
         <app-card
           title="release"
           icon="exclamation"
-          (eventTrigger)="onClickTaskRelease()"
+          (eventTrigger)="onSumbit('taskRelease')"
         ></app-card>
       </div>
       <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.camera">
         <app-card
           title="camera"
           icon="camera"
-          (eventTrigger)="onClickCamera()"
+          (eventTrigger)="onSumbit('camera')"
         ></app-card>
       </div>
 

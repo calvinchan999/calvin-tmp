@@ -33,5 +33,5 @@
   "enableMap": true,
   "enableFloorPlanMode": false,
   "enableTaskReleaseOrHold": false,
-  "loggerServer":""
+  "loggerServer":"http://192.168.0.232:3100/api/logs"
 }

@@ -3,13 +3,21 @@ import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import * as moment from 'moment';
+import { AppConfigService } from './app-config.service';
+import { HttpClient } from '@angular/common/http';
+import { SharedService } from './shared.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorLogService {
   maxErrorLogs = 100;
-  constructor(private dbService: NgxIndexedDBService) {}
+  constructor(
+    private dbService: NgxIndexedDBService,
+    private appConfigService: AppConfigService,
+    private http: HttpClient,
+    private sharedService: SharedService
+  ) {}
 
   logError(error: any): void {
     const logEntry = {
@@ -71,16 +79,30 @@ export class ErrorLogService {
   }
 
   downloadRecords(robotId: any): void {
-    this.dbService.getAll('errorLogs').subscribe(
-      records => {
-        const content = records
-          .map(records => JSON.stringify(records))
-          .join('\n');
-        this.saveTextFile(content, robotId);
-      },
-      error => {
-        console.error('Error retriening records:', error);
-      }
-    );
+    this.dbService
+      .getAll('errorLogs')
+      .pipe(
+        switchMap(records => {
+          if (records.length <= 0) throw new Error('record table is empty');
+          
+          const loggerServer = this.appConfigService.getConfig().loggerServer;
+          if (loggerServer === '' || !loggerServer)
+            throw new Error('loggerServer url not found');
+
+          const data = records;
+          return this.http.post(loggerServer, { robotId, data });
+        }),
+        switchMap((res: any) => {
+          const { status } = res;
+          if (status) return this.dbService.clear('errorLogs');
+          return of(EMPTY);
+        })
+      )
+      .subscribe(
+        () => {},
+        error => {
+          console.log(error);
+        }
+      );
   }
 }

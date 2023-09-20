@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EMPTY, Observable, Subscription, iif, of } from 'rxjs';
-import { map, tap, take, finalize, switchMap, delay, mergeMap } from 'rxjs/operators';
+import {
+  map,
+  tap,
+  take,
+  // finalize,
+  switchMap,
+  delay,
+  // mergeMap
+} from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
@@ -11,6 +19,27 @@ import { TaskService } from '../services/task.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { ErrorLogService } from 'src/app/services/error-log.service';
 
+export type DialogName = 'sos' | 'pair' | 'unpair';
+
+export interface Dialog {
+  name: DialogName;
+}
+
+export type Features =
+  | 'waypoint'
+  | 'docking'
+  | 'sos'
+  | 'map'
+  | 'localization'
+  | 'mode'
+  | 'logs'
+  | 'pairing'
+  | 'unpairing'
+  | 'followRobotGroup'
+  | 'taskReserve'
+  | 'taskRelease'
+  | 'clearCache'
+  | 'camera';
 
 @Component({
   selector: 'app-home',
@@ -114,87 +143,6 @@ export class HomeComponent implements OnInit {
       .subscribe();
   }
 
-  onSubmitWaypont() {
-    if (this.mode === 'NAVIGATION') {
-      this.router.navigate(['/waypoint']);
-    }
-  }
-
-  onDockToStation() {
-    this.router.navigate(['/charging']);
-  }
-
-  onSubmitSOS() {
-    this.sharedService.isOpenModal$.next({
-      modal: 'sos',
-      modalHeader: 'sos',
-      isDisableClose: false
-    });
-  }
-
-  onChangeMap() {
-    if (this.mode && this.mode !== 'UNDEFINED') {
-      this.router.navigate(['/map']);
-    }
-  }
-
-  onSubmitLocalization() {
-    if (this.mode === 'NAVIGATION') {
-      this.router.navigate(['/localization']);
-    }
-  }
-
-  onChangeMode() {
-    this.router.navigate(['/mode']);
-  }
-
-  onDownloadLogs() {
-    const robotId: any = this.sharedService.robotIdBahaviorSubject.value;
-    this.errorLogService.downloadRecords(robotId);
-  // this.indexedDbService
-  //   .getLogs()
-  //   .pipe(
-  //     mergeMap((logs: any) => this.indexedDbService.generateLogsPdf(logs))
-  //   )
-  //   .subscribe();
-  }
-
-  onClickPairing() {
-    this.sharedService.isOpenModal$.next({
-      modal: 'pair',
-      modalHeader: 'pair',
-      isDisableClose: true,
-      closeAfterRefresh: false
-    });
-  }
-
-  onClickUnPairing() {
-    this.sharedService.isOpenModal$.next({
-      modal: 'unpair',
-      modalHeader: 'unpair',
-      isDisableClose: true,
-      closeAfterRefresh: false
-    });
-  }
-
-  onClickFollowRobotGroup() {
-    this.router.navigate(['/robot-group']);
-  }
-
-  onClickTaskReserve() {
-    this.taskService
-      .holdTask()
-      .pipe(tap(() => this.router.navigate(['/'])))
-      .subscribe();
-  }
-
-  onClickTaskRelease() {
-    this.taskService
-      .releaseTask()
-      .pipe(tap(() => this.router.navigate(['/'])))
-      .subscribe();
-  }
-
   isRobotHeld() {
     this.sub = this.sharedService.isRobotHeldBehaviorSubject
       .pipe(
@@ -211,7 +159,7 @@ export class HomeComponent implements OnInit {
       .subscribe();
   }
 
-  onClickClearCache() {
+  clearCache() {
     of(EMPTY)
       .pipe(
         switchMap(() => this.dbService.clear('map')),
@@ -221,13 +169,108 @@ export class HomeComponent implements OnInit {
             message: 'cacheClearSuccessful'
           })
         ),
-        delay(2000),
+        delay(2000)
       )
       .subscribe(() => this.router.navigate(['/dashboard']));
   }
 
-  onClickCamera() {
-    this.router.navigate(['/camera']);
+  taskReserve() {
+    this.taskService
+      .holdTask()
+      .pipe(tap(() => this.router.navigate(['/'])))
+      .subscribe();
+  }
+
+  taskRelease() {
+    this.taskService
+      .releaseTask()
+      .pipe(tap(() => this.router.navigate(['/'])))
+      .subscribe();
+  }
+
+  downloadLogs() {
+    const robotId: any = this.sharedService.robotIdBahaviorSubject.value;
+    this.errorLogService.downloadRecords(robotId);
+  }
+
+  openDialog({ name }) {
+    if (name === 'sos') {
+      this.sharedService.isOpenModal$.next({
+        modal: 'sos',
+        modalHeader: 'sos',
+        isDisableClose: false
+      });
+    }
+    if (name === 'pair') {
+      this.sharedService.isOpenModal$.next({
+        modal: 'pair',
+        modalHeader: 'pair',
+        isDisableClose: true,
+        closeAfterRefresh: false
+      });
+    }
+    if (name === 'unpair') {
+      this.sharedService.isOpenModal$.next({
+        modal: 'unpair',
+        modalHeader: 'unpair',
+        isDisableClose: true,
+        closeAfterRefresh: false
+      });
+    }
+  }
+
+  onSumbit(type: Features) {
+    switch (type) {
+      case 'waypoint':
+        if (this.mode === 'NAVIGATION') this.router.navigate(['/waypoint']);
+        break;
+      case 'docking':
+        this.router.navigate(['/charging']);
+        break;
+      case 'sos':
+        const sosDialog: Dialog = { name: 'sos' };
+        this.openDialog(sosDialog);
+        break;
+      case 'map':
+        if (this.mode && this.mode !== 'UNDEFINED') {
+          this.router.navigate(['/map']);
+        }
+        break;
+      case 'localization':
+        if (this.mode === 'NAVIGATION') {
+          this.router.navigate(['/localization']);
+        }
+        break;
+      case 'mode':
+        this.router.navigate(['/mode']);
+        break;
+      case 'logs':
+        this.downloadLogs();
+        break;
+      case 'pairing':
+        const pairDialog: Dialog = { name: 'pair' };
+        this.openDialog(pairDialog);
+        break;
+      case 'unpairing':
+        const unpairDialog: Dialog = { name: 'unpair' };
+        this.openDialog(unpairDialog);
+        break;
+      case 'followRobotGroup':
+        this.router.navigate(['/robot-group']);
+        break;
+      case 'taskReserve':
+        this.taskReserve();
+        break;
+      case 'taskRelease':
+        this.taskRelease();
+        break;
+      case 'clearCache':
+        this.clearCache();
+        break;
+      case 'camera':
+        this.router.navigate(['/camera']);
+        break;
+    }
   }
 
   // debugMap(){
