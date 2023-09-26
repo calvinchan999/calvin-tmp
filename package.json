@@ -41,8 +41,10 @@
     "ngx-toastr": "^14.3.0",
     "ngx-webcam": "^0.4.1",
     "pdfmake": "^0.2.5",
+    "peerjs": "^1.5.1",
     "pouchdb": "^8.0.1",
     "rxjs": "^6.6.7",
+    "socket.io-client": "^4.7.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
