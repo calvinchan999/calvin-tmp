@@ -16,6 +16,7 @@ import {
 import * as _ from 'lodash';
 import { SharedService } from 'src/app/services/shared.service';
 import { TaskService } from 'src/app/views/services/task.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'app-waypoint-form',
@@ -56,32 +57,50 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
     private waypointService: WaypointService,
     private sharedService: SharedService,
     private router: Router,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private appConfigService: AppConfigService
   ) {
     this.sub = this.sharedService.isClosedModal$
       .pipe(
         switchMap(dialogType => {
-          const robotId = this.sharedService.currentRobotId.value;
-          return this.taskService.getRobotStatusJobId(robotId).pipe(
-            map(jobRefId => {
-              return { jobRefId, dialogType };
-            })
-          );
+          if (this.appConfigService.getConfig().enableJobsRefId) {
+            const robotId = this.sharedService.currentRobotId.value;
+            return this.taskService.getRobotStatusJobId(robotId).pipe(
+              map(jobRefId => {
+                return { jobRefId, dialogType };
+              })
+            );
+          } else {
+            return of({ jobRefId: null, dialogType });
+          }
         })
       )
       .subscribe(data => {
         const { dialogType, jobRefId } = data;
         if (dialogType === 'confirmation-dialog') {
-          const data: TaskConfig = {
-            jobId: jobRefId ? jobRefId : null,
-            taskItemList: [
-              {
-                movement: {
-                  waypointName: this.selectedWaypoint.name
+          let data: TaskConfig;
+          if (this.appConfigService.getConfig().enableJobsRefId) {
+            data = {
+              jobId: jobRefId ? jobRefId : null,
+              taskItemList: [
+                {
+                  movement: {
+                    waypointName: this.selectedWaypoint.name
+                  }
                 }
-              }
-            ]
-          };
+              ]
+            };
+          } else {
+            data = {
+              taskItemList: [
+                {
+                  movement: {
+                    waypointName: this.selectedWaypoint.name
+                  }
+                }
+              ]
+            };
+          }
           this.waypointService.sendTask(data).subscribe(() => {
             this.router.navigate(['/waypoint/destination']);
           });
