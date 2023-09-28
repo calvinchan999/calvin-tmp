@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
 
@@ -17,7 +17,7 @@ export interface TaskStatus {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TaskService {
   public baseUrl;
@@ -26,6 +26,11 @@ export class TaskService {
     private appConfigService: AppConfigService
   ) {
     this.baseUrl = this.appConfigService.getConfig().server.endpoint;
+  }
+
+  forwardApi({ method, requestUri, body }): Observable<any> {
+    const url = `${this.baseUrl}${environment.api.forward}`;
+    return this.http.post<any>(url, { method, requestUri, body });
   }
 
   getTaskStatus(): Observable<TaskStatus> {
@@ -41,5 +46,15 @@ export class TaskService {
   holdTask(): Observable<any> {
     const url = `${this.baseUrl}${environment.api.taskHold}`;
     return this.http.put<any>(url, {});
+  }
+
+  getRobotStatusJobId(robotId): Observable<any> {
+    const url = `/robotStatus/v1/jobId/${robotId}`;
+
+    return this.forwardApi({
+      method: 'GET',
+      requestUri: url,
+      body: ''
+    });
   }
 }
