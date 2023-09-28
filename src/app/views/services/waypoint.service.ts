@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
@@ -14,6 +14,7 @@ export interface Waypoint {
 
 export interface TaskConfig {
   taskId?: string;
+  jobId?: string | null;
   taskItemList: TaskItemList[];
 }
 
