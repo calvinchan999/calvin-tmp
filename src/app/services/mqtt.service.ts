@@ -67,7 +67,7 @@ export class MqttService {
         path: '/mqtt',
         clientId: this.clientId,
         protocol: config.mqtt.protocol,
-        keepalive: 1,
+        keepalive: 1
         // clean: true
       });
 
@@ -102,7 +102,7 @@ export class MqttService {
 
   globalTopic(qos) {
     this._mqttService
-      .observe('rvautotech/fobo/battery', { qos})
+      .observe('rvautotech/fobo/battery', { qos })
       .subscribe((message: IMqttMessage) => {
         // console.log('rvautotech/fobo/battery');
         // console.log(new TextDecoder('utf-8').decode(message.payload));
@@ -287,6 +287,12 @@ export class MqttService {
   getBaseControllerPauseResume(): Observable<any> {
     return this._mqttService
       .observe('rvautotech/fobo/baseController/pauseResume', { qos: this.qos })
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
+  getActiveMap(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/map/active', { qos: this.qos })
       .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
   }
 

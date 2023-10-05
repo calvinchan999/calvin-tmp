@@ -17,7 +17,7 @@ import {
   tap,
   distinctUntilChanged,
   switchMap,
-  delay,
+  delay
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -476,6 +476,19 @@ export class DefaultComponent implements OnInit, OnDestroy {
         .subscribe()
     );
 
+    this.mqttService
+      .getActiveMap()
+      .pipe(
+        map(data => JSON.parse(data)),
+        tap(data => {
+          const { mapCode } = data;
+          if (mapCode) {
+            this.sharedService.currentMap$.next(mapCode);
+          }
+        })
+      )
+      .subscribe();
+
     this.routerSub = this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
@@ -928,7 +941,11 @@ export class DefaultComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
+  // onCloseVideoRoomDialog(data) {
+  //   this.dialog.onCloseWithoutRefresh();
+  // }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
