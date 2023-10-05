@@ -16,9 +16,8 @@ import {
   takeUntil,
   tap,
   distinctUntilChanged,
-  take,
   switchMap,
-  delay
+  delay,
 } from 'rxjs/operators';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpStatusService } from 'src/app/services/http-status.service';
@@ -34,6 +33,7 @@ import * as _ from 'lodash';
 import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { RobotProfileService } from 'src/app/views/services/robot-profile.service';
+// import { PeerService } from 'src/app/services/peer.service';
 
 @Component({
   selector: 'app-default',
@@ -79,7 +79,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private waypointService: WaypointService,
     private robotGroupService: RobotGroupService,
     private appConfigService: AppConfigService,
-    private robotProfileService: RobotProfileService
+    private robotProfileService: RobotProfileService // private peerService: PeerService
   ) {
     this.sharedService.isRobotHeldBehaviorSubject.next(undefined); // pass undefined to reset variables to avoid triggering other functions
 
@@ -496,6 +496,13 @@ export class DefaultComponent implements OnInit, OnDestroy {
         mergeMap(() => this.getRobotHeld())
       )
       .subscribe();
+
+    // this.sharedService.currentRobotId.pipe(
+    //   filter(robotId => !!robotId),
+    //   tap(robotId => {
+    //     this.peerService.init(robotId);
+    //   })
+    // );
   }
 
   ngOnInit() {
@@ -525,6 +532,20 @@ export class DefaultComponent implements OnInit, OnDestroy {
     //     }
     //   }
     // });
+
+    // retry getCurrentMap when the map is empty or null
+    this.sharedService.currentMapBehaviorSubject$
+      .pipe(
+        delay(2000),
+        switchMap(map => {
+          if (!map || map === '') {
+            return this.getCurrentMap();
+          } else {
+            return of();
+          }
+        })
+      )
+      .subscribe();
   }
 
   getProfile(): Observable<any> {
@@ -548,14 +569,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
   }
 
   getCurrentMap(): Observable<any> {
-    // this.mapService.getActiveMap().subscribe((response: MapResponse) => {
-    //   console.log('Get Active Map:');
-    //   console.log(response);
-    //   const { name } = response;
-    //   this.sharedService.currentMap$.next(name);
-    //   this.sharedService.loading$.next(false);
-    // });
-
     return this.mapService.getActiveMap().pipe(
       tap((response: MapResponse) => {
         console.log('Get Active Map:');
@@ -915,7 +928,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
