@@ -538,24 +538,12 @@ export class DefaultComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // this.sharedService.mqBrokerConnection.subscribe(status => {
-    //   if (status) {
-    //     this.disconnectResponseDialog.onCloseWithoutRefresh();
-    //   } else {
-    //     this.closeDialogAfterRefresh = false;
-    //     if (!this.disconnectResponseDialog.isExist()) {
-    //       this.disconnectMessage = 'error.disconnect';
-    //       setTimeout(() => this.disconnectResponseDialog.open(), 0);
-    //     }
-    //   }
-    // });
-
     // retry getCurrentMap when the map is empty or null
     this.sharedService.currentMapBehaviorSubject$
       .pipe(
         delay(2000),
         switchMap(map => {
-          if (!map || map === '') {
+          if ((!map || map === '') && this.router.url !== '/login') {
             return this.getCurrentMap();
           } else {
             return of();
@@ -598,23 +586,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
   }
 
   getCurrentMode(): Observable<any> {
-    // this.modeService
-    //   .getMode()
-    //   .pipe(
-    //     tap((response: ModeResponse) => {
-    //       console.log('Get Mode: ', response);
-    //       const { robotId, state, manual } = response;
-    //       this.sharedService.currentMode$.next(state);
-    //       this.sharedService.currentManualStatus$.next(manual);
-    //       this.sharedService.currentRobotId.next(robotId);
-    //       if (state !== `FOLLOW_ME`) {
-    //         this.sharedService.currentPairingStatus$.next(null);
-    //       } else {
-    //         this.getPairingStatus();
-    //       }
-    //     })
-    //   )
-    //   .subscribe();
     return this.modeService.getMode().pipe(
       mergeMap((result: ModeResponse) => {
         console.log('Get Mode: ', result);
@@ -667,18 +638,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
                   name
                 });
               } else {
-                //   this.translateService
-                //     .get('destinationNotFoundError', {
-                //       mapName,
-                //       waypointName
-                //     })
-                //     .subscribe(msg => {
-                //       this.sharedService.response$.next({
-                //         type: 'warning',
-                //         message: msg,
-                //         closeAfterRefresh: true
-                //       });
-                //     });
                 const msg = this.translateService.instant(
                   'destinationNotFoundError',
                   { mapName, waypointName }
