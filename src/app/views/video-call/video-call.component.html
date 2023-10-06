@@ -1,0 +1,29 @@
+<div class="container-layout">
+  <div class="remote-video-layout">
+    <video
+      #remoteVideo
+      id="video"
+      class="remote-video-player"
+      autoplay="true"
+    ></video>
+  </div>
+  <div class="local-video-layout">
+    <video
+      #video
+      id="localVideo"
+      class="local-video-player"
+      autoplay="true"
+    ></video>
+  </div>
+  <div class="video-call-btn-group">
+    <label class="room-key">{{ roomKey }}</label>
+    <i
+      class="mdi mdi-phone icon call"
+      *ngIf="!isCalling"
+      [ngClass]="roomKey ? 'enable-call' : 'disable-call'"
+      (click)="roomKey ? callUser(roomKey) : null"
+    ></i>
+    <i class="mdi mdi-phone-hangup icon hangup" *ngIf="isCalling"></i>
+    <i class="mdi mdi-account-multiple icon user" (click)="onSelectGroup()"></i>
+  </div>
+</div>

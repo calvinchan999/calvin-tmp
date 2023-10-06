@@ -33,7 +33,7 @@ import * as _ from 'lodash';
 import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { RobotProfileService } from 'src/app/views/services/robot-profile.service';
-// import { PeerService } from 'src/app/services/peer.service';
+import { PeerService } from 'src/app/services/peer.service';
 
 @Component({
   selector: 'app-default',
@@ -79,7 +79,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private waypointService: WaypointService,
     private robotGroupService: RobotGroupService,
     private appConfigService: AppConfigService,
-    private robotProfileService: RobotProfileService // private peerService: PeerService
+    private robotProfileService: RobotProfileService,
+    private peerService: PeerService
   ) {
     this.sharedService.isRobotHeldBehaviorSubject.next(undefined); // pass undefined to reset variables to avoid triggering other functions
 
@@ -508,14 +509,17 @@ export class DefaultComponent implements OnInit, OnDestroy {
         delay(2000),
         mergeMap(() => this.getRobotHeld())
       )
-      .subscribe();
-
-    // this.sharedService.currentRobotId.pipe(
-    //   filter(robotId => !!robotId),
-    //   tap(robotId => {
-    //     this.peerService.init(robotId);
-    //   })
-    // );
+      .subscribe(() => {
+        const robotId = this.sharedService.currentRobotId.value;
+        if (robotId) {
+          if (
+            this.appConfigService.getConfig().webrtcPeerServer &&
+            this.appConfigService.getConfig().webrtcPeerServer !== ''
+          ) {
+            this.peerService.init(robotId);
+          }
+        }
+      });
   }
 
   ngOnInit() {
@@ -942,9 +946,9 @@ export class DefaultComponent implements OnInit, OnDestroy {
     });
   }
 
-  // onCloseVideoRoomDialog(data) {
-  //   this.dialog.onCloseWithoutRefresh();
-  // }
+  onCloseVideoRoomDialog(data) {
+    this.dialog.onCloseWithoutRefresh();
+  }
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();

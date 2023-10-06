@@ -5,6 +5,7 @@ import { DefaultComponent } from './layouts/default/default.component';
 import { HomeComponent } from './views/home/home.component';
 import { SignInComponent } from './views/sign-in/sign-in.component';
 import { CameraComponent } from './views/camera/camera.component';
+import { VideoCallComponent } from './views/video-call/video-call.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -69,6 +70,11 @@ const routes: Routes = [
         path: 'camera',
         data: { title: 'camera' },
         component: CameraComponent
+      },
+      {
+        path: 'video-call',
+        data: { title: 'video-call' },
+        component: VideoCallComponent
       },
     ]
   }

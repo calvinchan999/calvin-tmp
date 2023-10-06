@@ -33,8 +33,8 @@
   "enableMap": true,
   "enableFloorPlanMode": true,
   "enableTaskReleaseOrHold": false,
-  "loggerServer":"http://calvinchan999.eastasia.cloudapp.azure.com:3100/api/logs",
-  "webrtcSocketServer":"http://192.168.0.232:5021",
-  "webrtcPeerServer":"http://192.168.0.232",
+  "loggerServer": "http://calvinchan999.eastasia.cloudapp.azure.com:3100/api/logs",
+  "webrtcSocketServer": "",
+  "webrtcPeerServer": "",
   "enableJobsRefId": true
 }

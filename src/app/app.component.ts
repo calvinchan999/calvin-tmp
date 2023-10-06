@@ -8,6 +8,8 @@ import { LanguageService } from './services/language.service';
 import { environment } from 'src/environments/environment';
 import { tap } from 'rxjs/operators';
 import { ModalComponent } from './shared/components/modal/modal.component';
+import { SocketIoService } from './services/socket-io.service';
+// import { SocketIoService } from './services/socket-io.service';
 // import { IndexedDbService } from './services/indexed-db.service';
 
 @Component({
@@ -28,7 +30,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private mqttService: MqttService,
     private sharedService: SharedService,
     private spinner: NgxSpinnerService,
-    private languageService: LanguageService // private indexedDbService: IndexedDbService
+    private languageService: LanguageService, // private indexedDbService: IndexedDbService
+    private socketIoService: SocketIoService
   ) {
     this.languageService.setInitState();
 
@@ -42,19 +45,30 @@ export class AppComponent implements OnInit, OnDestroy {
     //   .pipe(mergeMap(() => this.indexedDbService.createLogsSchemes()))
     //   .subscribe();
 
-    this.sharedService.loading$.pipe(tap((status) => {
-      if (status) {
-        this.spinner.show();
-      } else {
-        this.spinner.hide();
-      }
-    })).subscribe();
+    this.sharedService.loading$
+      .pipe(
+        tap(status => {
+          if (status) {
+            this.spinner.show();
+          } else {
+            this.spinner.hide();
+          }
+        })
+      )
+      .subscribe();
+
+    if (
+      this.appConfigService.getConfig().webrtcSocketServer &&
+      this.appConfigService.getConfig().webrtcSocketServer !== ''
+    ) {
+      this.socketIoService.init();
+    }
   }
 
   ngOnInit() {
     const appVersion: string = environment.appVersion;
     console.log(`appVersion: ${appVersion}`);
-     this.sharedService.mqBrokerConnection.subscribe(status => {
+    this.sharedService.mqBrokerConnection.subscribe(status => {
       if (status) {
         this.disconnectResponseDialog.onCloseWithoutRefresh();
       } else {

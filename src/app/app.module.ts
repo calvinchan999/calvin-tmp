@@ -30,6 +30,7 @@ import { CameraComponent } from './views/camera/camera.component';
 import { WebcamModule } from 'ngx-webcam';
 // import { RobotGroupComponent } from './views/robot-group/robot-group.component';
 import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
+import { VideoCallComponent } from './views/video-call/video-call.component';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
@@ -79,7 +80,7 @@ const dbConfig: DBConfig = {
 };
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, SignInComponent, CameraComponent],
+  declarations: [AppComponent, HomeComponent, SignInComponent, CameraComponent, VideoCallComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

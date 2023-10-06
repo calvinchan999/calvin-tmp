@@ -29,6 +29,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { RobotGroupFormComponent } from './components/robot-group-form/robot-group-form.component';
 import { RobotListComponent } from './components/robot-list/robot-list.component';
 import { RobotPairingDialogComponent } from './components/robot-pairing-dialog/robot-pairing-dialog.component';
+import { VideoRoomListComponent } from './components/video-room-list/video-room-list.component';
 
 @NgModule({
   imports: [
@@ -64,7 +65,8 @@ import { RobotPairingDialogComponent } from './components/robot-pairing-dialog/r
     ConfirmationDialogComponent,
     RobotGroupFormComponent,
     RobotListComponent,
-    RobotPairingDialogComponent
+    RobotPairingDialogComponent,
+    VideoRoomListComponent
   ],
   exports: [
     HeaderComponent,
@@ -90,7 +92,8 @@ import { RobotPairingDialogComponent } from './components/robot-pairing-dialog/r
     ConfirmationDialogComponent,
     RobotGroupFormComponent,
     RobotListComponent,
-    RobotPairingDialogComponent
+    RobotPairingDialogComponent,
+    VideoRoomListComponent
   ],
   providers: [ModalComponent]
 })

@@ -1,0 +1,24 @@
+<div class="video-room-list-layout">
+  <div class="video-room-list-content-container">
+    <div class="video-room-list-content">
+      <div class="video-room-keys">
+        <div
+          class="video-room-key"
+          *ngFor="let roomKey of roomKeys"
+          [ngClass]="{ selected: selectedRoomKey === roomKey }"
+          (click)="onSelectedRoomKey(roomKey)"
+        >
+          {{ roomKey }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="video-room-list-btn-container" *ngIf="roomKeys">
+    <div class="btn cancel-btn" (click)="onCancel()">
+      {{ "cancel" | translate }}
+    </div>
+    <div class="btn confirm-btn" (click)="onConfirm(selectedRoomKey)">
+      {{ "confirm" | translate }}
+    </div>
+  </div>
+</div>

@@ -143,5 +143,8 @@
   "cacheClearSuccessful": "cache has been cleared",
   "minutes":"min(s)",
   "obstacleDetected": "Obstacle Detected",
-  "publishLogsSuccessful": "The error logs has been published to server"
+  "publishLogsSuccessful": "The error logs has been published to server",
+  "videoCall":{
+    "fullException":"The {{roomId}} is full"
+  }
 }

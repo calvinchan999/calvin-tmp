@@ -104,6 +104,12 @@
         [metaData]="metaData"
       ></app-robot-pairing-dialog>
     </div>
+    <div *ngSwitchCase="'video-room'">
+      <app-video-room-list
+        [metaData]="metaData"
+        (onClose)="onCloseVideoRoomDialog($event)"
+      ></app-video-room-list>
+    </div>
   </ng-template>
 </app-modal>
 
