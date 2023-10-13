@@ -541,7 +541,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
     // retry getCurrentMap when the map is empty or null
     this.sharedService.currentMapBehaviorSubject$
       .pipe(
-        delay(2000),
+        delay(10000),
         switchMap(map => {
           if ((!map || map === '') && this.router.url !== '/login') {
             return this.getCurrentMap();
