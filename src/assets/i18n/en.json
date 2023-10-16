@@ -27,6 +27,7 @@
   "mapChanged": "The map has been updated with ",
   "cancel": "Cancel",
   "confirm": "Confirm",
+  "localize": "Localize",
   "start": "Start",
   "resume": "Resume",
   "resumeMessage": "Restart to the destination",

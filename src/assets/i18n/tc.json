@@ -16,7 +16,7 @@
   "followRobotGroup": "車跟車",
   "reserve": "預留",
   "release": "取消預留",
-  "cacheClear":"清除緩存",
+  "cacheClear": "清除緩存",
   "camera": "相機",
   "robotStatus": {
     "followMe": "跟隨模式",
@@ -27,6 +27,7 @@
   "mapChanged": "地圖已更新",
   "cancel": "取消",
   "confirm": "確認",
+  "localize": "定位",
   "resume": "重新開始",
   "resumeMessage": "重新開始前往目的地",
   "pause": "暫停",
@@ -59,7 +60,7 @@
     "failedMessage": "更新初始點失敗",
     "confirmation": "您確認當前航點是否正確?",
     "poseDeviationSuccessMessage": "定位成功",
-    "poseDeviationFailedMessage":"定位不佳，建議嘗試手動移動輪椅到其他地方修正或重新定位"
+    "poseDeviationFailedMessage": "定位不佳，建議嘗試手動移動輪椅到其他地方修正或重新定位"
   },
   "resetWaypoint": "重設初始點",
   "clearWaypoint": "清除初始點",
@@ -113,7 +114,7 @@
       "300002": "驗證碼錯誤"
     },
     "disconnect": "系統斷開連接",
-    "wifiSignalDisconnect":"網絡信號已斷開,請重新連接"
+    "wifiSignalDisconnect": "網絡信號已斷開,請重新連接"
   },
   "yes": "是",
   "no": "不是",
@@ -139,12 +140,12 @@
   "goingToDestination": "前往目的地",
   "distance": "距離",
   "arrivalTime": "到達時間",
-  "meter":"米",
+  "meter": "米",
   "cacheClearSuccessful": "本地存儲已被清除",
-  "minutes":"分",
+  "minutes": "分",
   "obstacleDetected": "檢測到障礙物",
   "publishLogsSuccessful": "錯誤日誌已發佈到伺服器",
-  "videoCall":{
-    "fullException":"{{roomId}}已超過人數上限"
+  "videoCall": {
+    "fullException": "{{roomId}}已超過人數上限"
   }
 }

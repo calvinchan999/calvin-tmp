@@ -4,7 +4,8 @@
 //   height: 100%;
 // }
 
-.map-items-container {
+.map-items-container,
+.waypoint-container {
   text-align: center;
   width: 100%;
   height: 100%;
@@ -12,7 +13,8 @@
   overflow-x: hidden;
 }
 
-.map-items {
+.map-items,
+.waypoint-items {
   display: flex;
   gap: 10px;
   margin: 15px 20px 0 20px;
@@ -20,7 +22,8 @@
   height: auto;
 }
 
-.map-item {
+.map-item,
+.waypoint-item {
   min-height: 80px;
   width: 100%;
   border: 4px solid #00b8d4;
@@ -73,7 +76,8 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .map-item {
+  .map-item,
+  .waypoint-item {
     font-size: 35px !important;
   }
 

@@ -1,24 +1,52 @@
 <!-- <div class="map-form"> -->
-  <div class="map-items-container">
-    <div class="map-items">
-      <div
-        class="map-item"
-        *ngFor="let map of mapLists$ | async"
-        [ngClass]="{ selected: selectedMap === map.name }"
-        (click)="onSelectedMap(map.name)"
-      >
-        {{ map.name }}
-      </div>
+<div class="map-items-container" *ngIf=" !next">
+  <div class="map-items">
+    <div
+      class="map-item"
+      *ngFor="let map of mapLists$ | async"
+      [ngClass]="{ selected: selectedMap === map.name }"
+      (click)="onSelectedMap(map.name)"
+    >
+      {{ map.name }}
     </div>
   </div>
-  <div class="map-btn-container d-flex justify-content-around">
-    <!-- <button class="btn map-cancel-button" (click)="onCloseModel()">{{ "cancel" | translate }}</button> -->
+</div>
+<div
+  class="map-btn-container d-flex justify-content-around"
+  *ngIf="selectedMap && !next"
+>
+  <button
+    class="btn map-confirm-button"
+    (click)="onSubmitMap()"
+    *ngIf="selectedMap"
+  >
+    <i class="mdi mdi-chevron-right map-confirm-button-icon"></i>
+    <label class="map-confirm-button-title">{{ "confirm" | translate }}</label>
+  </button>
+</div>
 
-    <button class="btn map-confirm-button" (click)="onSubmitModel(selectedMap)" *ngIf="selectedMap">
-      <i class="mdi mdi-chevron-right map-confirm-button-icon"></i>
-      <label class="map-confirm-button-title">{{
-        "confirm" | translate
-      }}</label>
-    </button>
+<div class="waypoint-items-container" *ngIf="next">
+  <div class="waypoint-items">
+    <div
+      class="waypoint-item"
+      *ngFor="let waypoint of waypointLists$ | async"
+      [ngClass]="{ selected: selectedWaypoint === waypoint.name }"
+      (click)="onSelectedWaypoint(waypoint.name)"
+    >
+      {{ waypoint.name }}
+    </div>
   </div>
-<!-- </div> -->
+</div>
+<div
+  class="map-btn-container d-flex justify-content-around"
+  *ngIf="selectedMap && selectedWaypoint && next"
+>
+  <button
+    class="btn map-confirm-button"
+    (click)="onSubmitModel(selectedMap, selectedWaypoint)"
+    *ngIf="selectedMap && selectedWaypoint"
+  >
+    <i class="mdi mdi-chevron-right map-confirm-button-icon"></i>
+    <label class="map-confirm-button-title">{{ "localize" | translate }}</label>
+  </button>
+</div>

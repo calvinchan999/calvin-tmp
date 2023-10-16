@@ -4,8 +4,18 @@ import { Observable, of } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { generateQueryUrl } from 'src/app/utils/query-builder';
 import { environment } from 'src/environments/environment';
+export interface MapRequest {
+  mapName: Map;
+  waypointName: Waypoint;
+  useInitialPose: boolean;
+}
+
 export interface Map {
   map: string;
+}
+
+export interface Waypoint {
+  waypoint: string;
 }
 
 export interface MapResponse {
@@ -67,7 +77,7 @@ export class MapService {
     return this.http.get<MapResponse>(url);
   }
 
-  changeMap(data: { mapName: string }): Observable<any> {
+  changeMap(data: MapRequest): Observable<any> {
     const url = `${this.baseUrl}${environment.api.changeMap}`;
     return this.http.post<any>(url, data);
   }
@@ -91,6 +101,13 @@ export class MapService {
   getLocalizationPose(): Observable<LocalizationPose> {
     const url = `${this.baseUrl}${environment.api.localizationPose}`;
     return this.http.get<LocalizationPose>(url);
+    // return of({
+    //   "robotId": "Mobilechair-06",
+    //   "mapName": "Y",
+    //   "x": 252.77269871573412,
+    //   "y": -948.6669580631975,
+    //   "angle": -2.159500277109134
+    // })
   }
 
   resizeImage(data): Observable<any> {
