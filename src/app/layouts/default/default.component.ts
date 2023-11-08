@@ -888,6 +888,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
 
   onCloseDialog(data) {
     const { status, parentComponent } = data;
+
     // @ts-ignore
     Promise.all([this.dialog.onCloseWithoutRefresh()]).then(() => {
       if (status && parentComponent === 'waypoint') {
@@ -896,9 +897,12 @@ export class DefaultComponent implements OnInit, OnDestroy {
       } else if (status && parentComponent === 'localization') {
         this.sharedService.poseDeviationConnectionBahaviorSubject.next(true); // cancel localize pose deviation toastr
         this.router.navigate(['/']);
-      } else if (!status && parentComponent === 'localization') {
+      } else if (
+        !status &&
+        (parentComponent === 'localization' || parentComponent === 'map')
+      ) {
         this.sharedService.poseDeviationConnectionBahaviorSubject.next(true); // cancel localize pose deviation toastr
-        this.router.navigate(['/localization']);
+        this.router.navigate([`/${parentComponent}`]);
       } else {
         this.router.navigate(['/']);
       }
