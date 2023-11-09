@@ -1,6 +1,6 @@
 {
   "name": "mobile-chair-frontend",
-  "version": "1.9.17",
+  "version": "1.9.18",
   "scripts": {
     "ng": "ng",
     "start": "ng serve  --host 0.0.0.0 --port 8989 --disable-host-check",
