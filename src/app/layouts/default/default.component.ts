@@ -776,7 +776,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sharedService.isRobotPairingPayloadBehaviorSubject.next(null);
-      if (this.modal) {
+      if (this.modal && this.modal !== 'confirmation-dialog') { // hardcode confirmation-dialog
         this.dialog.onCloseWithoutRefresh();
       }
     }
@@ -888,7 +888,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
 
   onCloseDialog(data) {
     const { status, parentComponent } = data;
-
     // @ts-ignore
     Promise.all([this.dialog.onCloseWithoutRefresh()]).then(() => {
       if (status && parentComponent === 'waypoint') {
@@ -904,7 +903,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
         this.sharedService.poseDeviationConnectionBahaviorSubject.next(true); // cancel localize pose deviation toastr
         this.router.navigate([`/${parentComponent}`]);
       } else {
-        this.router.navigate(['/']);
+        this.router.navigate(['/']).then(() => location.reload());
       }
     });
   }
