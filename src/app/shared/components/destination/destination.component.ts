@@ -141,7 +141,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
                       })
                     );
                   } else {
-                    return this.mapService.getFloorPlan(currentMap).pipe(
+                    const param = _.pickBy({ floorPlanIncluded: 'true' }, _.identity);
+                    const queries = { param };
+                    return this.mapService.getFloorPlan(currentMap, queries).pipe(
                       map((info: any) => {
                         return {
                           floorPlanImage: info.base64Image,

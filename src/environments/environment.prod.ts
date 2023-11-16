@@ -34,6 +34,7 @@ export const environment = {
     floorPlan: (mapCode: string) => `/api/floorPlan/v1/${mapCode}`,
     assistance: '/api/baseControl/v1/assistance',
     profile: '/api/baseControl/v1/profile',
-    pauseResume: '/api/baseControl/v1/pauseResume'
+    pauseResume: '/api/baseControl/v1/pauseResume',
+    executeMission: (missionId) => `/api/mission/v1/execution/${missionId}`
   }
 };

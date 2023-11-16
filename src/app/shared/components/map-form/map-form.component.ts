@@ -135,10 +135,10 @@ export class MapFormComponent implements OnInit, OnDestroy {
 
       this.mapService.changeMap(data).subscribe(() => {
         // this.modalComponent.closeTrigger$.next();
-        this.sharedService.response$.next({
-          type: 'normal',
-          message: 'mapDialog.tips1'
-        });
+        // this.sharedService.response$.next({
+        //   type: 'normal',
+        //   message: 'mapDialog.tips1'
+        // });
 
         if (this.currentMetaData && this.selectedMap && this.rosMapImage) {
           setTimeout(() => {
@@ -169,6 +169,7 @@ export class MapFormComponent implements OnInit, OnDestroy {
 
   onSubmitMap() {
     this.clickEvent$.next();
+    this.sharedService.currentPageTitleEvent.next('localization')
   }
 
   ngOnDestroy() {

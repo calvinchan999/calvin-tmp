@@ -115,10 +115,10 @@ export class MapService {
     return this.http.post(`${url}/api/image/resize`, data);
   }
 
-  getFloorPlan(mapCode: string): Observable<any> {
-    const url = `${this.baseUrl}${environment.api.floorPlan(
+  getFloorPlan(mapCode: string, queries): Observable<any> {
+    const url = generateQueryUrl(`${this.baseUrl}${environment.api.floorPlan(
       mapCode
-    )}?floorPlanIncluded=true`;
+    )}`, queries);
     return this.http.get(url);
   }
 

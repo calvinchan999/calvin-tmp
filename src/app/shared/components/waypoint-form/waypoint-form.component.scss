@@ -1,17 +1,17 @@
-.waypoint-items-container {
+.mission-items-container {
   text-align: center;
   width: 100%;
   height: 100%;
 }
 
-.waypoint-items {
+.mission-items {
   display: flex;
   gap: 10px;
   margin: 15px 20px 0 20px;
   flex-direction: column;
 }
 
-.waypoint-item {
+.mission-item {
   min-height: 80px;
   width: 100%;
   border: 4px solid #00b8d4;
@@ -30,14 +30,14 @@
   color: #fff;
 }
 
-.waypoint-btn-container {
+.mission-btn-container {
   position: fixed;
   bottom: 0;
   right: 0;
   margin: 0px 20px 20px 0;
 }
 
-.waypoint-confirm-button {
+.mission-confirm-button {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -50,37 +50,37 @@
   font-size: 22px;
 }
 
-.waypoint-confirm-button-icon {
+.mission-confirm-button-icon {
   text-align: center;
   font-size: 4em;
   position: absolute;
   bottom: 0;
 }
 
-.waypoint-confirm-button-title {
+.mission-confirm-button-title {
   text-align: center;
   position: absolute;
   bottom: 10px;
 }
 
 @media only screen and (max-width: 900px) {
-  .waypoint-item {
+  .mission-item {
     font-size: 35px !important;
   }
 
-  .waypoint-cancel-button {
+  .mission-cancel-button {
     font-size: 35px;
   }
 
-  .waypoint-confirm-button {
+  .mission-confirm-button {
     font-size: 35px;
   }
 
-  .waypoint-confirm-button-icon {
+  .mission-confirm-button-icon {
     font-size: 2.5em;
   }
 
-  .waypoint-confirm-button-title {
+  .mission-confirm-button-title {
     font-size: 20px;
   }
 }

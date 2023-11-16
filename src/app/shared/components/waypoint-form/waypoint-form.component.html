@@ -1,4 +1,4 @@
-<div class="waypoint-items-container">
+<!-- <div class="waypoint-items-container">
   <div class="waypoint-items">
     <div
       class="waypoint-item"
@@ -18,6 +18,31 @@
   >
     <i class="mdi mdi-chevron-right waypoint-confirm-button-icon"></i>
     <label class="waypoint-confirm-button-title">{{
+      "confirm" | translate
+    }}</label>
+  </button>
+</div> -->
+
+<div class="mission-container">
+  <div class="mission-items">
+    <div
+      class="mission-item"
+      *ngFor="let mission of missions$ | async"
+      [ngClass]="{ selected: selectedMission?.missionId === mission.missionId }"
+      (click)="onSelectedMission(mission)"
+    >
+      {{ mission.name }}
+    </div>
+  </div>
+</div>
+<div class="mission-btn-container d-flex justify-content-around">
+  <button
+    *ngIf="selectedMission"
+    class="btn mission-confirm-button"
+    (click)="onSubmitModel(selectedMission?.missionId)"
+  >
+    <i class="mdi mdi-chevron-right mission-confirm-button-icon"></i>
+    <label class="mission-confirm-button-title">{{
       "confirm" | translate
     }}</label>
   </button>

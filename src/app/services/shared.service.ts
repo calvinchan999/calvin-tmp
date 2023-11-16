@@ -87,6 +87,9 @@ export class SharedService {
 
   public poseDeviationConnectionBahaviorSubject = new BehaviorSubject<boolean>(false)
 
+  public currentPageTitleEvent = new Subject<string>();
+  public currentPageTitleEvent$ = this.currentPageTitleEvent.asObservable();
+
   constructor() {
     this.currentMap$
       .pipe(

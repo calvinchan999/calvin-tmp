@@ -7,16 +7,20 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
-import { map, mergeMap, tap, take, switchMap } from 'rxjs/operators';
-import {
-  WaypointService,
-  Waypoint,
-  TaskConfig
-} from 'src/app/views/services/waypoint.service';
+import { map, mergeMap, tap, take } from 'rxjs/operators';
+// import {
+//   WaypointService,
+//   Waypoint,
+//   TaskConfig
+// } from 'src/app/views/services/waypoint.service';
 import * as _ from 'lodash';
 import { SharedService } from 'src/app/services/shared.service';
-import { TaskService } from 'src/app/views/services/task.service';
-import { AppConfigService } from 'src/app/services/app-config.service';
+// import { TaskService } from 'src/app/views/services/task.service';
+// import { AppConfigService } from 'src/app/services/app-config.service';
+import {
+  MissionService,
+  Mission
+} from 'src/app/views/services/mission.service';
 
 @Component({
   selector: 'app-waypoint-form',
@@ -25,97 +29,149 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 })
 export class WaypointFormComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter(false);
-  waypointLists$: Observable<
+  // waypointLists$: Observable<
+  //   any
+  // > = this.sharedService.currentMapBehaviorSubject$.pipe(
+  //   take(1),
+  //   mergeMap((currentMap: string) => {
+  //     if (currentMap) {
+  //       const filter = _.pickBy({ mapName: currentMap }, _.identity);
+  //       return this.waypointService.getWaypoint({ filter }).pipe(
+  //         map(data => {
+  //           const dataTransfor = [];
+  //           for (const i of data) {
+  //             const splitName = i.name.split('%');
+  //             dataTransfor.push({
+  //               ...i,
+  //               waypointName: splitName[1] ?? splitName[0]
+  //             });
+  //           }
+  //           return _.orderBy(dataTransfor, 'waypointName', 'asc');
+  //         })
+  //       );
+  //     } else {
+  //       return of(null).pipe(tap(() => this.router.navigate(['/'])));
+  //     }
+  //   })
+  // );
+
+  // selectedWaypoint: Waypoint;
+
+  missions$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
     take(1),
     mergeMap((currentMap: string) => {
-      if (currentMap) {
-        const filter = _.pickBy({ mapName: currentMap }, _.identity);
-        return this.waypointService.getWaypoint({ filter }).pipe(
-          map(data => {
-            const dataTransfor = [];
-            for (const i of data) {
-              const splitName = i.name.split('%');
-              dataTransfor.push({
-                ...i,
-                waypointName: splitName[1] ?? splitName[0]
-              });
-            }
-            return _.orderBy(dataTransfor, 'waypointName', 'asc');
-          })
-        );
+      if (currentMap !== '' && !!currentMap) {
+        const filter = _.pickBy({ floorPlanCode: currentMap }, _.identity);
+        return this.missionService.getMission({ filter });
       } else {
         return of(null).pipe(tap(() => this.router.navigate(['/'])));
       }
     })
   );
 
-  selectedWaypoint: Waypoint;
+  selectedMission: Mission;
   sub = new Subscription();
   constructor(
-    private waypointService: WaypointService,
+    // private waypointService: WaypointService,
     private sharedService: SharedService,
     private router: Router,
-    private taskService: TaskService,
-    private appConfigService: AppConfigService
+    // private taskService: TaskService,
+    // private appConfigService: AppConfigService,
+    private missionService: MissionService
   ) {
+    // this.sub = this.sharedService.isClosedModal$
+    //   .pipe(
+    //     switchMap(dialogType => {
+    //       if (this.appConfigService.getConfig().enableJobsRefId) {
+    //         const robotId = this.sharedService.currentRobotId.value;
+    //         return this.taskService.getRobotStatusJobId(robotId).pipe(
+    //           map(jobRefId => {
+    //             return { jobRefId, dialogType };
+    //           })
+    //         );
+    //       } else {
+    //         return of({ jobRefId: null, dialogType });
+    //       }
+    //     })
+    //   )
+    //   .subscribe(data => {
+    //     const { dialogType, jobRefId } = data;
+    //     if (dialogType === 'confirmation-dialog') {
+    //       let data: TaskConfig;
+    //       if (this.appConfigService.getConfig().enableJobsRefId) {
+    //         data = {
+    //           jobId: jobRefId ? jobRefId : null,
+    //           taskItemList: [
+    //             {
+    //               movement: {
+    //                 waypointName: this.selectedWaypoint.name
+    //               }
+    //             }
+    //           ]
+    //         };
+    //       } else {
+    //         data = {
+    //           taskItemList: [
+    //             {
+    //               movement: {
+    //                 waypointName: this.selectedWaypoint.name
+    //               }
+    //             }
+    //           ]
+    //         };
+    //       }
+    //       this.waypointService.sendTask(data).subscribe(() => {
+    //         this.router.navigate(['/waypoint/destination']);
+    //       });
+    //     }
+    //   });
+
     this.sub = this.sharedService.isClosedModal$
       .pipe(
-        switchMap(dialogType => {
-          if (this.appConfigService.getConfig().enableJobsRefId) {
-            const robotId = this.sharedService.currentRobotId.value;
-            return this.taskService.getRobotStatusJobId(robotId).pipe(
-              map(jobRefId => {
-                return { jobRefId, dialogType };
-              })
-            );
+        mergeMap(dialogType => {
+          if (dialogType === 'confirmation-dialog') {
+            const missionId = this.selectedMission.missionId;
+            return this.missionService.executeMission(missionId);
           } else {
-            return of({ jobRefId: null, dialogType });
+            return of(null);
           }
         })
       )
-      .subscribe(data => {
-        const { dialogType, jobRefId } = data;
-        if (dialogType === 'confirmation-dialog') {
-          let data: TaskConfig;
-          if (this.appConfigService.getConfig().enableJobsRefId) {
-            data = {
-              jobId: jobRefId ? jobRefId : null,
-              taskItemList: [
-                {
-                  movement: {
-                    waypointName: this.selectedWaypoint.name
-                  }
-                }
-              ]
-            };
-          } else {
-            data = {
-              taskItemList: [
-                {
-                  movement: {
-                    waypointName: this.selectedWaypoint.name
-                  }
-                }
-              ]
-            };
-          }
-          this.waypointService.sendTask(data).subscribe(() => {
-            this.router.navigate(['/waypoint/destination']);
-          });
-        }
-      });
+      .subscribe(() => this.router.navigate(['/waypoint/destination']));
   }
 
   ngOnInit() {}
 
-  onSelectedWaypoint(waypoint: Waypoint) {
-    this.selectedWaypoint = waypoint;
+  // onSelectedWaypoint(waypoint: Waypoint) {
+  //   this.selectedWaypoint = waypoint;
+  // }
+
+  onSelectedMission(mission) {
+    this.selectedMission = mission;
   }
 
-  onSubmitModel(selectedWaypoint: Waypoint) {
-    if (selectedWaypoint) {
+  // onSubmitModel(selectedWaypoint: Waypoint) {
+  //   if (selectedWaypoint) {
+  //     this.sharedService.isOpenModal$.next({
+  //       modal: 'confirmation-dialog',
+  //       modalHeader: '',
+  //       isDisableClose: true,
+  //       metaData: {
+  //         message: 'destinationReminding',
+  //         submitButtonName: 'start',
+  //         height: '150px',
+  //         width: '150px',
+  //         fontSize: '42px',
+  //         component: 'waypoint'
+  //       }
+  //     });
+  //   }
+  // }
+
+  onSubmitModel(selectedMission) {
+    if (selectedMission) {
       this.sharedService.isOpenModal$.next({
         modal: 'confirmation-dialog',
         modalHeader: '',
@@ -129,12 +185,6 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
           component: 'waypoint'
         }
       });
-
-      //   this.waypointService.sendTask(data).subscribe(() =>
-      //     this.router.navigate(['/waypoint/destination'], {
-      //       queryParams: { waypointName: selectedWaypoint }
-      //     })
-      //   );
     }
   }
 

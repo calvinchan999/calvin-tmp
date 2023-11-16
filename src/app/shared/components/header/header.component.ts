@@ -6,7 +6,7 @@ import {
   Router
 } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { LanguageService } from 'src/app/services/language.service';
 import { MqttService } from 'src/app/services/mqtt.service';
@@ -55,6 +55,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private location: Location,
     private authService: AuthService
   ) {
+    this.sharedService.currentPageTitleEvent$ // hotfix
+      .pipe(
+        filter(title => !!title),
+        tap(title => {
+          this.currentPageTitle = title;
+        })
+      )
+      .subscribe();
+
     this.sub.add(
       this.router.events
         .pipe(
@@ -188,7 +197,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   getBattery() {
     // @todo check connection
-    // mqtt heartbeat 
+    // mqtt heartbeat
     //
     this.mqttService.batterySubject
       // .pipe(tap(() => this.sharedService.reset$.next(0)))
