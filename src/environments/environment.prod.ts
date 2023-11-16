@@ -35,6 +35,7 @@ export const environment = {
     assistance: '/api/baseControl/v1/assistance',
     profile: '/api/baseControl/v1/profile',
     pauseResume: '/api/baseControl/v1/pauseResume',
+    mission: '/api/mission/v1',
     executeMission: (missionId) => `/api/mission/v1/execution/${missionId}`
   }
 };
