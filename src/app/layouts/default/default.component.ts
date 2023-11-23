@@ -47,9 +47,11 @@ export class DefaultComponent implements OnInit, OnDestroy {
   // }
   // @ViewChild('disconnectResponseDialog')
   // disconnectResponseDialog: ModalComponent;
+  @ViewChild('broadcastDialog') broadcastDialog: ModalComponent;
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   @ViewChild('robotGroupPairingDialog') robotPairingDialog: ModalComponent;
+ 
 
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
@@ -57,6 +59,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
   public option: string = '';
   public response: Response;
   public disconnectMessage: string;
+
+  public broadcastMessage;
 
   modal: string;
   modalTitle: string = '';
@@ -457,10 +461,16 @@ export class DefaultComponent implements OnInit, OnDestroy {
         tap(data => {
           const { subject, content, createdBy, createdDateTime } = data;
           if (subject && content) {
-            this.sharedService.response$.next({
+            // this.sharedService.response$.next({
+            //   type: 'broadcast',
+            //   message: `${subject}<br/>${content}<br/>${createdDateTime}`
+            // });
+            this.broadcastMessage = {
               type: 'broadcast',
               message: `${subject}<br/>${content}<br/>${createdDateTime}`
-            });
+            };
+            this.closeDialogAfterRefresh = false;
+            this.broadcastDialog.open();
           }
         })
       )
@@ -776,7 +786,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
       });
     } else {
       this.sharedService.isRobotPairingPayloadBehaviorSubject.next(null);
-      if (this.modal && this.modal !== 'confirmation-dialog') { // hardcode confirmation-dialog
+      if (this.modal && this.modal !== 'confirmation-dialog') {
+        // hardcode confirmation-dialog
         this.dialog.onCloseWithoutRefresh();
       }
     }

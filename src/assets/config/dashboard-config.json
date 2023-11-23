@@ -4,8 +4,8 @@
     "envirmonent": "development"
   },
   "mqtt": {
-    "ip_address": "calvinchan999.eastasia.cloudapp.azure.com",
-    "port_no": 61614,
+    "ip_address": "rv-calvinchan.eastasia.cloudapp.azure.com",
+    "port_no": 8083,
     "protocol": "ws"
   },
   "battery": {
@@ -28,12 +28,12 @@
     "camera": true
   },
   "maxPx": 4080,
-  "imageScalingServer": "http://calvinchan999.eastasia.cloudapp.azure.com:5200",
+  "imageScalingServer": "http://rv-calvinchan.eastasia.cloudapp.azure.com:8098",
   "largeImageServerSideRendering": true,
   "enableMap": true,
   "enableFloorPlanMode": true,
   "enableTaskReleaseOrHold": false,
-  "loggerServer": "http://calvinchan999.eastasia.cloudapp.azure.com:3100/api/logs",
+  "loggerServer": "http://rv-calvinchan.eastasia.cloudapp.azure.com:8097/api/logs",
   "webrtcSocketServer": "",
   "webrtcPeerServer": "",
   "enableJobsRefId": true
