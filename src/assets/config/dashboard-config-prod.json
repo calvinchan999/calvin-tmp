@@ -33,8 +33,12 @@
   "enableMap": true,
   "enableFloorPlanMode": false,
   "enableTaskReleaseOrHold": false,
-  "loggerServer":"http://192.168.0.232:3100/api/logs",
-  "webrtcSocketServer":"",
-  "webrtcPeerServer":"",
-  "enableJobsRefId": true
+  "loggerServer": "http://192.168.0.232:3100/api/logs",
+  "webrtcSocketServer": "",
+  "webrtcPeerServer": "",
+  "enableJobsRefId": true,
+  "mapConfig": {
+    "defaultScale": 0.77,
+    "scaleMultiplier": 0.9
+  }
 }

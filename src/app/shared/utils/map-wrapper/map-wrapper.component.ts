@@ -83,10 +83,11 @@ export class MapWrapperComponent
   mapLayer: Konva.Layer;
 
   degrees: number = 0;
-  scale: number = 0.77; // 0.35
+  scale: number =
+    this.appConfigService.getConfig().mapConfig.defaultScale ?? 0.77; // 0.35
   // rosScale: number = 2; // 0.66, 1.35
   // floorPlanScale: number = 1;
-  scaleMultiplier: number = 0.85; // 0.99
+  scaleMultiplier: number = this.appConfigService.getConfig().mapConfig.scaleMultiplier ?? 0.85; // 0.99
   rosMap: Konva.Image;
 
   isReset: boolean = false;
@@ -174,12 +175,11 @@ export class MapWrapperComponent
             observer.error(err);
           };
           const { floorPlanImage, transformedScale } = this.floorPlan;
-          if(floorPlanImage.indexOf('data:image/jpeg;base64,') > -1){
-            img.src = floorPlanImage
-          }else {
+          if (floorPlanImage.indexOf('data:image/jpeg;base64,') > -1) {
+            img.src = floorPlanImage;
+          } else {
             img.src = `data:image/jpeg;base64,${floorPlanImage}`;
           }
-         
         }),
         new Observable<HTMLImageElement>(observer => {
           const img = new Image();
@@ -237,14 +237,14 @@ export class MapWrapperComponent
                 img.height * newRatio
               );
             } else {
-              const callback = (floorPlanImage) => {
-                if(floorPlanImage.indexOf('data:image/jpeg;base64,') > -1){
+              const callback = floorPlanImage => {
+                if (floorPlanImage.indexOf('data:image/jpeg;base64,') > -1) {
                   return floorPlanImage;
-                }else {
+                } else {
                   return `data:image/jpeg;base64,${floorPlanImage}`;
                 }
-              }
-              
+              };
+
               // Resizing large image on the server side
               const result = await this.mapService
                 .resizeImage({
@@ -268,7 +268,7 @@ export class MapWrapperComponent
                 };
                 jsonData = { ...jsonData, floorPlanData };
               } else {
-                jsonData = {  ...jsonData, image: result.image };
+                jsonData = { ...jsonData, image: result.image };
               }
 
               this.dbService

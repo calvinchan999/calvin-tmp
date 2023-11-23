@@ -36,5 +36,9 @@
   "loggerServer": "http://rv-calvinchan.eastasia.cloudapp.azure.com:8097/api/logs",
   "webrtcSocketServer": "",
   "webrtcPeerServer": "",
-  "enableJobsRefId": true
+  "enableJobsRefId": true,
+  "mapConfig": {
+    "defaultScale": 0.77,
+    "scaleMultiplier": 0.5
+  }
 }
