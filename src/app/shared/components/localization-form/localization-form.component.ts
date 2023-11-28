@@ -336,28 +336,28 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
           audio.play();
 
           setTimeout(() => {
-            // this.router.navigate(['/']);
+            this.router.navigate(['/']);
 
-            this.sharedService.isOpenModal$.next({
-              modal: 'confirmation-dialog',
-              modalHeader: '',
-              isDisableClose: false,
-              metaData: {
-                viewComponentRef: '',
-                message: 'localizationDialog.confirmation',
-                submitButtonName: 'confirm',
-                height: '50px',
-                width: '150px',
-                fontSize: '22px',
-                component: 'localization',
-                editor: this.editor,
-                floorPlanImg: this.floorPlanImg,
-                rosMapImage: this.rosMapImage,
-                metaData: this.metaData,
-                mapName: this.mapName,
-                newRatio: this.newRatio
-              }
-            });
+            // this.sharedService.isOpenModal$.next({
+            //   modal: 'confirmation-dialog',
+            //   modalHeader: '',
+            //   isDisableClose: false,
+            //   metaData: {
+            //     viewComponentRef: '',
+            //     message: 'localizationDialog.confirmation',
+            //     submitButtonName: 'confirm',
+            //     height: '50px',
+            //     width: '150px',
+            //     fontSize: '22px',
+            //     component: 'localization',
+            //     editor: this.editor,
+            //     floorPlanImg: this.floorPlanImg,
+            //     rosMapImage: this.rosMapImage,
+            //     metaData: this.metaData,
+            //     mapName: this.mapName,
+            //     newRatio: this.newRatio
+            //   }
+            // });
           }, 3000);
         },
         error => {
