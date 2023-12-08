@@ -27,6 +27,7 @@ export const environment = {
     resume: '/api/baseControl/v1/resume',
     localization: '/api/localization/v1',
     initialPose: '/api/localization/v1/initialPose',
+    initialPoseByWaypoint: (waypointName: string) => `/api/localization/v1/initialPose/${waypointName}`,
     localizationPose: '/api/localization/v1/pose',
     docking: '/api/docking/v1/charging',
     mapImage: (map: string) => `/api/map/v1/${map}/image`,
@@ -41,7 +42,8 @@ export const environment = {
     profile: '/api/baseControl/v1/profile',
     pauseResume: '/api/baseControl/v1/pauseResume',
     mission: '/api/mission/v1',
-    executeMission: (missionId) => `/api/mission/v1/execution/${missionId}`
+    executeMission: (missionId) => `/api/mission/v1/execution/${missionId}`,
+    floorPlanPoint: '/api/floorPlanPoint/v1'
   },
 };
 

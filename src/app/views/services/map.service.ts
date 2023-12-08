@@ -116,9 +116,10 @@ export class MapService {
   }
 
   getFloorPlan(mapCode: string, queries): Observable<any> {
-    const url = generateQueryUrl(`${this.baseUrl}${environment.api.floorPlan(
-      mapCode
-    )}`, queries);
+    const url = generateQueryUrl(
+      `${this.baseUrl}${environment.api.floorPlan(mapCode)}`,
+      queries
+    );
     return this.http.get(url);
   }
 
@@ -156,5 +157,44 @@ export class MapService {
       GuiY: y,
       GuiAngle: retAngle
     });
+  }
+
+  getFloorPlanPoints(queries): Observable<any> {
+    const url = generateQueryUrl(
+      `${this.baseUrl}${environment.api.floorPlanPoint}`,
+      queries
+    );
+    return this.http.get(url);
+
+  //   return of([
+  //     {
+  //       floorPlanCode: '17W_1F',
+  //       pointCode: 'P1',
+  //       name: '',
+  //       pointType: 'NORMAL',
+  //       userDefinedPointType: 'NORMAL',
+  //       guiX: 250,
+  //       guiY: 463,
+  //       guiAngle: 0,
+  //       enabled: true,
+  //       remark: '',
+  //       createdDateTime: '2023-03-01T12:45:08.87',
+  //       modifiedDateTime: '2023-10-25T11:50:30.63'
+  //     },
+  //     {
+  //       floorPlanCode: '17W_1F',
+  //       pointCode: 'P2-2',
+  //       name: '',
+  //       pointType: 'NORMAL',
+  //       userDefinedPointType: 'NORMAL',
+  //       guiX: 249,
+  //       guiY: 357,
+  //       guiAngle: 0,
+  //       enabled: true,
+  //       remark: '',
+  //       createdDateTime: '2023-09-28T10:29:23.843',
+  //       modifiedDateTime: '2023-10-25T11:50:30.63'
+  //     }
+  //   ]);
   }
 }

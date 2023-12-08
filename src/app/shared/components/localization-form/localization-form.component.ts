@@ -25,6 +25,7 @@ import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { ToastrService } from 'ngx-toastr';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
+import { AppConfigService } from 'src/app/services/app-config.service';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 export interface Metadata {
@@ -45,32 +46,75 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   message: any;
   type: string;
   editor = EditorType.LOCALIZATIONEDITOR;
-  waypointLists$: Observable<
+
+  // waypoint - old version
+  // waypointLists$: Observable<
+  //   any
+  // > = this.sharedService.currentMapBehaviorSubject$.pipe(
+  //   mergeMap(mapResult => {
+  //     if (mapResult && mapResult?.length > 0) {
+  //       const filter = _.pickBy({ mapName: mapResult }, _.identity);
+  //       return this.waypointService.getWaypoint({ filter });
+  //     } else {
+  //       return of(null).pipe(tap(() => this.router.navigate(['/'])));
+  //     }
+  //   }),
+  //   map(data => {
+  //     const dataTransfor = [];
+  //     if (data?.length > 0) {
+  //       for (const i of data) {
+  //         const splitName = i.name.split('%');
+  //         dataTransfor.push({
+  //           ...i,
+  //           waypointName: splitName[1] ?? splitName[0]
+  //         });
+  //       }
+  //     }
+  //     return _.orderBy(dataTransfor, 'waypointName', 'asc');
+  //   })
+  // );
+  // selectedWaypoint: Waypoint;
+
+  // floorplan point - current version
+  floorPlanLists$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
-    mergeMap(mapResult => {
-      if (mapResult && mapResult?.length > 0) {
-        const filter = _.pickBy({ mapName: mapResult }, _.identity);
-        return this.waypointService.getWaypoint({ filter });
+    switchMap((currentMap: string) => {
+      if (currentMap && currentMap?.length > 0) {
+        const userDefinePointType = this.appConfigService.getConfig()
+          .userDefinePointType;
+        const filter = _.pickBy(
+          {
+            floorPlanCode: currentMap,
+            userDefinePointType: userDefinePointType,
+            enabled: 'true'
+          },
+          _.identity
+        );
+
+        return this.mapService.getFloorPlanPoints({ filter });
       } else {
-        return of(null).pipe(tap(() => this.router.navigate(['/'])));
+        return of(null);
       }
-    }),
-    map(data => {
-      const dataTransfor = [];
-      if (data?.length > 0) {
-        for (const i of data) {
-          const splitName = i.name.split('%');
-          dataTransfor.push({
-            ...i,
-            waypointName: splitName[1] ?? splitName[0]
-          });
-        }
-      }
-      return _.orderBy(dataTransfor, 'waypointName', 'asc');
     })
   );
-  selectedWaypoint: Waypoint;
+
+  selectedFloorPlanPoint: any;
+
+  //   missions$: Observable<
+  //   any
+  // > = this.sharedService.currentMapBehaviorSubject$.pipe(
+  //   take(1),
+  //   mergeMap((currentMap: string) => {
+  //     if (currentMap !== '' && !!currentMap) {
+  //       const filter = _.pickBy({ floorPlanCode: currentMap }, _.identity);
+  //       return this.missionService.getMission({ filter });
+  //     } else {
+  //       return of(null).pipe(tap(() => this.router.navigate(['/'])));
+  //     }
+  //   })
+  // );
+
   localizationCorrectBgmPath: string = `./assets/musics/correct.mp3`;
   mapName: string;
   newRatio: number = 1;
@@ -86,7 +130,8 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private mqttService: MqttService,
     private toastrService: ToastrService, // private indexedDbService: IndexedDbService
-    private dbService: NgxIndexedDBService
+    private dbService: NgxIndexedDBService,
+    private appConfigService: AppConfigService
   ) {
     this.setMessage();
   }
@@ -262,8 +307,12 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectedWaypoint(waypoint: Waypoint) {
-    this.selectedWaypoint = waypoint;
+  // onSelectedWaypoint(waypoint: Waypoint) {
+  //   this.selectedWaypoint = waypoint;
+  // }
+
+  onSelectedFloorPlanPoint(floorPlanPoint: any) {
+    this.selectedFloorPlanPoint = floorPlanPoint;
   }
 
   onSubmitLocalizationPoint(point) {
@@ -408,6 +457,62 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
 
   onCloseModel() {
     this.modalComponent.closeTrigger$.next();
+  }
+
+  onSubmitLocalizationByFloorPlanPoint(point) {
+    const { pointCode } = point;
+
+    this.waypointService
+      .initialPoseByWaypoint(pointCode)
+      .pipe(tap(() => this.triggerPoseDeviation()))
+      .subscribe(
+        () => {
+          this.isLocalizedLocation({
+            status: 'success'
+          });
+
+          const audio = new Audio();
+          audio.src = this.localizationCorrectBgmPath;
+          audio.play();
+
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 3000);
+        },
+        error => {
+          this.isLocalizedLocation({
+            status: 'failed',
+            error
+          });
+        }
+      );
+
+    // const { x, y, angle } = point;
+
+    // this.waypointService
+    //   .initialPose({ x, y, angle })
+    //   .pipe(tap(() => this.triggerPoseDeviation()))
+    //   .subscribe(
+    //     () => {
+    //       this.isLocalizedLocation({
+    //         status: 'success'
+    //       });
+
+    //       const audio = new Audio();
+    //       audio.src = this.localizationCorrectBgmPath;
+    //       audio.play();
+
+    //       setTimeout(() => {
+    //         this.router.navigate(['/']);
+    //       }, 3000);
+    //     },
+    //     error => {
+    //       this.isLocalizedLocation({
+    //         status: 'failed',
+    //         error
+    //       });
+    //     }
+    //   );
   }
 
   ngOnDestroy() {

@@ -5,7 +5,7 @@
   },
   "mqtt": {
     "ip_address": "rv-calvinchan.eastasia.cloudapp.azure.com",
-    "port_no": 8083,
+    "port_no": 61614,
     "protocol": "ws"
   },
   "battery": {
@@ -39,6 +39,7 @@
   "enableJobsRefId": true,
   "mapConfig": {
     "defaultScale": 0.77,
-    "scaleMultiplier": 0.5
-  }
+    "scaleMultiplier": 0.9
+  },
+  "userDefinePointType": "test"
 }

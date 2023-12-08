@@ -15,7 +15,7 @@
 </ng-container>
 
 <ng-container *ngIf="type === 'LIST'">
-  <div class="waypoint-items-container">
+  <!-- <div class="waypoint-items-container">
     <div class="waypoint-items">
       <div
         class="waypoint-item"
@@ -38,5 +38,31 @@
         "confirm" | translate
       }}</label>
     </button>
+  </div> -->
+
+  <div class="waypoint-items-container">
+    <div class="waypoint-items">
+      <div
+        class="waypoint-item"
+        *ngFor="let floorPlan of floorPlanLists$ | async"
+        [ngClass]="{ selected: selectedFloorPlanPoint?.pointCode === floorPlan.pointCode }"
+        (click)="onSelectedFloorPlanPoint(floorPlan)"
+      >
+        {{ floorPlan.pointCode }}
+      </div>
+    </div>
   </div>
+  <div class="waypoint-btn-container d-flex justify-content-around">
+    <button
+      *ngIf="selectedFloorPlanPoint"
+      class="btn waypoint-confirm-button"
+      (click)="onSubmitLocalizationByFloorPlanPoint(selectedFloorPlanPoint)"
+    >
+      <i class="mdi mdi-chevron-right waypoint-confirm-button-icon"></i>
+      <label class="waypoint-confirm-button-title">{{
+        "confirm" | translate
+      }}</label>
+    </button>
+  </div>
+
 </ng-container>
