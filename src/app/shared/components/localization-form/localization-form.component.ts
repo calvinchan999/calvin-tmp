@@ -81,12 +81,12 @@ export class LocalizationFormComponent implements OnInit, OnDestroy {
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
     switchMap((currentMap: string) => {
       if (currentMap && currentMap?.length > 0) {
-        const userDefinePointType = this.appConfigService.getConfig()
-          .userDefinePointType;
+        const userDefinedPointType = this.appConfigService.getConfig()
+          .userDefinedPointType;
         const filter = _.pickBy(
           {
             floorPlanCode: currentMap,
-            userDefinePointType: userDefinePointType,
+            userDefinedPointType: userDefinedPointType,
             enabled: 'true'
           },
           _.identity

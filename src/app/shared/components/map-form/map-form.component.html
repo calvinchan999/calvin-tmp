@@ -25,7 +25,7 @@
   </button>
 </div>
 
-<div class="waypoint-items-container" *ngIf="next">
+<!-- <div class="waypoint-items-container" *ngIf="next">
   <div class="waypoint-items">
     <div
       class="waypoint-item"
@@ -49,4 +49,31 @@
     <i class="mdi mdi-chevron-right map-confirm-button-icon"></i>
     <label class="map-confirm-button-title">{{ "localize" | translate }}</label>
   </button>
+</div> -->
+
+<div class="waypoint-items-container" *ngIf="next">
+  <div class="waypoint-items">
+    <div
+      class="waypoint-item"
+      *ngFor="let floorPlanPoint of floorPlanPointLists$ | async"
+      [ngClass]="{ selected: selectedFloorPlanPoint?.pointCode === floorPlanPoint.pointCode }"
+      (click)="onSelectedFloorPlanPoint(floorPlanPoint)"
+    >
+      {{ floorPlanPoint.pointCode  }}
+    </div>
+  </div>
 </div>
+<div
+  class="map-btn-container d-flex justify-content-around"
+  *ngIf="selectedMap && selectedFloorPlanPoint && next"
+>
+  <button
+    class="btn map-confirm-button"
+    (click)="onSubmitModel(selectedMap, selectedFloorPlanPoint)"
+    *ngIf="selectedMap && selectedFloorPlanPoint"
+  >
+    <i class="mdi mdi-chevron-right map-confirm-button-icon"></i>
+    <label class="map-confirm-button-title">{{ "localize" | translate }}</label>
+  </button>
+</div>
+

@@ -15,6 +15,8 @@ import {
 } from 'rxjs/operators';
 import { EditorType } from '../../utils/map-wrapper/map-wrapper.component';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-map-form',
@@ -23,7 +25,8 @@ import { NgxIndexedDBService } from 'ngx-indexed-db';
 })
 export class MapFormComponent implements OnInit, OnDestroy {
   mapLists$: Observable<any> = this.mapService.getMap();
-  waypointLists$;
+  // waypointLists$;
+  floorPlanPointLists$;
   selectedMap: string;
   selectedWaypoint: string;
   clickEvent$ = new Subject();
@@ -40,12 +43,16 @@ export class MapFormComponent implements OnInit, OnDestroy {
 
   mapSub = new Subscription();
 
+  selectedFloorPlanPoint;
+
   constructor(
     private modalComponent: ModalComponent,
     private mapService: MapService,
     private waypointService: WaypointService,
     private sharedService: SharedService,
-    private dbService: NgxIndexedDBService
+    private dbService: NgxIndexedDBService,
+    private appConfigService: AppConfigService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -57,17 +64,33 @@ export class MapFormComponent implements OnInit, OnDestroy {
             of(EMPTY).pipe(
               switchMap(() => {
                 if (this.selectedMap) {
-                  const param = _.pickBy(
-                    { mapName: this.selectedMap, initialLocalization: 'true' },
+                  // const param = _.pickBy(
+                  //   { mapName: this.selectedMap, initialLocalization: 'true' },
+                  //   _.identity
+                  // );
+                  // const queries = { param };
+                  // return this.waypointService.getWaypoint(queries).pipe(
+                  //   tap(waypointLists => {
+                  //     this.next = true;
+                  //     this.waypointLists$ = of(waypointLists);
+                  //   }),
+                  //   switchMap(() => of(EMPTY))
+                  // );
+                  const userDefinedPointType = this.appConfigService.getConfig()
+                    .userDefinedPointType;
+                  const filter = _.pickBy(
+                    {
+                      floorPlanCode: this.selectedMap,
+                      userDefinedPointType: userDefinedPointType,
+                      enabled: 'true'
+                    },
                     _.identity
                   );
-                  const queries = { param };
-                  return this.waypointService.getWaypoint(queries).pipe(
-                    tap(waypointLists => {
+                  return this.mapService.getFloorPlanPoints({ filter }).pipe(
+                    tap(floorPlanPoints => {
                       this.next = true;
-                      this.waypointLists$ = of(waypointLists);
-                    }),
-                    switchMap(() => of(EMPTY))
+                      this.floorPlanPointLists$ = of(floorPlanPoints);
+                    })
                   );
                 } else {
                   return of(EMPTY);
@@ -121,15 +144,20 @@ export class MapFormComponent implements OnInit, OnDestroy {
     this.selectedWaypoint = waypoint;
   }
 
+  onSelectedFloorPlanPoint(floorPlanPoint: any) {
+    this.selectedFloorPlanPoint = floorPlanPoint;
+  }
+
   onCloseModel() {
     this.modalComponent.closeTrigger$.next();
   }
 
-  onSubmitModel(mapName, waypointName) {
-    if (mapName && waypointName) {
+  onSubmitModel(mapName, floorPlanPoint) {
+    const { pointCode } = floorPlanPoint;
+    if (mapName && pointCode) {
       const data: MapRequest = {
         mapName,
-        waypointName,
+        waypointName: pointCode,
         useInitialPose: true
       };
 
@@ -140,36 +168,42 @@ export class MapFormComponent implements OnInit, OnDestroy {
         //   message: 'mapDialog.tips1'
         // });
 
-        if (this.currentMetaData && this.selectedMap && this.rosMapImage) {
-          setTimeout(() => {
-            this.sharedService.isOpenModal$.next({
-              modal: 'confirmation-dialog',
-              modalHeader: '',
-              isDisableClose: false,
-              metaData: {
-                viewComponentRef: '',
-                message: 'localizationDialog.confirmation',
-                submitButtonName: 'confirm',
-                height: '50px',
-                width: '150px',
-                fontSize: '22px',
-                component: 'map',
-                editor: this.editor,
-                rosMapImage: this.rosMapImage,
-                metaData: this.currentMetaData,
-                mapName: this.selectedMap,
-                newRatio: this.newRatio
-              }
-            });
-          }, 1000);
-        }
+        // if (this.currentMetaData && this.selectedMap && this.rosMapImage) {
+        //   setTimeout(() => {
+        //     this.sharedService.isOpenModal$.next({
+        //       modal: 'confirmation-dialog',
+        //       modalHeader: '',
+        //       isDisableClose: false,
+        //       metaData: {
+        //         viewComponentRef: '',
+        //         message: 'localizationDialog.confirmation',
+        //         submitButtonName: 'confirm',
+        //         height: '50px',
+        //         width: '150px',
+        //         fontSize: '22px',
+        //         component: 'map',
+        //         editor: this.editor,
+        //         rosMapImage: this.rosMapImage,
+        //         metaData: this.currentMetaData,
+        //         mapName: this.selectedMap,
+        //         newRatio: this.newRatio
+        //       }
+        //     });
+        //   }, 1000);
+        // }
+
+        this.sharedService.response$.next({
+          type: 'normal',
+          message: 'mapChanged'
+        });
+        setTimeout(() => this.router.navigate(['/']), 1000);
       });
     }
   }
 
   onSubmitMap() {
     this.clickEvent$.next();
-    this.sharedService.currentPageTitleEvent.next('localization')
+    this.sharedService.currentPageTitleEvent.next('localization');
   }
 
   ngOnDestroy() {
