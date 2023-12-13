@@ -38,6 +38,7 @@ export const environment = {
     pauseResume: '/api/baseControl/v1/pauseResume',
     mission: '/api/mission/v1',
     executeMission: (missionId) => `/api/mission/v1/execution/${missionId}`,
-    floorPlanPoint: '/api/floorPlanPoint/v1'
+    floorPlanPoint: '/api/floorPlanPoint/v1',
+    dockingChargingFeedback: '/api/docking/v1/charging/feedback'
   }
 };

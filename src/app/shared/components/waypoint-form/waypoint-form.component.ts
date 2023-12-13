@@ -63,7 +63,7 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
     take(1),
     mergeMap((currentMap: string) => {
       if (currentMap !== '' && !!currentMap) {
-        const filter = _.pickBy({ floorPlanCode: currentMap }, _.identity);
+        const filter = _.pickBy({ floorPlanCode: currentMap, orderBy: 'name' }, _.identity);
         return this.missionService.getMission({ filter });
       } else {
         return of(null).pipe(tap(() => this.router.navigate(['/'])));

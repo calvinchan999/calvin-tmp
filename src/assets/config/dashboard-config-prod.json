@@ -41,5 +41,5 @@
     "defaultScale": 0.77,
     "scaleMultiplier": 0.9
   },
-  "userDefinedPointType": "test"
+  "userDefinedPointType": "LOCATION"
 }

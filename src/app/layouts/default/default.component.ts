@@ -34,6 +34,7 @@ import { RobotGroupService } from 'src/app/views/services/robot-group.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { RobotProfileService } from 'src/app/views/services/robot-profile.service';
 import { PeerService } from 'src/app/services/peer.service';
+import { DockingService } from 'src/app/views/services/docking.service';
 
 @Component({
   selector: 'app-default',
@@ -51,7 +52,6 @@ export class DefaultComponent implements OnInit, OnDestroy {
   @ViewChild('responseDialog') responseDialog: ModalComponent;
   @ViewChild('dialog') dialog: ModalComponent;
   @ViewChild('robotGroupPairingDialog') robotPairingDialog: ModalComponent;
- 
 
   private ngUnsubscribe = new Subject();
   public sub = new Subscription();
@@ -84,7 +84,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
     private robotGroupService: RobotGroupService,
     private appConfigService: AppConfigService,
     private robotProfileService: RobotProfileService,
-    private peerService: PeerService
+    private peerService: PeerService,
+    private dockingService: DockingService
   ) {
     this.sharedService.isRobotHeldBehaviorSubject.next(undefined); // pass undefined to reset variables to avoid triggering other functions
 
@@ -517,7 +518,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
         mergeMap(() => this.getTaskStatus()),
         // mergeMap(() => this.getFollowRobotStatus()),
         delay(2000),
-        mergeMap(() => this.getRobotHeld())
+        mergeMap(() => this.getRobotHeld()),
+        mergeMap(() => this.getDockingChargingFeedback())
       )
       .subscribe(() => {
         const robotId = this.sharedService.currentRobotId.value;
@@ -756,6 +758,19 @@ export class DefaultComponent implements OnInit, OnDestroy {
     } else {
       return of(EMPTY);
     }
+  }
+
+  getDockingChargingFeedback() {
+    return this.dockingService.dockingChargingFeedback().pipe(
+      tap(feedback => {
+        if (feedback) {
+          const { chargingStatus } = JSON.parse(feedback);
+          if (chargingStatus === 'CHARGING') {
+            this.router.navigate(['/charging/charging-mqtt']);
+          }
+        }
+      })
+    );
   }
 
   robotPairDialogConditionChecker({ group, master, client, value }) {

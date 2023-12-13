@@ -5,7 +5,7 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class DockingService {
   public baseUrl;
@@ -27,5 +27,10 @@ export class DockingService {
   cancelDocking(): Observable<any> {
     const url = `${this.baseUrl}${environment.api.docking}`;
     return this.http.delete<any>(url);
+  }
+
+  dockingChargingFeedback(): Observable<any> {
+    const url = `${this.baseUrl}${environment.api.dockingChargingFeedback}`;
+    return this.http.get<any>(url);
   }
 }
