@@ -764,8 +764,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
     return this.dockingService.dockingChargingFeedback().pipe(
       tap(feedback => {
         if (feedback) {
-          const { chargingStatus } = JSON.parse(feedback);
-          if (chargingStatus === 'CHARGING') {
+          const { chargingStatus } = feedback;
+          if (chargingStatus === 'CHARGING' || chargingStatus ==='PRE_CHARGING') {
             this.router.navigate(['/charging/charging-mqtt']);
           }
         }
