@@ -44,7 +44,8 @@ export const environment = {
     mission: '/api/mission/v1',
     executeMission: (missionId) => `/api/mission/v1/execution/${missionId}`,
     floorPlanPoint: '/api/floorPlanPoint/v1',
-    dockingChargingFeedback: '/api/docking/v1/charging/feedback'
+    dockingChargingFeedback: '/api/docking/v1/charging/feedback',
+    path: '/api/path/v1'
   },
 };
 

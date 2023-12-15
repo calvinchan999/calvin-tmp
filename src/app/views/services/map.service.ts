@@ -164,37 +164,43 @@ export class MapService {
       `${this.baseUrl}${environment.api.floorPlanPoint}`,
       queries
     );
+
     return this.http.get(url);
 
-  //   return of([
-  //     {
-  //       floorPlanCode: '17W_1F',
-  //       pointCode: 'P1',
-  //       name: '',
-  //       pointType: 'NORMAL',
-  //       userDefinedPointType: 'NORMAL',
-  //       guiX: 250,
-  //       guiY: 463,
-  //       guiAngle: 0,
-  //       enabled: true,
-  //       remark: '',
-  //       createdDateTime: '2023-03-01T12:45:08.87',
-  //       modifiedDateTime: '2023-10-25T11:50:30.63'
-  //     },
-  //     {
-  //       floorPlanCode: '17W_1F',
-  //       pointCode: 'P2-2',
-  //       name: '',
-  //       pointType: 'NORMAL',
-  //       userDefinedPointType: 'NORMAL',
-  //       guiX: 249,
-  //       guiY: 357,
-  //       guiAngle: 0,
-  //       enabled: true,
-  //       remark: '',
-  //       createdDateTime: '2023-09-28T10:29:23.843',
-  //       modifiedDateTime: '2023-10-25T11:50:30.63'
-  //     }
-  //   ]);
+    // return of([
+    //   {
+    //     floorPlanCode: '17W_1F',
+    //     pointCode: 'P1',
+    //     name: '',
+    //     pointType: 'NORMAL',
+    //     userDefinedPointType: 'NORMAL',
+    //     guiX: 250,
+    //     guiY: 463,
+    //     guiAngle: 0,
+    //     enabled: true,
+    //     remark: '',
+    //     createdDateTime: '2023-03-01T12:45:08.87',
+    //     modifiedDateTime: '2023-10-25T11:50:30.63'
+    //   },
+    //   {
+    //     floorPlanCode: '17W_1F',
+    //     pointCode: 'P2-2',
+    //     name: '',
+    //     pointType: 'NORMAL',
+    //     userDefinedPointType: 'NORMAL',
+    //     guiX: 249,
+    //     guiY: 357,
+    //     guiAngle: 0,
+    //     enabled: true,
+    //     remark: '',
+    //     createdDateTime: '2023-09-28T10:29:23.843',
+    //     modifiedDateTime: '2023-10-25T11:50:30.63'
+    //   }
+    // ]);
+  }
+
+  getRobotPath() {
+    const url = `${this.baseUrl}${environment.api.path}`;
+    return this.http.get(url);
   }
 }

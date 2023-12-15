@@ -6,7 +6,7 @@ import { DockingService } from 'src/app/views/services/docking.service';
 @Component({
   selector: 'app-docking-form',
   templateUrl: './docking-form.component.html',
-  styleUrls: ['./docking-form.component.scss'],
+  styleUrls: ['./docking-form.component.scss']
 })
 export class DockingFormComponent implements OnInit {
   @Output() isUpdate = new EventEmitter<boolean>(false);
@@ -26,7 +26,7 @@ export class DockingFormComponent implements OnInit {
     const { duration, upperLimit } = this.appConfigService.getConfig().battery;
     const data = {
       upperLimit,
-      duration,
+      duration
     };
 
     // this.translateService.get("dockingDialog.tips2").pipe(tap(tip2 => {
@@ -36,8 +36,9 @@ export class DockingFormComponent implements OnInit {
     //   });
     // }), mergeMap(() => this.dockingService.startdocking(data))).subscribe(() => this.modalComponent.closeTrigger$.next());
 
-    this.dockingService
-      .startdocking(data)
-      .subscribe(() => this.isUpdate.emit(true));
+    this.dockingService.startdocking(data).subscribe(result => {
+      const { status } = result;
+      if (status === 'SUCCEEDED') this.isUpdate.emit(true);
+    });
   }
 }

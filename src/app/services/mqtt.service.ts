@@ -296,6 +296,12 @@ export class MqttService {
       .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
   }
 
+  getRobotPath(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/path', { qos: this.qos })
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
   public unsafePublish(topic: string, payload: string): Observable<void> {
     return of(
       this._mqttService.unsafePublish(topic, payload, { qos: 2, retain: true })

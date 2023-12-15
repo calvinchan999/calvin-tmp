@@ -45,6 +45,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
 
   obstacleDetectionSub = new Subscription();
   baseControllerPauseResumeSub = new Subscription();
+  robotPathSub = new Subscription();
+
+  poseList;
 
   constructor(
     private waypointService: WaypointService,
@@ -141,36 +144,41 @@ export class DestinationComponent implements OnInit, OnDestroy {
                       })
                     );
                   } else {
-                    const param = _.pickBy({ floorPlanIncluded: 'true' }, _.identity);
-                    const queries = { param };
-                    return this.mapService.getFloorPlan(currentMap, queries).pipe(
-                      map((info: any) => {
-                        return {
-                          floorPlanImage: info.base64Image,
-                          mapCode: info.mapList[0].mapCode,
-                          floorPlanCode: info.floorPlanCode,
-                          originX: info.mapList[0].originX,
-                          originY: info.mapList[0].originY,
-                          resolution: info.mapList[0].resolution,
-                          imageWidth: info.mapList[0].imageWidth,
-                          imageHeight: info.mapList[0].imageHeight,
-                          transformedPositionX:
-                            info.mapList[0].transformedPositionX,
-                          transformedPositionY:
-                            info.mapList[0].transformedPositionY,
-                          transformedScale: info.mapList[0].transformedScale,
-                          transformedAngle: info.mapList[0].transformedAngle
-                        };
-                      }),
-                      tap(result => (this.floorPlanData = result)),
-                      mergeMap(() =>
-                        this.mapService.getMapMetadata(currentMap).pipe(
-                          tap(metaData => {
-                            this.metaData = metaData;
-                          })
-                        )
-                      )
+                    const param = _.pickBy(
+                      { floorPlanIncluded: 'true' },
+                      _.identity
                     );
+                    const queries = { param };
+                    return this.mapService
+                      .getFloorPlan(currentMap, queries)
+                      .pipe(
+                        map((info: any) => {
+                          return {
+                            floorPlanImage: info.base64Image,
+                            mapCode: info.mapList[0].mapCode,
+                            floorPlanCode: info.floorPlanCode,
+                            originX: info.mapList[0].originX,
+                            originY: info.mapList[0].originY,
+                            resolution: info.mapList[0].resolution,
+                            imageWidth: info.mapList[0].imageWidth,
+                            imageHeight: info.mapList[0].imageHeight,
+                            transformedPositionX:
+                              info.mapList[0].transformedPositionX,
+                            transformedPositionY:
+                              info.mapList[0].transformedPositionY,
+                            transformedScale: info.mapList[0].transformedScale,
+                            transformedAngle: info.mapList[0].transformedAngle
+                          };
+                        }),
+                        tap(result => (this.floorPlanData = result)),
+                        mergeMap(() =>
+                          this.mapService.getMapMetadata(currentMap).pipe(
+                            tap(metaData => {
+                              this.metaData = metaData;
+                            })
+                          )
+                        )
+                      );
                   }
                 })
               );
@@ -203,7 +211,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
       .getPoseMq()
       .pipe(
         map(pose => JSON.parse(pose)),
-        tap(pose => (this.robotPose = pose))
+        tap(pose => {
+          this.robotPose = pose;
+        })
       )
       .subscribe();
 
@@ -258,6 +268,19 @@ export class DestinationComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+
+    this.robotPathSub = this.mqttService
+      .getRobotPath()
+      .pipe(
+        map(mq => JSON.parse(mq)),
+        tap(mq => {
+          if (mq) {
+            const { poseList } = mq;
+            this.poseList = poseList;
+          }
+        })
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
@@ -266,6 +289,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
     //     this.router.navigate(['/']);
     //   }
     // }, 3000);
+    this.getRobotPath();
   }
 
   ngAfterViewInit() {
@@ -287,9 +311,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
           this.distance = distance.toFixed(0) > 0 ? distance.toFixed(0) : '--';
         })
       )
-      .subscribe(res => {
-        // console.log(res); // debug
-      });
+      .subscribe();
 
     this.baseControllerPauseResumeSub = this.mqttService
       .getBaseControllerPauseResume()
@@ -354,6 +376,15 @@ export class DestinationComponent implements OnInit, OnDestroy {
       .subscribe(() =>
         setTimeout(() => this.sharedService.loading$.next(false), 3000)
       );
+  }
+
+  getRobotPath() {
+    this.mapService.getRobotPath().subscribe((res: any) => {
+      if (res) {
+        const { poseList } = res;
+        this.poseList = poseList;
+      }
+    });
   }
 
   ngOnDestroy() {

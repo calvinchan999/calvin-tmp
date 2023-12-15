@@ -73,6 +73,8 @@ export class MapWrapperComponent
   @Input() mapName: string;
   @Input() newRatio: number = 1;
   @Output() isUpdatedWaypoint = new EventEmitter<any>(false);
+  @Input() poseList: Array<any>;
+
   editorType = EditorType;
   sub = new Subscription();
   stage: Konva.Stage;
@@ -87,7 +89,8 @@ export class MapWrapperComponent
     this.appConfigService.getConfig().mapConfig.defaultScale ?? 0.77; // 0.35
   // rosScale: number = 2; // 0.66, 1.35
   // floorPlanScale: number = 1;
-  scaleMultiplier: number = this.appConfigService.getConfig().mapConfig.scaleMultiplier ?? 0.85; // 0.99
+  scaleMultiplier: number =
+    this.appConfigService.getConfig().mapConfig.scaleMultiplier ?? 0.85; // 0.99
   rosMap: Konva.Image;
 
   isReset: boolean = false;
@@ -123,6 +126,8 @@ export class MapWrapperComponent
     this.appConfigService.getConfig().largeImageServerSideRendering ?? false;
 
   destinationIcon;
+
+  robotPath: Konva.Line;
 
   constructor(
     private waypointService: WaypointService,
@@ -324,6 +329,18 @@ export class MapWrapperComponent
           mapLayer.add(rosMap);
 
           this.mapLayer = mapLayer;
+
+          if (this.editor === EditorType.POSITIONLISTENER) {
+            this.robotPath = new Konva.Line({
+              points: [],
+              stroke: 'black',
+              strokeWidth: 2,
+              tension: 1
+            });
+
+            this.mapLayer.add(this.robotPath);
+          }
+
           if (this.editor === EditorType.LOCALIZATIONEDITOR) {
             this.lidarGroup = new Konva.Group({
               x: 0,
@@ -381,6 +398,16 @@ export class MapWrapperComponent
           (this.mapImage || this.floorPlan)
         ) {
           this.init();
+
+          this.stage.on('wheel', event => {
+            event.evt.preventDefault();
+            const direction = event.evt.deltaY > 0 ? 1 : -1;
+            if (direction < 0) {
+              this.zoomIn();
+            } else {
+              this.zoomOut();
+            }
+          });
         }
       });
   }
@@ -388,12 +415,32 @@ export class MapWrapperComponent
   ngOnChanges() {
     if (
       // (this.robotPose || this.waypointTargets) &&
+      this.robotPose &&
       this.mapLayer &&
       this.metaData &&
       this.editor &&
       (this.mapImage || this.floorPlan)
     ) {
-      this.init();
+      // this.init();
+      let obs: Observable<any>[] = [];
+      if (!this.floorPlan) {
+        obs.push(this.createRobotCurrentPointToRosMap());
+      } else {
+        obs.push(this.createRobotCurrentPointToFloorPlan());
+      }
+
+      if (this.editor === EditorType.POSITIONLISTENER) {
+        obs.push(this.createTargetPosition());
+        if (this.poseList && this.poseList.length > 0) {
+          if (!this.floorPlan) {
+            obs.push(this.createRobotPath({ isFloorPlan: false }));
+          } else {
+            obs.push(this.createRobotPath({ isFloorPlan: true }));
+          }
+        }
+      }
+
+      forkJoin(obs).subscribe();
     }
   }
 
@@ -407,19 +454,25 @@ export class MapWrapperComponent
     if (this.editor === EditorType.LOCALIZATIONEDITOR) {
       obs.push(this.createLidarRedpoints());
     } else if (this.editor === EditorType.POSITIONLISTENER) {
-      obs.push(this.createTargetPosition());
+      if (this.poseList && this.poseList.length > 0) {
+        if (!this.floorPlan) {
+          obs.push(this.createRobotPath({ isFloorPlan: false }));
+        } else {
+          obs.push(this.createRobotPath({ isFloorPlan: true }));
+        }
+      }
     }
 
     forkJoin(obs).subscribe(() => {
-      this.stage.on('wheel', event => {
-        event.evt.preventDefault();
-        const direction = event.evt.deltaY > 0 ? 1 : -1;
-        if (direction < 0) {
-          this.zoomIn();
-        } else {
-          this.zoomOut();
-        }
-      });
+      // this.stage.on('wheel', event => {
+      //   event.evt.preventDefault();
+      //   const direction = event.evt.deltaY > 0 ? 1 : -1;
+      //   if (direction < 0) {
+      //     this.zoomIn();
+      //   } else {
+      //     this.zoomOut();
+      //   }
+      // });
 
       if (this.editor === EditorType.LOCALIZATIONEDITOR) {
         this.mapLayer.on('mousedown touchstart', async (event: any) => {
@@ -1340,6 +1393,83 @@ export class MapWrapperComponent
     let ctx = canvas.getContext('2d');
     ctx.drawImage(image, 0, 0, newWidth, newHeight);
     return canvas;
+  }
+
+  createRobotPath({ isFloorPlan }) {
+    const obs: Observable<any>[] = [];
+    const { x, y, height, resolution } = this.metaData;
+
+    if (isFloorPlan) {
+      const {
+        transformedAngle,
+        resolution,
+        originX,
+        originY,
+        imageHeight,
+        imageWidth,
+        transformedScale,
+        transformedPositionX,
+        transformedPositionY
+      } = this.floorPlan;
+
+      const map = {
+        transformedAngle,
+        resolution,
+        originX,
+        originY,
+        imageHeight,
+        imageWidth,
+        transformedScale,
+        transformedPositionX,
+        transformedPositionY
+      };
+
+      for (let pose of this.poseList) {
+        const destinationPoint = {
+          angle: 0,
+          positionX: x - x + pose.x,
+          positionY: y - y + pose.y
+        };
+
+        obs.push(
+          this.mapService.getFloorPlanPointFromMapPoint(map, destinationPoint)
+        );
+      }
+
+      forkJoin(obs).subscribe((res: any) => {
+        const points = [];
+        for (let item of res) {
+          const { GuiX, GuiY } = item;
+          points.push(GuiX * this.newRatio);
+          points.push(GuiY * this.newRatio);
+        }
+
+        this.robotPath.points(points);
+      });
+    } else {
+      for (let pose of this.poseList) {
+        const destinationPoint = {
+          angle: 0,
+          positionX: Math.abs(((x - pose.x) * this.newRatio) / resolution),
+          positionY:
+            (height - Math.abs((y - pose.y) / resolution)) * this.newRatio
+        };
+
+        obs.push(of(destinationPoint));
+      }
+
+      forkJoin(obs).subscribe((res: any) => {
+        const points = [];
+        for (let item of res) {
+          const { positionX, positionY } = item;
+          points.push(positionX);
+          points.push(positionY);
+        }
+
+        this.robotPath.points(points);
+      });
+    }
+    return of();
   }
 
   ngOnDestroy() {
