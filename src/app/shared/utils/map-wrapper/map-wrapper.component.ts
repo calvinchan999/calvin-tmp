@@ -333,7 +333,7 @@ export class MapWrapperComponent
           if (this.editor === EditorType.POSITIONLISTENER) {
             this.robotPath = new Konva.Line({
               points: [],
-              stroke: 'black',
+              stroke: '#7CFC00',
               strokeWidth: 2,
               tension: 1
             });
