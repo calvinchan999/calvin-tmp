@@ -67,13 +67,13 @@ export class MqttService {
         path: '/mqtt',
         clientId: this.clientId,
         protocol: config.mqtt.protocol,
-        keepalive: 1
+        keepalive: 5
         // clean: true
       });
 
-      this.getConnection();
       this.getError();
       this.getOffline();
+      this.getConnection();
       this.globalTopic(qos);
       // this._mqttService.onReconnect.subscribe(connect => console.log(connect));
       // this._mqttService.onClose.subscribe(close => console.log(close));
