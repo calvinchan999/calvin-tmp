@@ -67,7 +67,7 @@ export class MqttService {
         path: '/mqtt',
         clientId: this.clientId,
         protocol: config.mqtt.protocol,
-        keepalive: 5
+        keepalive: 15
         // clean: true
       });
 
