@@ -292,11 +292,16 @@ export class DefaultComponent implements OnInit, OnDestroy {
             this.sharedService.currentRobotId.next(robotId);
             this.sharedService.currentMode$.next(state);
             this.sharedService.currentManualStatus$.next(manual);
-            if (state !== `FOLLOW_ME`) {
-              this.sharedService.currentPairingStatus$.next(null);
-              return this.getFollowRobotStatus();
-            } else {
+            // if (state !== `FOLLOW_ME`) {
+            //   this.sharedService.currentPairingStatus$.next(null);
+            //   return this.getFollowRobotStatus();
+            // } else {
+            //   return this.getFollowMePairingStatus();
+            // }
+            if (state === 'FOLLOW_ME') {
               return this.getFollowMePairingStatus();
+            } else {
+              return of(EMPTY);
             }
           } else {
             return of(EMPTY);
@@ -605,11 +610,16 @@ export class DefaultComponent implements OnInit, OnDestroy {
         this.sharedService.currentMode$.next(state);
         this.sharedService.currentManualStatus$.next(manual);
         this.sharedService.currentRobotId.next(robotId);
-        if (state !== `FOLLOW_ME`) {
-          this.sharedService.currentPairingStatus$.next(null);
-          return this.getFollowRobotStatus();
-        } else {
+        // if (state !== `FOLLOW_ME`) {
+        //   this.sharedService.currentPairingStatus$.next(null);
+        //   return this.getFollowRobotStatus();
+        // } else {
+        //   return this.getFollowMePairingStatus();
+        // }
+        if (state === 'FOLLOW_ME') {
           return this.getFollowMePairingStatus();
+        } else {
+          return of(EMPTY);
         }
       })
     );
@@ -765,7 +775,10 @@ export class DefaultComponent implements OnInit, OnDestroy {
       tap(feedback => {
         if (feedback) {
           const { chargingStatus } = feedback;
-          if (chargingStatus === 'CHARGING' || chargingStatus ==='PRE_CHARGING') {
+          if (
+            chargingStatus === 'CHARGING' ||
+            chargingStatus === 'PRE_CHARGING'
+          ) {
             this.router.navigate(['/charging/charging-mqtt']);
           }
         }
