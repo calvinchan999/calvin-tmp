@@ -8,10 +8,26 @@
         <app-card
           title="waypoint"
           icon="map-marker-distance"
-          [disable]="map?.length <= 0 || mode !== 'NAVIGATION' ? true : false"
+          [disable]="map?.length <= 0 && mode !== 'NAVIGATION' ? true : false"
           (eventTrigger)="onSumbit('waypoint')"
         ></app-card>
       </div>
+      <div
+      class="col-md-12 col-xs-12 col-md-offset-2"
+      *ngIf="features.task"
+    >
+      <app-card
+        title="task"
+        icon="map-marker-distance"
+        [disable]="site !== 'HKSTP' ? true : false"
+        (eventTrigger)="onSumbit('task')"
+      ></app-card>
+      <!-- <app-card
+        title="waypoint"
+        icon="map-marker-distance"
+        (eventTrigger)="onSumbit('waypoint')"
+      ></app-card> -->
+    </div>
       <div
         class="col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.docking"
@@ -149,6 +165,13 @@
           title="test"
           icon="test"
           (eventTrigger)="debugMap()"
+        ></app-card>
+      </div> -->
+      <!-- <div class="col-md-12 col-xs-12 col-md-offset-2">
+        <app-card
+          title="test"
+          icon="test"
+          (eventTrigger)="debugVideoCall()"
         ></app-card>
       </div> -->
     </div>

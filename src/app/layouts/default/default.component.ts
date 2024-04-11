@@ -506,6 +506,22 @@ export class DefaultComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
+    this.mqttService
+      .getBattery()
+      .pipe(
+        map(data => JSON.parse(data)),
+        tap(data => {
+          const { powerSupplyStatus, percentage } = data;
+          if (powerSupplyStatus && percentage) {
+            this.sharedService.batterySubject.next({
+              powerSupplyStatus,
+              percentage
+            });
+          }
+        })
+      )
+      .subscribe();
+
     this.routerSub = this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
@@ -558,7 +574,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
     // retry getCurrentMap when the map is empty or null
     this.sharedService.currentMapBehaviorSubject$
       .pipe(
-        delay(10000),
+        delay(25000), // change 10s to 25s , 20240411
         switchMap(map => {
           if ((!map || map === '') && this.router.url !== '/login') {
             return this.getCurrentMap();

@@ -25,7 +25,8 @@
     "reserve": true,
     "release": true,
     "cache": true,
-    "camera": false
+    "camera": false,
+    "task": false
   },
   "maxPx": 2048,
   "imageScalingServer": "http://rv-arcs-image-resizer.dzdue5gdfwc9drha.eastasia.azurecontainer.io:5100",
@@ -41,5 +42,11 @@
     "defaultScale": 0.77,
     "scaleMultiplier": 0.9
   },
-  "userDefinedPointType": "LOCATION"
+  "userDefinedPointType": "LOCATION",
+  "application": {
+    "site": "HKSTP"
+  },
+  "lowBatteryAlert": {
+    "percentage": 90
+  }
 }

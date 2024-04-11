@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, Subscription } from 'rxjs';
-import { map, mergeMap, tap, take } from 'rxjs/operators';
+import { mergeMap, tap, take } from 'rxjs/operators';
 // import {
 //   WaypointService,
 //   Waypoint,
@@ -21,12 +21,20 @@ import {
   MissionService,
   Mission
 } from 'src/app/views/services/mission.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
+
+export enum ProjectSite {
+    AA="AA",
+    HONGCHI="HONGCHI",
+    HKSTP="HKSTP"
+}
 
 @Component({
   selector: 'app-waypoint-form',
   templateUrl: './waypoint-form.component.html',
   styleUrls: ['./waypoint-form.component.scss']
 })
+
 export class WaypointFormComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter(false);
   // waypointLists$: Observable<
@@ -54,9 +62,9 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
   //     }
   //   })
   // );
-
+  
   // selectedWaypoint: Waypoint;
-
+  project: string = this.appConfigService.getConfig().application.site
   missions$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
@@ -65,7 +73,10 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
       if (currentMap !== '' && !!currentMap) {
         const filter = _.pickBy({ floorPlanCode: currentMap, orderBy: 'name' }, _.identity);
         return this.missionService.getMission({ filter });
-      } else {
+      } else if(this.project === ProjectSite.HKSTP) {
+        return this.missionService.getMission();
+      } 
+      else {
         return of(null).pipe(tap(() => this.router.navigate(['/'])));
       }
     })
@@ -73,12 +84,15 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
 
   selectedMission: Mission;
   sub = new Subscription();
+
+ 
+
   constructor(
     // private waypointService: WaypointService,
     private sharedService: SharedService,
     private router: Router,
     // private taskService: TaskService,
-    // private appConfigService: AppConfigService,
+    private appConfigService: AppConfigService,
     private missionService: MissionService
   ) {
     // this.sub = this.sharedService.isClosedModal$

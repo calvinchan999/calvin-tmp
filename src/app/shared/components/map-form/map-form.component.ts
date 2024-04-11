@@ -45,6 +45,8 @@ export class MapFormComponent implements OnInit, OnDestroy {
 
   selectedFloorPlanPoint;
 
+  userDefinedPointType = this.appConfigService.getConfig().userDefinedPointType;
+
   constructor(
     private modalComponent: ModalComponent,
     private mapService: MapService,
@@ -76,12 +78,10 @@ export class MapFormComponent implements OnInit, OnDestroy {
                   //   }),
                   //   switchMap(() => of(EMPTY))
                   // );
-                  const userDefinedPointType = this.appConfigService.getConfig()
-                    .userDefinedPointType;
                   const filter = _.pickBy(
                     {
                       floorPlanCode: this.selectedMap,
-                      userDefinedPointType: userDefinedPointType,
+                      userDefinedPointType: this.userDefinedPointType,
                       enabled: 'true'
                     },
                     _.identity

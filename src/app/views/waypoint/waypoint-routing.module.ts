@@ -11,24 +11,39 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'list',
+        redirectTo: 'list'
       },
       {
         path: 'list',
-        data: { title: 'waypointList' },
-        component: WaypointListComponent,
+        children: [
+          {
+            path: '',
+            redirectTo: 'waypoints',
+            pathMatch: 'full'
+          },
+          {
+            path: 'waypoints',
+            data: { title: 'waypointList' },
+            component: WaypointListComponent
+          },
+          {
+            path: 'tasks',
+            data: { title: 'task' },
+            component: WaypointListComponent
+          }
+        ]
       },
       {
         path: 'destination',
         data: { title: 'destination' },
-        component: WaypointDestinationComponent,
+        component: WaypointDestinationComponent
       }
-    ],
-  },
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class WaypointRoutingModule {}

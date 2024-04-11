@@ -44,7 +44,7 @@
 .path {
   color: #fff;
   font-weight: bold;
-  font-size: 10px;
+  font-size: 25px;
 }
 
 .nav-link {
@@ -86,21 +86,21 @@
   //   animation: fade 600ms infinite;
   // }
 
-  .battery-percentage {
-    font-size: 18px;
-    font-weight: bold;
-    width: 30px;
-    text-align: center;
-    color: white;
-  }
-
-  .battery-charging-icon {
-    animation: fade 600ms infinite;
-  }
-
   // .battery-charging-icon {
   //   // animation: blink 1s 3;
   // }
+}
+
+.battery-percentage {
+  font-size: 18px;
+  font-weight: bold;
+  width: 30px;
+  text-align: center;
+  color: white;
+}
+
+.battery-charging-icon {
+  animation: batteryChargingMultiColor 600ms infinite;
 }
 
 .icon {
@@ -141,5 +141,55 @@
 @media (width < 350px) {
   .map-title {
     text-align: end;
+  }
+}
+
+@media only screen and (orientation: landscape) {
+  .battery-percentage {
+    font-size: 35px;
+    width: 60px;
+  }
+
+  .icon {
+    font-size: 3em;
+    color: #fff;
+  }
+
+  .low-battery-alert {
+    animation: lowBatteryAlertMultiColor 600ms infinite;
+  }
+}
+
+
+@keyframes batteryChargingMultiColor {
+  0% {
+    color: #fff;
+  }
+  25% {
+    color: #c8ff00;
+  }
+  50% {
+    color: #c8ff00;
+  }
+
+  100% {
+    color: #fff;
+  }
+}
+
+
+@keyframes lowBatteryAlertMultiColor {
+  0% {
+    color: #fff;
+  }
+  25% {
+    color: #ff0000;
+  }
+  50% {
+    color: #ff0000;
+  }
+
+  100% {
+    color: #fff;
   }
 }

@@ -101,15 +101,15 @@ export class MqttService {
   }
 
   globalTopic(qos) {
-    this._mqttService
-      .observe('rvautotech/fobo/battery', { qos })
-      .subscribe((message: IMqttMessage) => {
-        // console.log('rvautotech/fobo/battery');
-        // console.log(new TextDecoder('utf-8').decode(message.payload));
-        this.batterySubject.next(
-          new TextDecoder('utf-8').decode(message.payload)
-        );
-      });
+    // this._mqttService
+    //   .observe('rvautotech/fobo/battery', { qos })
+    //   .subscribe((message: IMqttMessage) => {
+    //     // console.log('rvautotech/fobo/battery');
+    //     // console.log(new TextDecoder('utf-8').decode(message.payload));
+    //     this.batterySubject.next(
+    //       new TextDecoder('utf-8').decode(message.payload)
+    //     );
+    //   });
 
     this._mqttService
       .observe('rvautotech/fobo/docking/charging/feedback', { qos })
@@ -299,6 +299,12 @@ export class MqttService {
   getRobotPath(): Observable<any> {
     return this._mqttService
       .observe('rvautotech/fobo/path', { qos: this.qos })
+      .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
+  }
+
+  getBattery(): Observable<any> {
+    return this._mqttService
+      .observe('rvautotech/fobo/battery', { qos: this.qos })
       .pipe(map(mq => new TextDecoder('utf-8').decode(mq.payload)));
   }
 

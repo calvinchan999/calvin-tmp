@@ -85,10 +85,14 @@ export class SharedService {
 
   public arcsModeBahaviorSubject = new BehaviorSubject<boolean>(false);
 
-  public poseDeviationConnectionBahaviorSubject = new BehaviorSubject<boolean>(false)
+  public poseDeviationConnectionBahaviorSubject = new BehaviorSubject<boolean>(
+    false
+  );
 
   public currentPageTitleEvent = new Subject<string>();
   public currentPageTitleEvent$ = this.currentPageTitleEvent.asObservable();
+
+  public batterySubject = new Subject<any>();
 
   constructor() {
     this.currentMap$

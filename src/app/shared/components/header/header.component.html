@@ -23,6 +23,7 @@
             class="battery-percentage"
             style="text-align: end"
             *ngIf="showBatteryPercentage"
+            #batteryPercentageLabel
             >{{ percentage }}%</label
           >
           <!-- <ng-container *ngIf="!powerSupplyStatus">
@@ -30,9 +31,9 @@
               class="mdi mdi-battery-alert-variant-outline battery-icon icon"
             ></i>
           </ng-container> -->
-          <ng-container
+          <!-- <ng-container
             *ngIf="
-              powerSupplyStatus == 'NOT_CHARGING' ||
+              powerSupplyStatus === 'NOT_CHARGING' ||
               powerSupplyStatus !== 'CHARGING'
             "
           >
@@ -40,8 +41,10 @@
           </ng-container>
 
           <ng-container *ngIf="powerSupplyStatus === 'CHARGING'">
-            <i class="mdi mdi-battery-charging battery-charging-icon icon"></i>
-          </ng-container>
+            <i [class]="getBatteryCssStyle(percentage, powerSupplyStatus)"></i>
+          </ng-container> -->
+
+          <i #batteryIconElement class="mdi mdi-battery-alert-variant-outline battery-icon icon"></i>
         </li>
 
         <!-- manual -->
@@ -78,7 +81,11 @@
         </li>
 
         <!-- robot group-->
-        <li class="nav-item admin-container" (click)="openRobotGroupPairingDialog()" *ngIf="robotGroupPairing">
+        <li
+          class="nav-item admin-container"
+          (click)="openRobotGroupPairingDialog()"
+          *ngIf="robotGroupPairing"
+        >
           <i class="mdi mdi-car-connected icon"></i>
         </li>
 

@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
@@ -18,6 +24,7 @@ import {
 import { Location } from '@angular/common';
 import * as _ from 'lodash';
 import { Auth, AuthService } from 'src/app/services/auth.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 @Component({
   selector: 'app-header',
@@ -45,6 +52,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   robotGroupPairing: boolean = false;
   robotGroupPairingModalPayload: Modal = null;
 
+  lowBatteryAlertPercentage: number;
+
+  @ViewChild('batteryPercentageLabel') labelElementRef!: ElementRef;
+  @ViewChild('batteryIconElement') batteryIconElementRef!: ElementRef;
+
   constructor(
     private mqttService: MqttService,
     private sharedService: SharedService,
@@ -53,7 +65,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    private authService: AuthService
+    private authService: AuthService,
+    private appConfigService: AppConfigService
   ) {
     this.sharedService.currentPageTitleEvent$ // hotfix
       .pipe(
@@ -170,10 +183,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
         )
         .subscribe()
     );
+
+    this.lowBatteryAlertPercentage = this.appConfigService.getConfig().lowBatteryAlert.percentage;
+    this.sharedService.currentPageTitleEvent.next('localization');
+
+    if (this.batteryIconElementRef)
+      this.batteryIconElementRef.nativeElement.className = `mdi mdi-battery-alert-variant-outline battery-icon icon`;
+
+    this.sub.add(this.getBattery());
   }
 
   ngOnInit() {
-    this.sub.add(this.getBattery());
     this.sub.add(this.getLanguage());
     this.getUserAuth();
   }
@@ -195,21 +215,60 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  getBattery() {
-    // @todo check connection
-    // mqtt heartbeat
-    //
-    this.mqttService.batterySubject
-      // .pipe(tap(() => this.sharedService.reset$.next(0)))
-      .subscribe(battery => {
-        if (battery) {
-          const { robotId, powerSupplyStatus, percentage } = JSON.parse(
-            battery
-          );
-          this.powerSupplyStatus = powerSupplyStatus;
-          this.percentage = Math.round(percentage * 100);
-        }
-      });
+  getBattery(): void {
+    this.sharedService.batterySubject.subscribe(
+      ({ powerSupplyStatus, percentage }) => {
+        this.percentage = Math.round(percentage * 100);
+        this.powerSupplyStatus = powerSupplyStatus;
+        this.updateBatteryStatus(this.powerSupplyStatus, this.percentage);
+      }
+    );
+  }
+
+  updateBatteryStatus(powerSupplyStatus: string, percentage: number): void {
+    if (percentage && powerSupplyStatus === 'CHARGING') {
+      this.updateChargingBatteryIcon();
+    } else if (percentage > 0 && powerSupplyStatus !== 'CHARGING') {
+      this.updateNormalBatteryIcon(percentage);
+    } else {
+      this.updateLowBatteryIcon();
+    }
+  }
+
+  updateChargingBatteryIcon(): void {
+    if (this.batteryIconElementRef && this.labelElementRef) {
+      this.batteryIconElementRef.nativeElement.className =
+        'mdi mdi-battery-charging battery-charging-icon icon';
+      this.labelElementRef.nativeElement.className =
+        'battery-percentage battery-charging-icon';
+    }
+  }
+
+  updateNormalBatteryIcon(percentage: number): void {
+    const val = Math.ceil(percentage / 10) * 10;
+    let className =
+      val <= 90
+        ? `mdi mdi-battery-${val} battery-icon icon`
+        : 'mdi mdi-battery battery-icon icon';
+    if (percentage <= this.lowBatteryAlertPercentage) {
+      className += ' low-battery-alert';
+      if (this.labelElementRef) {
+        this.labelElementRef.nativeElement.className =
+          'battery-percentage low-battery-alert';
+      }
+    } else {
+      if (this.labelElementRef)
+        this.labelElementRef.nativeElement.className = 'battery-percentage';
+    }
+    if (this.batteryIconElementRef)
+      this.batteryIconElementRef.nativeElement.className = className;
+  }
+
+  updateLowBatteryIcon(): void {
+    this.batteryIconElementRef.nativeElement.className =
+      'mdi mdi-battery-alert-variant-outline battery-icon icon';
+    this.labelElementRef.nativeElement.className =
+      'battery-percentage battery-charging-icon';
   }
 
   localizationByMap() {
@@ -297,19 +356,34 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  getBatteryCssStyle(percentage: number): string {
-    let css: string;
-    if (percentage > 0) {
-      const val = Math.ceil(percentage / 10) * 10;
-      css =
-        val <= 90
-          ? `mdi mdi-battery-${val} battery-icon icon`
-          : `mdi mdi-battery battery-icon icon`;
-    } else {
-      css = `mdi mdi-battery-alert-variant-outline battery-icon icon`;
-    }
-    return css;
-  }
+  // getBatteryCssStyle(percentage: number, powerSupplyStatus: string) {
+  //   let css: string;
+
+  //   if (percentage && powerSupplyStatus === 'CHARGING') {
+  //     css = `mdi mdi-battery-charging battery-charging-icon icon`;
+  //     this.labelElementRef.nativeElement.className =
+  //       'battery-percentage battery-charging-icon';
+  //   }else
+
+  //   if (percentage > 0) {
+  //     console.log(`debug`);
+  //     const val = Math.ceil(percentage / 10) * 10;
+  //     css =
+  //       val <= 90
+  //         ? `mdi mdi-battery-${val} battery-icon icon`
+  //         : `mdi mdi-battery battery-icon icon`;
+  //     if (percentage <= this.lowBatteryAlertPercentage) {
+  //       css = `${css} low-battery-alert`;
+  //       if (this.labelElementRef)
+  //         this.labelElementRef.nativeElement.className =
+  //           'battery-percentage low-battery-alert';
+  //     }
+  //   } else {
+  //     css = `mdi mdi-battery-alert-variant-outline battery-icon icon`;
+  //   }
+  //   console.log(css)
+  //   return css;
+  // }
 
   openRobotGroupPairingDialog() {
     const model: Modal = this.robotGroupPairingModalPayload;

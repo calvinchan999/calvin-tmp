@@ -14,7 +14,7 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { Auth, AuthService } from 'src/app/services/auth.service';
 // import { IndexedDbService } from 'src/app/services/indexed-db.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { ModeService } from '../services/mode.service';
+// import { ModeService } from '../services/mode.service';
 import { TaskService } from '../services/task.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { ErrorLogService } from 'src/app/services/error-log.service';
@@ -39,7 +39,8 @@ export type Features =
   | 'taskReserve'
   | 'taskRelease'
   | 'clearCache'
-  | 'camera';
+  | 'camera'
+  | 'task';
 
 @Component({
   selector: 'app-home',
@@ -61,6 +62,8 @@ export class HomeComponent implements OnInit {
 
   sub = new Subscription();
 
+  site: string;
+
   constructor(
     public router: Router,
     private sharedService: SharedService,
@@ -73,6 +76,8 @@ export class HomeComponent implements OnInit {
     private errorLogService: ErrorLogService
   ) {
     this.features = this.appConfigService.getConfig().feature;
+    this.site = this.appConfigService.getConfig().application.site;
+    
     this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
@@ -87,7 +92,6 @@ export class HomeComponent implements OnInit {
     this.sharedService.currentPairingStatus$
       .pipe(map(data => (data instanceof Object ? data : JSON.parse(data))))
       .subscribe(data => {
-        console.log(data)
         if (data?.pairingState) {
           const { pairingState } = data;
           if (pairingState === 'UNPAIRED') {
@@ -223,7 +227,12 @@ export class HomeComponent implements OnInit {
   onSumbit(type: Features) {
     switch (type) {
       case 'waypoint':
-        if (this.mode === 'NAVIGATION') this.router.navigate(['/waypoint']);
+        // if (this.site === 'HKSTP' && this.mode === 'NAVIGATION') this.router.navigate(['/waypoint']);
+        // if (this.site !== 'HKSTP') this.router.navigate(['/waypoint']);
+        this.router.navigate(['/waypoint']);
+        break;
+      case 'task':
+        this.router.navigate(['/waypoint/list/tasks']);
         break;
       case 'docking':
         this.router.navigate(['/charging']);

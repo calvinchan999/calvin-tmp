@@ -147,5 +147,6 @@
   "publishLogsSuccessful": "错误日志已发布到服务器",
   "videoCall": {
     "fullException": "{{roomId}}已超过人数上限"
-  }
+  },
+  "task": "任务"
 }

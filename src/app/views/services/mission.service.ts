@@ -22,7 +22,7 @@ export class MissionService {
     this.baseUrl = this.appConfigService.getConfig().server.endpoint;
   }
 
-  getMission(queries): Observable<any> {
+  getMission(queries?): Observable<any> {
     const url = generateQueryUrl(
       `${this.baseUrl}${environment.api.mission}`,
       queries
