@@ -47,6 +47,6 @@
     "site": "HKSTP"
   },
   "lowBatteryAlert": {
-    "percentage": 90
+    "percentage": 30
   }
 }
