@@ -148,5 +148,8 @@
   "videoCall":{
     "fullException":"The {{roomId}} is full"
   },
-  "task": "Task"
+  "task": "Task",
+  "exceptions": {
+    "mapNotExistException": "Active map not found"
+  }
 }

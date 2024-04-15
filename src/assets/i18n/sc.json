@@ -148,5 +148,8 @@
   "videoCall": {
     "fullException": "{{roomId}}已超过人数上限"
   },
-  "task": "任务"
+  "task": "任务",
+  "exceptions": {
+    "mapNotExistException": "找不到地图"
+  }
 }

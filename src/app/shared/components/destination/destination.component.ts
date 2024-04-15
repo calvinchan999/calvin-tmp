@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Subscription, iif, of } from 'rxjs';
-import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -63,6 +63,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
     this.sub = this.sharedService.currentMap$
       .pipe(
         mergeMap(currentMap => {
+          if(!currentMap || currentMap ==='')
+            throw 'exceptions.mapNotExistException';
           this.mapName = currentMap;
           const { enableFloorPlanMode } = this.appConfigService.getConfig();
           if (!enableFloorPlanMode) {
@@ -148,7 +150,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
                       { floorPlanIncluded: 'true' },
                       _.identity
                     );
-                    const queries = { param };
+                    const queries = { param };;
                     return this.mapService
                       .getFloorPlan(currentMap, queries)
                       .pipe(
