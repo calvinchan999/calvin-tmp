@@ -2,7 +2,7 @@
   <div class="home-items">
     <div class="row" style="margin: auto">
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="features.waypoint"
       >
         <app-card
@@ -13,7 +13,7 @@
         ></app-card>
       </div>
       <div
-      class="col-md-12 col-xs-12 col-md-offset-2"
+      class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
       *ngIf="features.task"
     >
       <app-card
@@ -29,7 +29,7 @@
       ></app-card> -->
     </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.docking"
       >
         <app-card
@@ -38,7 +38,7 @@
           (eventTrigger)="onSumbit('docking')"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.sos">
+      <div class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.sos">
         <app-card
           title="sos"
           icon="bell-ring-outline"
@@ -46,7 +46,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.map"
       >
         <app-card
@@ -57,7 +57,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.localization"
       >
         <app-card
@@ -69,7 +69,7 @@
       </div>
       <ng-container *ngIf="user?.length > 0">
         <div
-          class="col-md-12 col-xs-12 col-md-offset-2"
+          class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
           *ngIf="followMePairingState$ | async"
         >
           <app-card
@@ -81,7 +81,7 @@
       </ng-container>
       <ng-container *ngIf="user?.length > 0">
         <div
-          class="col-md-12 col-xs-12 col-md-offset-2"
+          class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
           *ngIf="followMeUnPairingState$ | async"
         >
           <app-card
@@ -92,7 +92,7 @@
         </div>
       </ng-container>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.mode"
       >
         <app-card
@@ -102,7 +102,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.logs"
       >
         <app-card
@@ -112,7 +112,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.grouping"
       >
         <app-card
@@ -122,7 +122,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.cache"
       >
         <app-card
@@ -132,7 +132,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.reserve && robotReserveStatus"
       >
         <app-card
@@ -142,7 +142,7 @@
         ></app-card>
       </div>
       <div
-        class="col-md-12 col-xs-12 col-md-offset-2"
+        class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2"
         *ngIf="user?.length > 0 && features.release && robotReleaseStatus"
       >
         <app-card
@@ -151,7 +151,7 @@
           (eventTrigger)="onSumbit('taskRelease')"
         ></app-card>
       </div>
-      <div class="col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.camera">
+      <div class="col-xl-4 col-lg-4 col-md-12 col-xs-12 col-md-offset-2" *ngIf="features.camera">
         <app-card
           title="camera"
           icon="camera"

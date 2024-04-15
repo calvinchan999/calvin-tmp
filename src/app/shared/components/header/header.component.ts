@@ -58,7 +58,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('batteryIconElement') batteryIconElementRef!: ElementRef;
 
   constructor(
-    private mqttService: MqttService,
+    // private mqttService: MqttService,
     private sharedService: SharedService,
     private languageService: LanguageService,
     private translateService: TranslateService,
@@ -76,6 +76,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+
+    this.sub.add(this.getBattery());
 
     this.sub.add(
       this.router.events
@@ -189,8 +191,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     if (this.batteryIconElementRef)
       this.batteryIconElementRef.nativeElement.className = `mdi mdi-battery-alert-variant-outline battery-icon icon`;
-
-    this.sub.add(this.getBattery());
   }
 
   ngOnInit() {
@@ -218,6 +218,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   getBattery(): void {
     this.sharedService.batterySubject.subscribe(
       ({ powerSupplyStatus, percentage }) => {
+        console.log(`debug`);
         this.percentage = Math.round(percentage * 100);
         this.powerSupplyStatus = powerSupplyStatus;
         this.updateBatteryStatus(this.powerSupplyStatus, this.percentage);
