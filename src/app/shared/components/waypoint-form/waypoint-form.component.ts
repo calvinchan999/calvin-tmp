@@ -62,15 +62,14 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
   //     }
   //   })
   // );
-  
-  // selectedWaypoint: Waypoint;
+
   project: string = this.appConfigService.getConfig().application.site
   missions$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
     take(1),
     mergeMap((currentMap: string) => {
-      if (currentMap !== '' && !!currentMap) {
+      if (currentMap !== '' && !!currentMap && this.project !== ProjectSite.HKSTP) {
         const filter = _.pickBy({ floorPlanCode: currentMap, orderBy: 'name' }, _.identity);
         return this.missionService.getMission({ filter });
       } else if(this.project === ProjectSite.HKSTP) {

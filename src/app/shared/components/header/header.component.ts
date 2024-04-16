@@ -218,7 +218,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   getBattery(): void {
     this.sharedService.batterySubject.subscribe(
       ({ powerSupplyStatus, percentage }) => {
-        console.log(`debug`);
         this.percentage = Math.round(percentage * 100);
         this.powerSupplyStatus = powerSupplyStatus;
         this.updateBatteryStatus(this.powerSupplyStatus, this.percentage);
