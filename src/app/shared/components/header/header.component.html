@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand flex-wrap">
   <div
-    class="container-fluid header-container"
+    class="container-fluid"
     *ngIf="site === 'HKSTP' || currentUrl === '/dashboard' || currentUrl === '/login'"
   >
     <div
@@ -99,7 +99,7 @@
     </div>
   </div>
   <div
-    class="container-fluid"
+    class="container-fluid  navbar-container"
     *ngIf="currentUrl !== '/dashboard' && currentUrl !== '/login'"
     style="
       display: flex;

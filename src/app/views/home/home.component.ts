@@ -7,7 +7,7 @@ import {
   take,
   // finalize,
   switchMap,
-  delay,
+  delay
   // mergeMap
 } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/services/app-config.service';
@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
   ) {
     this.features = this.appConfigService.getConfig().feature;
     this.site = this.appConfigService.getConfig().application.site;
-    
+
     this.sharedService.currentMode$.pipe(take(1)).subscribe((mode: string) => {
       this.mode = mode;
       console.log(`mode: ${mode}`);
@@ -232,7 +232,8 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/waypoint']);
         break;
       case 'task':
-        this.router.navigate(['/waypoint/list/tasks']);
+        if (this.site === 'HKSTP')
+          this.router.navigate(['/waypoint/list/tasks']);
         break;
       case 'docking':
         this.router.navigate(['/charging']);
@@ -287,7 +288,7 @@ export class HomeComponent implements OnInit {
   //   this.router.navigate(['/waypoint/destination']);
   // }
 
-  debugVideoCall(){
+  debugVideoCall() {
     this.router.navigate(['/video-call']);
   }
 
