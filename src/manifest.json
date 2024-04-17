@@ -4,8 +4,8 @@
   "display": "fullscreen",
   "scope": "/RV",
   "start_url": "/RV",
-  "name": "Mobile Chair User Interface",
-  "short_name": "Mobile Chair UI",
+  "name": "User Interface",
+  "short_name": "HKSTP UI",
   "icons": [
     {
       "src": "assets/images/icon-192x192.png",

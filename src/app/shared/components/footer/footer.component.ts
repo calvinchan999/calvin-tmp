@@ -8,7 +8,7 @@ import { SharedService } from 'src/app/services/shared.service';
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss'],
+  styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent implements OnInit {
   currentUrl: string = '';
@@ -24,11 +24,12 @@ export class FooterComponent implements OnInit {
     private translateService: TranslateService,
     private router: Router
   ) {
-    this.router.events.subscribe((event) => {
+    this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.currentUrl = event.urlAfterRedirects;
       }
     });
+    this.sharedService.currentMap$.subscribe(test => console.log(test));
   }
 
   ngOnInit() {}

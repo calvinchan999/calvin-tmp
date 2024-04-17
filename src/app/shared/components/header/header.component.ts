@@ -57,6 +57,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('batteryPercentageLabel') labelElementRef!: ElementRef;
   @ViewChild('batteryIconElement') batteryIconElementRef!: ElementRef;
 
+  site: string;
+
   constructor(
     // private mqttService: MqttService,
     private sharedService: SharedService,
@@ -68,6 +70,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private appConfigService: AppConfigService
   ) {
+    this.site = this.appConfigService.getConfig().application.site;
     this.sharedService.currentPageTitleEvent$ // hotfix
       .pipe(
         filter(title => !!title),
