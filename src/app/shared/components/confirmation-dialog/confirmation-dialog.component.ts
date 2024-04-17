@@ -67,9 +67,11 @@ export class ConfirmationDialogComponent implements OnInit {
       this.buttonWidth = width;
       this.buttonHeight = height;
       this.fontSize = fontSize;
-      this.message = this.sanitizer.bypassSecurityTrustHtml(
-        this._translateService.instant(message)
-      );
+      this.message = message
+        ? this.sanitizer.bypassSecurityTrustHtml(
+            this._translateService.instant(message)
+          )
+        : '';
       if (submitButtonName) {
         this.confirmButtonName = submitButtonName;
       }

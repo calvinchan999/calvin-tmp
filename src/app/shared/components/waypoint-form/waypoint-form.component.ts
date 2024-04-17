@@ -24,9 +24,9 @@ import {
 import { AppConfigService } from 'src/app/services/app-config.service';
 
 export enum ProjectSite {
-    AA="AA",
-    HONGCHI="HONGCHI",
-    HKSTP="HKSTP"
+  AA = 'AA',
+  HONGCHI = 'HONGCHI',
+  HKSTP = 'HKSTP'
 }
 
 @Component({
@@ -34,7 +34,6 @@ export enum ProjectSite {
   templateUrl: './waypoint-form.component.html',
   styleUrls: ['./waypoint-form.component.scss']
 })
-
 export class WaypointFormComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter(false);
   // waypointLists$: Observable<
@@ -63,19 +62,25 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
   //   })
   // );
 
-  project: string = this.appConfigService.getConfig().application.site
+  project: string = this.appConfigService.getConfig().application.site;
   missions$: Observable<
     any
   > = this.sharedService.currentMapBehaviorSubject$.pipe(
     take(1),
     mergeMap((currentMap: string) => {
-      if (currentMap !== '' && !!currentMap && this.project !== ProjectSite.HKSTP) {
-        const filter = _.pickBy({ floorPlanCode: currentMap, orderBy: 'name' }, _.identity);
+      if (
+        currentMap !== '' &&
+        !!currentMap &&
+        this.project !== ProjectSite.HKSTP
+      ) {
+        const filter = _.pickBy(
+          { floorPlanCode: currentMap, orderBy: 'name' },
+          _.identity
+        );
         return this.missionService.getMission({ filter });
-      } else if(this.project === ProjectSite.HKSTP) {
+      } else if (this.project === ProjectSite.HKSTP) {
         return this.missionService.getMission();
-      } 
-      else {
+      } else {
         return of(null).pipe(tap(() => this.router.navigate(['/'])));
       }
     })
@@ -83,8 +88,6 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
 
   selectedMission: Mission;
   sub = new Subscription();
-
- 
 
   constructor(
     // private waypointService: WaypointService,
@@ -185,18 +188,30 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
 
   onSubmitModel(selectedMission) {
     if (selectedMission) {
+      const metaData =
+        this.appConfigService.getConfig().application.site === 'HKSTP'
+          ? {
+              message: '',
+              submitButtonName: 'start',
+              height: '150px',
+              width: '150px',
+              fontSize: '42px',
+              component: 'waypoint'
+            }
+          : {
+              message: 'destinationReminding',
+              submitButtonName: 'start',
+              height: '150px',
+              width: '150px',
+              fontSize: '42px',
+              component: 'waypoint'
+            };
+
       this.sharedService.isOpenModal$.next({
         modal: 'confirmation-dialog',
         modalHeader: '',
         isDisableClose: true,
-        metaData: {
-          message: 'destinationReminding',
-          submitButtonName: 'start',
-          height: '150px',
-          width: '150px',
-          fontSize: '42px',
-          component: 'waypoint'
-        }
+        metaData
       });
     }
   }
