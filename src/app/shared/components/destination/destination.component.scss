@@ -13,6 +13,7 @@
   z-index: 1000;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .square-button {
@@ -25,7 +26,7 @@
   align-items: center;
   flex-direction: column;
   gap: 5px;
-  position: relative;
+  // position: relative;
 }
 
 .square-button:active {
@@ -85,7 +86,7 @@
 }
 
 .map-container {
-  height: 100%;
+  height: 50%;
   width: 100%;
 }
 
@@ -119,18 +120,19 @@
 .waypoint-name {
   display: flex;
   justify-content: center;
-  font-size: 50px;
+  font-size: 30px;
+  overflow: auto;
 }
 
 .destination-container {
-  height: 75%;
+  height: 100%;
   width: 100%;
   // display: flex;
   // flex-direction: column;
 }
 
 .destination-content {
-  height: 25%;
+  // height: 30%;
   width: 100%;
 }
 

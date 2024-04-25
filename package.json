@@ -1,6 +1,6 @@
 {
   "name": "mobile-chair-frontend",
-  "version": "1.10.11",
+  "version": "1.11.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve  --host 0.0.0.0 --port 8989 --disable-host-check",
@@ -37,6 +37,7 @@
     "ngx-drag-drop": "^2.0.0",
     "ngx-indexed-db": "^9.4.2",
     "ngx-mqtt": "^9.0.5",
+    "ngx-skeleton-loader": "^1.2.7",
     "ngx-spinner": "^12.0.0",
     "ngx-toastr": "^14.3.0",
     "ngx-webcam": "^0.4.1",

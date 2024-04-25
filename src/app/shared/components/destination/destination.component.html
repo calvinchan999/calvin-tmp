@@ -32,9 +32,9 @@
 
   <div class="destination-content">
     <div class="waypoint-title" *ngIf="!enableMap">
-      <h1 style="text-align: center;">
+      <h3 style="text-align: center;">
         {{ "goingToDestination" | translate }}
-      </h1>
+      </h3>
       <br />
       <h1 style="text-align: center;" *ngIf="waypoint">
         {{ waypoint.targetName }}
@@ -42,20 +42,31 @@
     </div>
 
     <div class="map-subtitle" *ngIf="enableMap">
-      <h2 style="text-align: center;">
+      <h3 style="text-align: center;">
         {{ "goingToDestination" | translate }}
-        <label class="waypoint-name" *ngIf="waypoint">{{
-          waypoint?.targetName
-        }}</label>
-      </h2>
+      </h3>
+      <label class="waypoint-name" *ngIf="waypoint">{{
+        waypoint?.targetName
+      }}</label>
+      <ngx-skeleton-loader
+        *ngIf="!waypoint"
+        [theme]="{
+          'border-radius': '5px',
+          height: '30px',
+          'background-color': 'inherit',
+          border: '1px solid #323232',
+          'animation-duration': '4s'
+        }"
+      >
+      </ngx-skeleton-loader>
       <div class="destination-info">
-        <div class="distance-label" *ngIf="distance">
+        <div class="distance-label" >
           <label>{{ "distance" | translate }}</label>
           <label *ngIf="distance > 0; else distanceNotFound"
             >{{ distance }} {{ "meter" | translate }}</label
           >
         </div>
-        <div class="time-label" *ngIf="arrivalTime">
+        <div class="time-label" >
           <label>{{ "arrivalTime" | translate }}</label>
           <label *ngIf="arrivalTime >= 0; else arrivalTimeIsZero"
             >{{ arrivalTime }} {{ "minutes" | translate }}</label
@@ -89,12 +100,32 @@
 </div>
 <ng-template #distanceNotFound>
   <ng-container>
-    <label>{{ "--" }}</label>
+    <!-- <label>{{ "--" }}</label> -->
+    <ngx-skeleton-loader
+      *ngIf="!distance"
+      [theme]="{
+        'border-radius': '5px',
+        height: '20px',
+        'background-color': 'inherit',
+        border: '1px solid #323232',
+        'animation-duration': '4s'
+      }"
+    ></ngx-skeleton-loader>
   </ng-container>
 </ng-template>
 <ng-template #arrivalTimeIsZero>
   <ng-container>
-    <label>{{ "--" }}</label>
+    <!-- <label>{{ "--" }}</label> -->
+    <ngx-skeleton-loader
+      *ngIf="!distance"
+      [theme]="{
+        'border-radius': '5px',
+        height: '20px',
+        'background-color': 'inherit',
+        border: '1px solid #323232',
+        'animation-duration': '4s'
+      }"
+    ></ngx-skeleton-loader>
   </ng-container>
 </ng-template>
 

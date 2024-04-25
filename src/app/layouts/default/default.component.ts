@@ -652,9 +652,11 @@ export class DefaultComponent implements OnInit, OnDestroy {
   getTaskWaypointPointer(departurePayload): Observable<any> {
     if (departurePayload?.movement) {
       const { waypointName } = departurePayload.movement;
-      const currentMap = this.sharedService.currentMapBehaviorSubject$.value;
+      // const currentMap = this.sharedService.currentMapBehaviorSubject$.value;
       return of(EMPTY).pipe(
-        map(() => currentMap),
+        switchMap(() => this.getCurrentMap()),
+        map(() => this.sharedService.currentMapBehaviorSubject$.value),
+        
         // take(1),
         mergeMap(mapName => {
           const filter = _.pickBy({ mapName }, _.identity);

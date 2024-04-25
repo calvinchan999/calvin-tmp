@@ -30,6 +30,7 @@ import { RobotGroupFormComponent } from './components/robot-group-form/robot-gro
 import { RobotListComponent } from './components/robot-list/robot-list.component';
 import { RobotPairingDialogComponent } from './components/robot-pairing-dialog/robot-pairing-dialog.component';
 import { VideoRoomListComponent } from './components/video-room-list/video-room-list.component';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { VideoRoomListComponent } from './components/video-room-list/video-room-
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    DragDropModule
+    DragDropModule,
+    NgxSkeletonLoaderModule
   ],
   declarations: [
     HeaderComponent,

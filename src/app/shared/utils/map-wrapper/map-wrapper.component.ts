@@ -16,8 +16,6 @@ import {
   EMPTY,
   forkJoin,
   iif,
-  merge,
-  observable,
   Observable,
   of,
   Subscription
@@ -36,6 +34,8 @@ import { MapService } from 'src/app/views/services/map.service';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
+
+import { loadImage } from './imageUtils';
 
 export interface Point {
   x: number;
@@ -129,6 +129,8 @@ export class MapWrapperComponent
 
   robotPath: Konva.Line;
 
+  currentMapName: string;
+
   constructor(
     private waypointService: WaypointService,
     private mapService: MapService,
@@ -140,165 +142,19 @@ export class MapWrapperComponent
   ngOnInit() {}
 
   ngAfterViewInit() {
-    // const floorPlanImg$ = new Observable<HTMLImageElement>(observer => {
-    //   const img = new Image();
-    //   img.onload = () => {
-    //     observer.next(img);
-    //     observer.complete();
-    //   };
-    //   img.onerror = err => {
-    //     observer.error(err);
-    //   };
-
-    //   if (!this.floorPlan) return observer.error('floorPlan is not exist');
-    //   const { floorPlanImage } = this.floorPlan;
-    //   img.src = floorPlanImage;
-    // });
-
-    // const rosImg$ = new Observable<HTMLImageElement>(observer => {
-    //   const rosImage = new Image();
-    //   rosImage.onload = () => {
-    //     observer.next(rosImage);
-    //     observer.complete();
-    //   };
-    //   rosImage.onerror = err => {
-    //     observer.error(err);
-    //   };
-    //   rosImage.src = `data:image/jpeg;base64,${this.mapImage}`;
-    // });
-
-    const img$ = defer(() => {
-      return iif(
-        () => this.floorPlan,
-        new Observable<HTMLImageElement>(observer => {
-          const img = new Image();
-          img.onload = () => {
-            observer.next(img);
-            observer.complete();
-          };
-          img.onerror = err => {
-            observer.error(err);
-          };
-          const { floorPlanImage, transformedScale } = this.floorPlan;
-          if (floorPlanImage.indexOf('data:image/jpeg;base64,') > -1) {
-            img.src = floorPlanImage;
-          } else {
-            img.src = `data:image/jpeg;base64,${floorPlanImage}`;
-          }
-        }),
-        new Observable<HTMLImageElement>(observer => {
-          const img = new Image();
-          img.onload = () => {
-            observer.next(img);
-            observer.complete();
-          };
-          img.onerror = err => {
-            observer.error(err);
-          };
-          img.src = `data:image/jpeg;base64,${this.mapImage}`;
-        })
-      );
-    });
-
-    // const maxPx = this.maxPx;
-    const loadImage = canvas => {
-      return new Promise((resolve, reject) => {
-        const rosMapImageObj = new Image();
-        rosMapImageObj.onload = () => {
-          resolve(rosMapImageObj);
-        };
-        rosMapImageObj.onerror = error => {
-          reject(error);
-        };
-
-        if (!this.largeImageServerSideRendering) {
-          // client side
-          rosMapImageObj.src = canvas.toDataURL('image/jpeg');
-        } else {
-          // server side
-          rosMapImageObj.src = `data:image/png;base64,${canvas}`;
-        }
-      });
-    };
+    this.currentMapName = this.mapName;
+    const img$ = this.loadImageObservable(this.floorPlan, this.mapImage);
 
     this.sub = img$
       .pipe(
         tap(() => this.sharedService.loading$.next(true)),
         switchMap(async img => {
-          const maxPx = this.maxPx;
-          const imgWidth = img.width;
-          const imgHeight = img.height;
-          if (imgWidth > maxPx || imgHeight > maxPx) {
-            //  && !this.floorPlan
-            let newRatio = maxPx / Math.max(img.width, img.height);
-            this.newRatio = newRatio;
-            this.scale /= newRatio;
-            let canvas;
-            if (!this.largeImageServerSideRendering) {
-              // Resizing large image on the client side
-              canvas = await this.getResizedCanvas(
-                img,
-                img.width * newRatio,
-                img.height * newRatio
-              );
-            } else {
-              const callback = floorPlanImage => {
-                if (floorPlanImage.indexOf('data:image/jpeg;base64,') > -1) {
-                  return floorPlanImage;
-                } else {
-                  return `data:image/jpeg;base64,${floorPlanImage}`;
-                }
-              };
-
-              // Resizing large image on the server side
-              const result = await this.mapService
-                .resizeImage({
-                  img: !this.floorPlan
-                    ? `data:image/jpeg;base64,${this.mapImage}`
-                    : callback(this.floorPlan.floorPlanImage),
-                  newRatio
-                })
-                .toPromise();
-
-              let jsonData: any = {
-                newRatio
-              };
-
-              if (this.floorPlan) {
-                let floorPlanData = this.floorPlan;
-                delete floorPlanData.floorPlanImage; // reduce json size
-                floorPlanData = {
-                  ...floorPlanData,
-                  ...{ floorPlanImage: result.image }
-                };
-                jsonData = { ...jsonData, floorPlanData };
-              } else {
-                jsonData = { ...jsonData, image: result.image };
-              }
-
-              this.dbService
-                .add('map', {
-                  name: !this.floorPlan
-                    ? `ros_${this.mapName}`
-                    : `floorPlan_${this.mapName}`,
-                  payload: JSON.stringify(jsonData)
-                })
-                .subscribe();
-
-              canvas = result.image;
-            }
-
-            return { canvas };
-          } else {
-            return { img };
-          }
-        }),
-        switchMap(async ({ canvas, img }) => {
-          if (canvas) {
-            const rosMapImageObj = await loadImage(canvas);
+          const result = await this.processImage(img, this.maxPx);
+          if (result.canvas) {
+            const rosMapImageObj = await loadImage(result.canvas);
             return rosMapImageObj;
           } else {
-            return img;
+            return result.img;
           }
         }),
         delay(3000),
@@ -323,7 +179,8 @@ export class MapWrapperComponent
             x: 0,
             y: 0,
             width: img.width,
-            height: img.height
+            height: img.height,
+            name: 'map'
           });
 
           mapLayer.add(rosMap);
@@ -397,7 +254,7 @@ export class MapWrapperComponent
           this.editor &&
           (this.mapImage || this.floorPlan)
         ) {
-          this.init();
+          this.initMapElements();
 
           this.stage.on('wheel', event => {
             event.evt.preventDefault();
@@ -412,7 +269,149 @@ export class MapWrapperComponent
       });
   }
 
+  loadImageObservable(
+    floorPlan: boolean,
+    mapImage: string
+  ): Observable<HTMLImageElement> {
+    return defer(() => {
+      return iif(
+        () => floorPlan,
+        new Observable<HTMLImageElement>(observer => {
+          const img = new Image();
+          img.onload = () => {
+            observer.next(img);
+            observer.complete();
+          };
+          img.onerror = err => {
+            observer.error(err);
+          };
+          const { floorPlanImage } = this.floorPlan;
+          if (floorPlanImage.indexOf('data:image/jpeg;base64,') > -1) {
+            img.src = floorPlanImage;
+          } else {
+            img.src = `data:image/jpeg;base64,${floorPlanImage}`;
+          }
+        }),
+        new Observable<HTMLImageElement>(observer => {
+          const img = new Image();
+          img.onload = () => {
+            observer.next(img);
+            observer.complete();
+          };
+          img.onerror = err => {
+            observer.error(err);
+          };
+          img.src = `data:image/jpeg;base64,${mapImage}`;
+        })
+      );
+    });
+  }
+
+  async processImage(img: HTMLImageElement, maxPx: number) {
+    const imgWidth = img.width;
+    const imgHeight = img.height;
+
+    if (imgWidth > maxPx || imgHeight > maxPx) {
+      let newRatio = maxPx / Math.max(imgWidth, imgHeight);
+      this.newRatio = newRatio;
+      this.scale /= newRatio;
+
+      let canvas: HTMLCanvasElement;
+
+      if (!this.largeImageServerSideRendering) {
+        // Resizing large image on the client side
+        canvas = await this.getResizedCanvas(
+          img,
+          imgWidth * newRatio,
+          imgHeight * newRatio
+        );
+      } else {
+        const callback = floorPlanImage => {
+          if (floorPlanImage.indexOf('data:image/jpeg;base64,') > -1) {
+            return floorPlanImage;
+          } else {
+            return `data:image/jpeg;base64,${floorPlanImage}`;
+          }
+        };
+
+        // Resizing large image on the server side
+        const result = await this.mapService
+          .resizeImage({
+            img: !this.floorPlan
+              ? `data:image/jpeg;base64,${this.mapImage}`
+              : callback(this.floorPlan.floorPlanImage),
+            newRatio
+          })
+          .toPromise();
+
+        let jsonData: any = {
+          newRatio
+        };
+
+        if (this.floorPlan) {
+          let floorPlanData = this.floorPlan;
+          delete floorPlanData.floorPlanImage; // reduce json size
+          floorPlanData = {
+            ...floorPlanData,
+            ...{ floorPlanImage: result.image }
+          };
+          jsonData = { ...jsonData, floorPlanData };
+        } else {
+          jsonData = { ...jsonData, image: result.image };
+        }
+
+        this.dbService
+          .add('map', {
+            name: !this.floorPlan
+              ? `ros_${this.mapName}`
+              : `floorPlan_${this.mapName}`,
+            payload: JSON.stringify(jsonData)
+          })
+          .subscribe();
+
+        canvas = result.image;
+      }
+
+      return { canvas };
+    } else {
+      return { img };
+    }
+  }
+
+  updateMapImage() {
+    this.mapLayer.removeChildren();
+  }
+
   ngOnChanges() {
+    const stage = this.stage?.find('.map');
+    if (this.currentMapName !== this.mapName && stage?.length > 0) {
+      const img$ = this.loadImageObservable(this.floorPlan, this.mapImage);
+
+      img$
+        .pipe(
+          switchMap(async img => {
+            const result = await this.processImage(img, this.maxPx);
+            if (result.canvas) {
+              const rosMapImageObj = await loadImage(result.canvas);
+              return rosMapImageObj;
+            } else {
+              return result.img;
+            }
+          })
+        )
+        .subscribe((img: any) => {
+          this.rosMap.setAttrs({
+            image: img,
+            width: img.width,
+            height: img.height
+          });
+          this.mapLayer.draw();
+          setTimeout(() => {
+            this.currentMapName = this.mapName;
+          }, 1000);
+        });
+    }
+
     if (
       // (this.robotPose || this.waypointTargets) &&
       this.robotPose &&
@@ -422,6 +421,7 @@ export class MapWrapperComponent
       (this.mapImage || this.floorPlan)
     ) {
       // this.init();
+
       let obs: Observable<any>[] = [];
       if (!this.floorPlan) {
         obs.push(this.createRobotCurrentPointToRosMap());
@@ -444,7 +444,7 @@ export class MapWrapperComponent
     }
   }
 
-  init() {
+  initMapElements() {
     let obs: Observable<any>[] = [];
     if (!this.floorPlan) {
       obs.push(this.createRobotCurrentPointToRosMap());
@@ -1347,7 +1347,7 @@ export class MapWrapperComponent
           this.isReset = true;
         })
       )
-      .subscribe(() => this.init());
+      .subscribe(() => this.initMapElements());
   }
 
   onPreviewMode() {
@@ -1357,7 +1357,7 @@ export class MapWrapperComponent
     forkJoin([this.getRobotCurrentPosition$(), this.getlidarPoints$()])
       .pipe(
         mergeMap(() => this.onReset()),
-        finalize(() => this.init())
+        finalize(() => this.initMapElements())
       )
       .subscribe();
   }

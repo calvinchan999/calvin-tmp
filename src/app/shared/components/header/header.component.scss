@@ -165,23 +165,21 @@
   }
 }
 
-
 @keyframes batteryChargingMultiColor {
   0% {
     color: #fff;
   }
   25% {
-    color: #c8ff00;
+    color: #ffff00;
   }
   50% {
-    color: #c8ff00;
+    color: #ffff00;
   }
 
   100% {
     color: #fff;
   }
 }
-
 
 @keyframes lowBatteryAlertMultiColor {
   0% {
