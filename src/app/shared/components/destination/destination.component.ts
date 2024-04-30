@@ -2,7 +2,14 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Subscription, iif, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import {
+  catchError,
+  finalize,
+  map,
+  mergeMap,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { MqttService } from 'src/app/services/mqtt.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { MapService } from 'src/app/views/services/map.service';
@@ -63,9 +70,9 @@ export class DestinationComponent implements OnInit, OnDestroy {
     this.sub = this.sharedService.currentMap$
       .pipe(
         mergeMap(currentMap => {
-          if(!currentMap || currentMap ==='')
+          if (!currentMap || currentMap === '')
             throw 'exceptions.mapNotExistException';
-          this.mapName = currentMap;
+          // this.mapName = currentMap;
           const { enableFloorPlanMode } = this.appConfigService.getConfig();
           if (!enableFloorPlanMode) {
             // const param = _.pickBy({ imageIncluded: 'true' }, _.identity);
@@ -127,7 +134,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
                     )
                   );
                 }
-              })
+              }),
+              finalize(() => (this.mapName = currentMap))
             );
           } else {
             return this.dbService
@@ -150,7 +158,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
                       { floorPlanIncluded: 'true' },
                       _.identity
                     );
-                    const queries = { param };;
+                    const queries = { param };
                     return this.mapService
                       .getFloorPlan(currentMap, queries)
                       .pipe(
@@ -182,7 +190,8 @@ export class DestinationComponent implements OnInit, OnDestroy {
                         )
                       );
                   }
-                })
+                }),
+                finalize(() => (this.mapName = currentMap))
               );
           }
         })

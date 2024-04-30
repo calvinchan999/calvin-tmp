@@ -150,7 +150,10 @@ export class MapWrapperComponent
         switchMap(async img => {
           const result = await this.processImage(img, this.maxPx);
           if (result.canvas) {
-            const rosMapImageObj = await loadImage(result.canvas, this.largeImageServerSideRendering);
+            const rosMapImageObj = await loadImage(
+              result.canvas,
+              this.largeImageServerSideRendering
+            );
             return rosMapImageObj;
           } else {
             return result.img;
@@ -227,6 +230,7 @@ export class MapWrapperComponent
             x: 0,
             y: 0
           });
+
           return of();
         }),
         // handle 2 cases "localizationEditor" & "positionListener"
@@ -377,9 +381,6 @@ export class MapWrapperComponent
     }
   }
 
-  updateMapImage() {
-    this.mapLayer.removeChildren();
-  }
 
   ngOnChanges() {
     const stage = this.stage?.find('.map');
@@ -388,23 +389,40 @@ export class MapWrapperComponent
 
       img$
         .pipe(
-          switchMap(async img => {
+          mergeMap(async img => {
             const result = await this.processImage(img, this.maxPx);
             if (result.canvas) {
-              const rosMapImageObj = await loadImage(result.canvas, this.largeImageServerSideRendering);
+              const rosMapImageObj = await loadImage(
+                result.canvas,
+                this.largeImageServerSideRendering
+              );
               return rosMapImageObj;
             } else {
               return result.img;
             }
+          }),
+          tap(img => {
+            console.log('onChange:');
+            console.log(img);
+            this.mapLayer.destroy();
+            this.rosMap.setAttrs({
+              image: img,
+              draggable: false,
+              x: 0,
+              y: 0,
+              width: img.width,
+              height: img.height,
+              name: 'map'
+            });
+            this.mapLayer.add(this.rosMap);
+            this.stage.add(this.mapLayer);
           })
         )
         .subscribe((img: any) => {
-          this.rosMap.setAttrs({
-            image: img,
-            width: img.width,
-            height: img.height
-          });
-          this.mapLayer.draw();
+          this.robotCurrentPositionPoint.remove();
+          this.destinationPoint.remove();
+          this.robotPath.remove();
+          // this.mapLayer.draw();
           setTimeout(() => {
             this.currentMapName = this.mapName;
           }, 1000);
