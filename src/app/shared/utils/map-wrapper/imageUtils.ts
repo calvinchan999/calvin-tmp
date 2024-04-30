@@ -1,5 +1,6 @@
 export function loadImage(
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  largeImageServerSideRendering: boolean
 ): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const rosMapImageObj = new Image();
@@ -10,7 +11,7 @@ export function loadImage(
       reject(error);
     };
 
-    if (!this.largeImageServerSideRendering) {
+    if (!largeImageServerSideRendering) {
       // client side
       rosMapImageObj.src = canvas.toDataURL('image/jpeg');
     } else {

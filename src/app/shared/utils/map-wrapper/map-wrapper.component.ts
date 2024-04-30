@@ -144,14 +144,13 @@ export class MapWrapperComponent
   ngAfterViewInit() {
     this.currentMapName = this.mapName;
     const img$ = this.loadImageObservable(this.floorPlan, this.mapImage);
-
     this.sub = img$
       .pipe(
         tap(() => this.sharedService.loading$.next(true)),
         switchMap(async img => {
           const result = await this.processImage(img, this.maxPx);
           if (result.canvas) {
-            const rosMapImageObj = await loadImage(result.canvas);
+            const rosMapImageObj = await loadImage(result.canvas, this.largeImageServerSideRendering);
             return rosMapImageObj;
           } else {
             return result.img;
@@ -392,7 +391,7 @@ export class MapWrapperComponent
           switchMap(async img => {
             const result = await this.processImage(img, this.maxPx);
             if (result.canvas) {
-              const rosMapImageObj = await loadImage(result.canvas);
+              const rosMapImageObj = await loadImage(result.canvas, this.largeImageServerSideRendering);
               return rosMapImageObj;
             } else {
               return result.img;
