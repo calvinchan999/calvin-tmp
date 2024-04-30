@@ -1,7 +1,12 @@
-<nav class="navbar navbar-expand flex-wrap"  *ngIf="currentUrl !== '/waypoint/destination'">
+<nav
+  class="navbar navbar-expand flex-wrap"
+  *ngIf="currentUrl !== '/waypoint/destination'"
+>
   <div
     class="container-fluid"
-    *ngIf="site === 'HKSTP' || currentUrl === '/dashboard' || currentUrl === '/login'"
+    *ngIf="
+      (site === 'HKSTP' && currentUrl !== '/localization' )|| currentUrl === '/dashboard' || currentUrl === '/login'
+    "
   >
     <div
       class="navbar-collapse collapse flex-sm-grow-1 justify-content-start align-self-center mode"
@@ -45,7 +50,10 @@
             <i [class]="getBatteryCssStyle(percentage, powerSupplyStatus)"></i>
           </ng-container> -->
 
-          <i #batteryIconElement class="mdi mdi-battery-alert-variant-outline battery-icon icon"></i>
+          <i
+            #batteryIconElement
+            class="mdi mdi-battery-alert-variant-outline battery-icon icon"
+          ></i>
         </li>
 
         <!-- manual -->
@@ -91,10 +99,31 @@
         </li>
 
         <!-- lang-->
-        <li class="nav-item language-container" (click)="useLanguage()" *ngIf="currentUrl === '/dashboard' || currentUrl === '/login'">
+        <li
+          class="nav-item language-container"
+          (click)="useLanguage()"
+          *ngIf="currentUrl === '/dashboard' || currentUrl === '/login'"
+        >
           <!-- <i class="material-icons nav-link icon">language</i> -->
           <i class="mdi mdi-web icon"></i>
         </li>
+
+        <!-- <li
+          class="nav-item localization-container"
+          *ngIf="currentUrl === '/localization'"
+        >
+          <i
+            class="mdi mdi-map-legend icon"
+            (click)="localizationByMap()"
+            *ngIf="localizationType === 'LIST'"
+          ></i>
+
+          <i
+            class="mdi mdi-format-list-bulleted icon"
+            (click)="localizationByList()"
+            *ngIf="localizationType === 'MAP'"
+          ></i>
+        </li> -->
       </ul>
     </div>
   </div>
