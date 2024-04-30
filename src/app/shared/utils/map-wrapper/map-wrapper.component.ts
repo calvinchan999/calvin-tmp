@@ -402,8 +402,6 @@ export class MapWrapperComponent
             }
           }),
           tap(img => {
-            console.log('onChange:');
-            console.log(img);
             this.mapLayer.destroy();
             this.rosMap.setAttrs({
               image: img,
