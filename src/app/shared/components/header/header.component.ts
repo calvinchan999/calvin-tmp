@@ -350,6 +350,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   backToPreviousPage() {
+    console.log(`debug`);
     this.location.back();
   }
 
