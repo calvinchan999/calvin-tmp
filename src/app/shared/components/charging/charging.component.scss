@@ -23,12 +23,11 @@
   // bottom: 50px;
 }
 
-.battery-charging-title{
+.battery-charging-title {
   position: relative;
   display: flex;
   flex-direction: column;
   text-align: center;
-
 }
 
 .docking-battery-percentage {
@@ -119,4 +118,25 @@
   to {
     opacity: 1;
   }
+}
+
+@media only screen and (max-height: 700px) and (orientation: landscape) {
+  .charging-icon {
+    font-size: 8em;
+  }
+
+  .charging-btn-container {
+    padding-top: 0px;
+    width: 100%;
+  }
+
+  .close-icon {
+    font-size: 3.5em;
+  }
+
+  // .close-title {
+  //   position: relative;
+  //   top: -60px;
+  //   font-size: 15px;
+  // }
 }

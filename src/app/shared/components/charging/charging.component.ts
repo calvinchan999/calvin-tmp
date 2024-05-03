@@ -25,7 +25,16 @@ export class ChargingComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private mqttService: MqttService
   ) {
-    this.batterySub = this.mqttService.batterySubject
+    // this.batterySub = this.mqttService.batterySubject
+    //   .pipe(map(battery => JSON.parse(battery)))
+    //   .subscribe(battery => {
+    //     const { percentage } = battery;
+    //     console.log(battery);
+    //     this.batteryPercentage = Math.round(percentage * 100);
+    //   });
+
+    this.batterySub = this.mqttService
+      .getBattery()
       .pipe(map(battery => JSON.parse(battery)))
       .subscribe(battery => {
         const { percentage } = battery;
