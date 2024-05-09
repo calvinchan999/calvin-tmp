@@ -94,6 +94,10 @@ export class SharedService {
 
   public batterySubject = new Subject<any>();
 
+  public robotTypeBahaviorSubject = new BehaviorSubject<string>("");
+
+  public mapMateData = new BehaviorSubject<any>(null);
+
   constructor() {
     this.currentMap$
       .pipe(
