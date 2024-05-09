@@ -181,19 +181,21 @@ export class DestinationComponent implements OnInit, OnDestroy {
                             transformedAngle: info.mapList[0].transformedAngle
                           };
                         }),
-                        tap(result => (this.floorPlanData = result)),
-                        delay(1000),
-                        mergeMap(() =>
-                          this.mapService.getMapMetadata(currentMap).pipe(
-                            tap(metaData => {
-                              this.metaData = metaData;
-                            })
-                          )
-                        )
+                        tap(result => (this.floorPlanData = result))
+                        // mergeMap(() =>
+                        //   this.mapService.getMapMetadata(currentMap).pipe(
+                        //     tap(metaData => {
+                        //       this.metaData = metaData;
+                        //     })
+                        //   )
+                        // )
                       );
                   }
                 }),
-                finalize(() => (this.mapName = currentMap))
+                finalize(() => {
+                  this.metaData = this.sharedService.mapMateData.value;
+                  this.mapName = currentMap;
+                })
               );
           }
         })

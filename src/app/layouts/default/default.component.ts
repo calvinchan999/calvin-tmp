@@ -497,11 +497,18 @@ export class DefaultComponent implements OnInit, OnDestroy {
       .getActiveMap()
       .pipe(
         map(data => JSON.parse(data)),
-        tap(data => {
+        // tap(data => {
+        //   console.log('mqtt activemap');
+        //   const { mapCode } = data;
+        //   if (mapCode) {
+        //     this.sharedService.currentMap$.next(mapCode);
+        //   }
+        // }),
+        mergeMap((data: any) => {
+          console.log('Get Active Map by mq:');
           const { mapCode } = data;
-          if (mapCode) {
-            this.sharedService.currentMap$.next(mapCode);
-          }
+          this.sharedService.currentMap$.next(mapCode);
+          return this.getRobotMapMetaData(mapCode);
         })
       )
       .subscribe();
@@ -602,18 +609,25 @@ export class DefaultComponent implements OnInit, OnDestroy {
         this.sharedService.arcsModeBahaviorSubject.next(
           fms?.enabled ? true : false
         );
+        // this.sharedService.robotTypeBahaviorSubject.next(robotType);
       })
     );
   }
 
   getCurrentMap(): Observable<any> {
     return this.mapService.getActiveMap().pipe(
-      tap((response: MapResponse) => {
-        console.log('Get Active Map:');
-        console.log(response);
+      // tap((response: MapResponse) => {
+      //   console.log('Get Active Map:');
+      //   console.log(response);
+      //   const { name } = response;
+      //   this.sharedService.currentMap$.next(name);
+      //   this.sharedService.loading$.next(false);
+      // })
+      mergeMap((response: MapResponse) => {
+        console.log('Get Active Map by api:');
         const { name } = response;
         this.sharedService.currentMap$.next(name);
-        this.sharedService.loading$.next(false);
+        return this.getRobotMapMetaData(name);
       })
     );
   }
@@ -654,9 +668,9 @@ export class DefaultComponent implements OnInit, OnDestroy {
       const { waypointName } = departurePayload.movement;
       // const currentMap = this.sharedService.currentMapBehaviorSubject$.value;
       return of(EMPTY).pipe(
-        switchMap(() => this.getCurrentMap()),
+        mergeMap(() => this.getCurrentMap()),
         map(() => this.sharedService.currentMapBehaviorSubject$.value),
-        
+
         // take(1),
         mergeMap(mapName => {
           const filter = _.pickBy({ mapName }, _.identity);
@@ -800,6 +814,14 @@ export class DefaultComponent implements OnInit, OnDestroy {
             this.router.navigate(['/charging/charging-mqtt']);
           }
         }
+      })
+    );
+  }
+
+  getRobotMapMetaData(currentMap) {
+    return this.mapService.getMapMetadata(currentMap).pipe(
+      tap(metaData => {
+        this.sharedService.mapMateData.next(metaData);
       })
     );
   }
