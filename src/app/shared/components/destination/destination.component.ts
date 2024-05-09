@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Subscription, iif, of } from 'rxjs';
 import {
   catchError,
+  delay,
   finalize,
   map,
   mergeMap,
@@ -181,6 +182,7 @@ export class DestinationComponent implements OnInit, OnDestroy {
                           };
                         }),
                         tap(result => (this.floorPlanData = result)),
+                        delay(1000),
                         mergeMap(() =>
                           this.mapService.getMapMetadata(currentMap).pipe(
                             tap(metaData => {
