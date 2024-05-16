@@ -89,6 +89,7 @@ export class MapService {
   }
 
   getMapMetadata(name: string): Observable<MapMetadata> {
+    if (!name || name.length <= 0) return of(null);
     const url = `${this.baseUrl}${environment.api.mapMetadata(name)}`;
     return this.http.get<MapMetadata>(url);
   }
@@ -202,5 +203,25 @@ export class MapService {
   getRobotPath() {
     const url = `${this.baseUrl}${environment.api.path}`;
     return this.http.get(url);
+
+    // return of({
+    //   robotId: 'PATROL-01',
+    //   poseList: [
+    //     {
+    //       robotId: 'PATROL-01',
+    //       mapName: '5W2023',
+    //       x: -1.401489478508008,
+    //       y: 3.43120936082852,
+    //       angle: 2.640854927038024
+    //     },
+    //     {
+    //       robotId: 'PATROL-01',
+    //       mapName: '5W2023',
+    //       x: -1.40149,
+    //       y: 3.43121,
+    //       angle: -3.125378544838766
+    //     }
+    //   ]
+    // });
   }
 }
