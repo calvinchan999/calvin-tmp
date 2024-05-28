@@ -48,5 +48,6 @@
   },
   "lowBatteryAlert": {
     "percentage": 30
-  }
+  },
+  "robotType": "PATROL"
 }

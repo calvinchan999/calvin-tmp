@@ -13,7 +13,7 @@
     "duration": "28800000"
   },
   "feature": {
-    "waypoint": false,
+    "waypoint": true,
     "docking": true,
     "sos": true,
     "map": true,
@@ -29,7 +29,7 @@
     "task": true
   },
   "maxPx": 4080,
-  "imageScalingServer": "http://rv-calvinchan.eastasia.cloudapp.azure.com:8098",
+  "imageScalingServer": "http://rv-arcs-image-resizer.dzdue5gdfwc9drha.eastasia.azurecontainer.io:5100",
   "largeImageServerSideRendering": true,
   "enableMap": true,
   "enableFloorPlanMode": true,
@@ -48,5 +48,6 @@
   },
   "lowBatteryAlert": {
     "percentage": 95
-  }
+  },
+  "robotType": "PATROL"
 }

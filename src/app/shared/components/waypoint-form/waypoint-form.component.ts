@@ -74,12 +74,20 @@ export class WaypointFormComponent implements OnInit, OnDestroy {
         this.project !== ProjectSite.HKSTP
       ) {
         const filter = _.pickBy(
-          { floorPlanCode: currentMap, orderBy: 'name' },
+          {
+            floorPlanCode: currentMap,
+            orderBy: 'name',
+            robotType: this.appConfigService.getConfig().robotType
+          },
           _.identity
         );
         return this.missionService.getMission({ filter });
       } else if (this.project === ProjectSite.HKSTP) {
-        return this.missionService.getMission();
+        const filter = _.pickBy(
+          { robotType: this.appConfigService.getConfig().robotType },
+          _.identity
+        );
+        return this.missionService.getMission({ filter });
       } else {
         return of(null).pipe(tap(() => this.router.navigate(['/'])));
       }
