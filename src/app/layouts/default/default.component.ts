@@ -507,7 +507,8 @@ export class DefaultComponent implements OnInit, OnDestroy {
         mergeMap((data: any) => {
           console.log('Get Active Map by mq:');
           const { mapCode } = data;
-          this.sharedService.currentMap$.next(mapCode);
+          if (mapCode && mapCode !== '')
+            this.sharedService.currentMap$.next(mapCode);
           return this.getRobotMapMetaData(mapCode);
         })
       )
@@ -626,7 +627,7 @@ export class DefaultComponent implements OnInit, OnDestroy {
       mergeMap((response: MapResponse) => {
         console.log('Get Active Map by api:');
         const { name } = response;
-        this.sharedService.currentMap$.next(name);
+        if (name && name !== '') this.sharedService.currentMap$.next(name);
         return this.getRobotMapMetaData(name);
       })
     );
